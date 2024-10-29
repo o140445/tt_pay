@@ -1,0 +1,51 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    {:token()}
+
+<!--    // 余额-->
+    <div class="form-group">
+        <label for="c-balance" class="control-label col-xs-12 col-sm-2">{:__('Balance')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-balance" class="form-control" name="row[balance]" type="text" value="{$row['wallet']['balance']}" data-rule="required" disabled>
+        </div>
+    </div>
+
+<!--    冻结余额-->
+    <div class="form-group">
+        <label for="c-blocked-balance" class="control-label col-xs-12 col-sm-2">{:__('FrozenBalance')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-blocked-balance" class="form-control" name="row[blocked_balance]" type="text" value="{$row['wallet']['blocked_balance']}" data-rule="required" disabled>
+        </div>
+    </div>
+<!--    类型-->
+    <div class="form-group">
+        <label for="c-type" class="control-label col-xs-12 col-sm-2">{:__('Type')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="radio">
+                {:build_select('row[type]', $changeType, 1)}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="c-amount" class="control-label col-xs-12 col-sm-2">{:__('Amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-amount" class="form-control" name="row[amount]" type="number" value="" data-rule="required">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="c-remark" class="control-label col-xs-12 col-sm-2">{:__('Remark')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-remark" class="form-control" name="row[remark]" rows="5"></textarea>
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+
+</form>

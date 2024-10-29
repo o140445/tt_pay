@@ -24,6 +24,24 @@ if (!function_exists('build_select')) {
     }
 }
 
+// selectpickers
+if (!function_exists('build_selectpicker')) {
+
+    /**
+     * 生成下拉列表
+     * @param string $name
+     * @param mixed  $options
+     * @param mixed  $selected
+     * @param mixed  $attr
+     * @return string
+     */
+    function build_selectpicker($name, $options, $selected = [], $attr = [])
+    {
+        $attr = array_merge(['id' => "s-{$name}", 'class' => 'form-control selectpicker', 'data-live-search' => 'true'], $attr);
+        return Form::selectpicker($name, $options, $selected, $attr);
+    }
+}
+
 if (!function_exists('build_radios')) {
 
     /**
@@ -193,5 +211,27 @@ if (!function_exists('build_heading')) {
             $result = '<div class="panel-heading">' . $result . '</div>';
         }
         return $result;
+    }
+}
+
+
+// 获取随机字符串
+if (!function_exists('get_random_string')) {
+    function get_random_string($length = 6, $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    {
+        $hash = '';
+        $max = strlen($chars) - 1;
+        for ($i = 0; $i < $length; $i++) {
+            $hash .= $chars[mt_rand(0, $max)];
+        }
+        return $hash;
+    }
+}
+
+// 获取单号
+if (!function_exists('get_order_no')) {
+    function get_order_no($prefix = '')
+    {
+        return $prefix . date('YmdHis') . get_random_string();
     }
 }

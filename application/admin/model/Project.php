@@ -4,10 +4,10 @@ namespace app\admin\model;
 
 use think\Model;
 
-class Channel extends Model
+class Project extends Model
 {
     // 表名
-    protected $name = 'channel';
+    protected $name = 'project';
 
 
     // 定义时间戳字段名
@@ -23,9 +23,10 @@ class Channel extends Model
     }
 
 
-
-    public function getStatusList()
+    //projectChannel
+    public function projectChannel()
     {
-        return ['0' => __('Hidden'), '1' => __('Normal')];
+        return $this->hasMany('ProjectChannel', 'project_id', 'id');
     }
+
 }
