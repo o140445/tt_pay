@@ -83,7 +83,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     title: __('设置通道'),
                                     classname: 'btn btn-xs btn-success btn-dialog',
                                     icon: 'fa fa-plus',
-                                    url: 'member/member/set_channel',
+                                    url: 'member/project/channel/index?member_id={id}&type=1',
                                     callback: function (data, ret) {
                                         // 重新加载表格
                                         table.bootstrapTable('refresh');

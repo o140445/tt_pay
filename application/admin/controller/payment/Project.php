@@ -2,6 +2,7 @@
 
 namespace app\admin\controller\payment;
 
+use app\admin\model\ProjectChannel;
 use app\common\controller\Backend;
 use app\admin\model\Project as ProjectModel;
 use app\admin\model\Channel;
@@ -171,5 +172,22 @@ class Project extends Backend
             $this->error(__('No rows were updated'));
         }
         $this->success();
+    }
+
+    /**
+     * getChannelListByProjectId
+     */
+    public function getChannelListByProjectId()
+    {
+        $project_id = $this->request->get('project_id');
+        $projectChannel = ProjectChannel::where('project_id', $project_id)->with('channel')->select();
+        $data = [];
+        foreach ($projectChannel as $k => $v) {
+            $data[] = [
+                'id' => $v->channel->id,
+                'name' => $v->channel->title,
+            ];
+        }
+        return json(['code' => 1, 'data' => $data]);
     }
 }

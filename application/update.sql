@@ -102,3 +102,19 @@ create TABLE if not exists fa_member_wallet_freeze (
     KEY `thaw_time` (`thaw_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员冻结列表';
 
+
+--- 会员通道费率
+create TABLE if not exists fa_member_project_channel (
+   `id` int NOT NULL AUTO_INCREMENT,
+   `status` tinyint NOT NULL DEFAULT '1' COMMENT '状态',
+   `member_id` bigint NOT NULL,
+   `project_id` bigint NOT NULL,
+   `type` tinyint NOT NULL DEFAULT '1' COMMENT '1代收 2代付',
+   `fixed_rate` decimal(10,4) unsigned NOT NULL DEFAULT '0.0000' COMMENT '固定成本',
+    `rate` decimal(10,4) unsigned NOT NULL DEFAULT '0.0000' COMMENT '成本比例',
+    `channel_id` bigint NOT NULL DEFAULT '0' COMMENT '通道id',
+    `sub_member_id` int NOT NULL DEFAULT '0' COMMENT '子商户号',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员通道费率';
+
+php think crud -t member_project_channel
