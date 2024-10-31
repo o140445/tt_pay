@@ -14,11 +14,24 @@ class MemberWalletModel extends Model
     const CHANGE_TYPE_FREEZE = 3; // 手动冻结
     const CHANGE_TYPE_UNFREEZE = 4; // 手动解冻
 
+
+    const CHANGE_TYPE_PAY_FREEZE = 5; // 代付冻结
+    const CHANGE_TYPE_WITHDRAW_FREEZE = 6; // 提现冻结
+    const CHANGE_TYPE_CYCLE_FREEZE = 7; // 循环冻结
+
     //manual
     const CHANGE_MANUAL_TYPE = [
         self::CHANGE_TYPE_ADD => '增加',
         self::CHANGE_TYPE_SUB => '减少',
         self::CHANGE_TYPE_FREEZE => '冻结',
+    ];
+
+    //freeze
+    const CHANGE_FREEZE_TYPE = [
+        self::CHANGE_TYPE_FREEZE => '手动冻结',
+        self::CHANGE_TYPE_PAY_FREEZE => '代付冻结',
+        self::CHANGE_TYPE_WITHDRAW_FREEZE => '提现冻结',
+        self::CHANGE_TYPE_CYCLE_FREEZE => '循环冻结',
     ];
 
     public function getChangeType($key='')

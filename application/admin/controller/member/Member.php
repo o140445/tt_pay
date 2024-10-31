@@ -5,6 +5,7 @@ namespace app\admin\controller\member;
 use app\admin\model\Member as MemberModel;
 use app\admin\model\MemberWalletModel;
 use app\common\controller\Backend;
+use app\common\service\FreezeService;
 use app\common\service\MemberWalletService;
 use think\Db;
 use think\Exception;
@@ -282,9 +283,9 @@ class Member extends Backend
                     $result = $walletService->subBalance($row->id, $params['amount'], $remark);
                     break;
                 case MemberWalletModel::CHANGE_TYPE_FREEZE:
-
+                    $freezeService = new FreezeService();
                     $remark = $params['remark'] ? $params['remark'] : '手动冻结';
-                    $result = $walletService->freeze($row->id, $params['amount'], $remark);
+                    $result = $freezeService->freeze($row->id, $params['amount'], MemberWalletModel::CHANGE_TYPE_FREEZE, $remark);
                     break;
                 default:
                     $this->error('未知操作');
