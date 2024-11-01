@@ -75,6 +75,20 @@ class Freeze extends Backend
         $this->success();
     }
 
+
+    public function multi($ids = null)
+    {
+        $this->success('ok');
+    }
+    public function edit($ids = null)
+    {
+        $this->success('ok');
+    }
+    public function del($ids = null)
+    {
+         $this->success('ok');
+    }
+
     //unfreeze
     public function unfreeze($ids = null)
     {
