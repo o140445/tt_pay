@@ -2,6 +2,7 @@
 
 namespace app\admin\controller\member;
 
+use app\admin\model\ConfigArea;
 use app\admin\model\Member as MemberModel;
 use app\admin\model\MemberWalletModel;
 use app\common\controller\Backend;
@@ -25,6 +26,7 @@ class Member extends Backend
         $this->model = new MemberModel();
         $this->view->assign("categoryList", $this->model->category);
         $this->view->assign('agentLists', $this->model->getAgentLists());
+        $this->view->assign('configAreaList', ConfigArea::column('id,name'));
     }
 
 
@@ -42,7 +44,7 @@ class Member extends Backend
         [$where, $sort, $order, $offset, $limit] = $this->buildparams();
 
         $list = $this->model
-            ->with(['wallet'])
+            ->with(['wallet', 'area'])
             ->where($where)
             ->order($sort, $order)
             ->paginate($limit);
@@ -285,7 +287,7 @@ class Member extends Backend
                 case MemberWalletModel::CHANGE_TYPE_FREEZE:
                     $freezeService = new FreezeService();
                     $remark = $params['remark'] ? $params['remark'] : '手动冻结';
-                    $result = $freezeService->freeze($row->id, $params['amount'], MemberWalletModel::CHANGE_TYPE_FREEZE, $remark);
+                    $result = $freezeService->freeze($row->id, $params['amount'], MemberWalletModel::CHANGE_TYPE_FREEZE, '', $remark);
                     break;
                 default:
                     $this->error('未知操作');

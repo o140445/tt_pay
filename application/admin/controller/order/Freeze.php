@@ -63,7 +63,7 @@ class Freeze extends Backend
         try {
             $freezeService = new FreezeService();
             $remark = $params['remark'] ? $params['remark'] : '手动冻结';
-            $result = $freezeService->freeze($params['member_id'], $params['amount'], MemberWalletModel::CHANGE_TYPE_FREEZE, $remark);
+            $result = $freezeService->freeze($params['member_id'], $params['amount'], MemberWalletModel::CHANGE_TYPE_FREEZE, '', $remark);
             Db::commit();
         } catch (\Exception $e) {
             Db::rollback();
@@ -103,7 +103,7 @@ class Freeze extends Backend
         Db::startTrans();
         try {
             $freezeService = new FreezeService();
-            $result = $freezeService->unfreeze($ids, '');
+            $result = $freezeService->unfreeze(MemberWalletModel::CHANGE_TYPE_UNFREEZE, $ids, '');
             Db::commit();
         } catch (\Exception $e) {
             Db::rollback();

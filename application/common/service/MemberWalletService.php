@@ -41,7 +41,7 @@ class MemberWalletService
         $after_balance = $before_balance + $amount;
         $wallet->save();
 
-        $this->addBalanceLog($member_id, $amount, $before_balance, $after_balance, MemberWalletModel::CHANGE_TYPE_ADD, $remark);
+        $this->addBalanceLog($member_id, $amount, $before_balance, $after_balance, MemberWalletModel::CHANGE_TYPE_ADD, '', $remark);
 
         return true;
     }
@@ -69,20 +69,20 @@ class MemberWalletService
         $wallet->balance = Db::raw('balance - ' . $amount);
         $after_balance = $before_balance - $amount;
         $wallet->save();
-        $this->addBalanceLog($member_id, $amount, $before_balance, $after_balance, MemberWalletModel::CHANGE_TYPE_SUB, $remark);
+        $this->addBalanceLog($member_id, $amount, $before_balance, $after_balance, MemberWalletModel::CHANGE_TYPE_SUB, '',  $remark);
 
         return true;
     }
 
 
     /**
-     * 手动冻结余额
+     * 冻结余额
      * @param int $member_id
      * @param float $amount
      * @param string $remark
      * @return bool
      */
-    public function freeze($member_id, $amount, $type, $remark = '手动冻结')
+    public function freeze($member_id, $amount, $type, $order_no, $remark = '手动冻结')
     {
         $amount = abs($amount);
         $wallet = $this->getWalletInfo($member_id);
@@ -99,7 +99,7 @@ class MemberWalletService
         $wallet->blocked_balance = Db::raw('blocked_balance + ' . $amount);
         $after_balance = $before_balance - $amount;
         $wallet->save();
-        $this->addBalanceLog($member_id, $amount, $before_balance, $after_balance, $type, $remark);
+        $this->addBalanceLog($member_id, $amount, $before_balance, $after_balance, $type, $order_no, $remark);
 
         return true;
     }
@@ -112,7 +112,7 @@ class MemberWalletService
      * @param string $remark
      */
 
-    public function unfreeze($member_id, $amount, $type, $remark = '手动解冻')
+    public function unfreeze($member_id, $amount, $type, $order_no, $remark = '手动解冻')
     {
         $amount = abs($amount);
         $wallet = $this->getWalletInfo($member_id);
@@ -129,7 +129,7 @@ class MemberWalletService
         $wallet->balance = Db::raw('balance + ' . $amount);
         $after_balance = $before_balance + $amount;
         $wallet->save();
-        $this->addBalanceLog($member_id, $amount, $before_balance, $after_balance, $type, $remark);
+        $this->addBalanceLog($member_id, $amount, $before_balance, $after_balance, $type, $order_no, $remark);
 
         return true;
     }
@@ -144,7 +144,7 @@ class MemberWalletService
      * @param $remark
      * @return void
      */
-    public function addBalanceLog($member_id, $amount, $before_balance, $after_balance, $type, $remark = '')
+    public function addBalanceLog($member_id, $amount, $before_balance, $after_balance, $type, $order_no, $remark = '')
     {
         $data = [
             'member_id' => $member_id,
@@ -153,11 +153,39 @@ class MemberWalletService
             'after_balance' => $after_balance,
             'type' => $type,
             'remark' => $remark,
+            'order_no' => $order_no,
         ];
         MemberWalletLogModel::create($data);
     }
 
 
+    /**
+     * 提现减少余额
+     * @param int $member_id
+     * @param float $amount
+     * @param string $order_no
+     * @param string $remark
+     */
+    public function withdraw($member_id, $amount, $order_no, $remark = '提现')
+    {
+        $amount = abs($amount);
+        $wallet = $this->getWalletInfo($member_id);
+        if (!$wallet) {
+            return false;
+        }
+
+        if ($wallet->balance < $amount) {
+            throw new \Exception('余额不足');
+        }
+
+        $before_balance = $wallet->balance;
+        $wallet->balance = Db::raw('balance - ' . $amount);
+        $after_balance = $before_balance - $amount;
+        $wallet->save();
+        $this->addBalanceLog($member_id, $amount, $before_balance, $after_balance, MemberWalletModel::CHANGE_TYPE_WITHDRAW_SUB, $order_no, $remark);
+
+        return true;
+    }
 
 
 }

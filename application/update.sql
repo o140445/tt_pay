@@ -33,6 +33,8 @@ create TABLE if not exists fa_project (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE `fa_project` ADD `area_id` INT NOT NULL COMMENT '地区id' AFTER `status`;
+
 -- 通道渠道关联
 create TABLE if not exists fa_project_channel (
     `id` int NOT NULL AUTO_INCREMENT,
@@ -61,6 +63,9 @@ create TABLE if not exists fa_member (
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员表';
+--- 会员添加ip白名单
+ALTER TABLE `fa_member` ADD `ip_white_list` VARCHAR(255) default '' COMMENT 'ip白名单' AFTER `usdt_address`;
+ALTER TABLE `fa_member` ADD `area_id` INT NOT NULL COMMENT '地区id' AFTER `ip_white_list`;
 
 -- 会员钱包
 create TABLE if not exists fa_member_wallet (
@@ -83,6 +88,11 @@ create TABLE if not exists fa_member_wallet_log (
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员余额变动记录表';
+
+-- 会员余额变动记录添加业务单号 和 会员id索引
+ALTER TABLE `fa_member_wallet_log` ADD `order_no` VARCHAR(255) NOT NULL COMMENT '业务单号' AFTER `member_id`;
+ALTER TABLE `fa_member_wallet_log` ADD INDEX `member_id` (`member_id`);
+ALTER TABLE `fa_member_wallet_log` ADD INDEX `order_no` (`order_no`);
 
 -- 会员冻结列表
 create TABLE if not exists fa_member_wallet_freeze (
@@ -117,4 +127,61 @@ create TABLE if not exists fa_member_project_channel (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员通道费率';
 
-php think crud -t member_project_channel
+--- 提款单
+create TABLE if not exists fa_withdraw_order (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `order_no` varchar(255)  NOT NULL COMMENT '订单号',
+    `member_id` int NOT NULL COMMENT '会员id',
+    `amount` decimal(10,4) Default 0 COMMENT '金额',
+    `usdt_amount` decimal(10,4) Default 0 COMMENT 'usdt金额',
+    `usdt_address` varchar(255)  NOT NULL COMMENT 'usdt地址',
+    `status` smallint Default 0 COMMENT '状态',
+    `remark` varchar(255)  NOT NULL COMMENT '备注',
+    `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='提款单';
+
+
+--- 代付单
+create TABLE if not exists fa_order_in (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `order_no` varchar(255)  NOT NULL COMMENT '订单号',
+    `member_id` int NOT NULL COMMENT '会员id',
+    `amount` decimal(10,4) Default 0 COMMENT '金额',
+    `true_amount` decimal(10,4) Default 0 COMMENT '实际金额',
+    `actual_amount` decimal(10,4) Default 0 COMMENT '实际到账金额',
+    `fee_amount` decimal(10,4) Default 0 COMMENT '手续费',
+    `channeel_fee_amount` decimal(10,4) Default 0 COMMENT '通道手续费',
+    `project_id` int NOT NULL COMMENT '项目id',
+    `channel_id` int NOT NULL COMMENT '通道id',
+    `pay_url` varchar(500) Default '' NOT NULL COMMENT '支付地址',
+    `attach` varchar(255) Default '' NOT NULL COMMENT '附加信息',
+    `order_ip` varchar(255) Default '' NOT NULL COMMENT '订单ip',
+    `error_msg` varchar(255) Default '' NOT NULL COMMENT '消息',
+    `e_no` varchar(255) Default '' NOT NULL COMMENT 'E单号',
+    `status` smallint Default 0 COMMENT '状态',
+    `remark` varchar(255) Default '' NOT NULL COMMENT '备注',
+    `pay_success_date` timestamp  COMMENT '支付成功时间',
+    `notify_url` varchar(500) Default '' NOT NULL COMMENT '通知地址',
+    `notify_status` smallint Default 0 COMMENT '通知状态',
+    `notify_count` int Default 0 COMMENT '通知次数',
+    `area_id` int Default 0 COMMENT '地区id',
+    `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    KEY `order_no` (`order_no`),
+    KEY `member_id` (`member_id`),
+    KEY `area_id` (`area_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='代付单';
+
+
+--- 地区信息
+create TABLE if not exists fa_config_area (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `name` varchar(255)  NOT NULL COMMENT '地区名称',
+    `timezone` varchar(255)  NOT NULL COMMENT '时区',
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='地区信息';
+
+php think crud -t area

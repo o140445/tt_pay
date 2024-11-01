@@ -37,4 +37,10 @@ class Member extends Model
     {
         return $this->hasOne('MemberWalletModel', 'member_id', 'id');
     }
+
+    // area
+    public function area()
+    {
+        return $this->hasOne('ConfigArea', 'id', 'area_id');
+    }
 }

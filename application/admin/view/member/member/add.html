@@ -52,6 +52,16 @@
             </div>
         </div>
     </div>
+
+<!--    区域配置-->
+    <div class="form-group">
+        <label for="c-area-id" class="control-label col-xs-12 col-sm-2">{:__('AreaId')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_select('row[area_id]', $configAreaList, 0)}
+        </div>
+    </div>
+
+
 <!--    是否代理-->
     <div class="form-group">
         <label for="c-is-agency" class="control-label col-xs-12 col-sm-2">{:__('IsAgency')}:</label>

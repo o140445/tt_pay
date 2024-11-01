@@ -53,6 +53,14 @@
         </div>
     </div>
 
+    <!--    区域配置-->
+    <div class="form-group">
+        <label for="c-area-id" class="control-label col-xs-12 col-sm-2">{:__('AreaId')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_select('row[area_id]', $configAreaList, $row['area_id'])}
+        </div>
+    </div>
+
 <!--    api_key 不可编辑-->
     <div class="form-group">
         <label for="c-api-key" class="control-label col-xs-12 col-sm-2">{:__('ApiKey')}:</label>

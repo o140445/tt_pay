@@ -25,4 +25,5 @@ return [
     'DockingType' => '对接类型',
     'DockingType1' => 'API',
     'DockingType2' => '网页',
+    'AreaId' => '地区',
 ];

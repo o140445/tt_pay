@@ -25,8 +25,15 @@
                     <option value="{$vo.id}">{$vo.title}</option>
                 {/foreach}
             </select>
+        </div>
+    </div>
 
-
+<!--        // area 单选-->
+    <div class="form-group">
+        <label for="c-area-id" class="control-label col-xs-12 col-sm-2">{:__('Area')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_select('row[area_id]', $configAreaList, 0)}
+        </div>
     </div>
 
 

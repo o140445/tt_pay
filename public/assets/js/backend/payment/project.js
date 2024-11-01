@@ -26,6 +26,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {checkbox: true},
                         {field: 'id', title: __('Id'), sortable: true},
                         {field: 'name', title: __('Name'), operate: 'LIKE', },
+                        {field: 'config_area.name', title: __('Area'), operate: false },
                         {field: 'status', title: __('Status'), searchList: {0:'禁用',1:'正常'}, formatter: Table.api.formatter.toggle},
                         // channels 是一个数组，需要自定义格式化
                         {field: 'channels', title: __('Channel'), operate: false, formatter: function (value, row, index) {

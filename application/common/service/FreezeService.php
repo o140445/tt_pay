@@ -8,29 +8,34 @@ use app\admin\model\MemberWalletModel;
 class FreezeService
 {
     // 冻结单
-    public function freeze($member_id, $amount, $type, $remark = '手动冻结')
+    public function freeze($member_id, $amount, $type, $order_no = '', $remark = '手动冻结')
     {
         $walletService = new MemberWalletService();
         $amount = abs($amount);
         $wallet = $walletService->getWalletInfo($member_id);
+        if (!$wallet) {
+            throw new \Exception('用户不存在');
+        }
+
+
         if  ($wallet->balance < $amount) {
             throw new \Exception('余额不足');
         }
         // 添加冻结记录
-        $order_no = $this->freezeOrderNo('SDDJ'.$member_id);
+        $order_no = $order_no ?: $this->freezeOrderNo('SDDJ'.$member_id);
         $res = $this->addFreeze($member_id, $amount, $type, $order_no, $remark);
         if (!$res) {
             throw new \Exception('冻结失败');
         }
 
         // 减少余额
-        $walletService->freeze($member_id, $amount, $type, $remark);
+        $walletService->freeze($member_id, $amount, $type, $order_no, $remark);
 
         return true;
     }
 
     // 解冻
-    public function unfreeze($id = ' ', $order_no = '')
+    public function unfreeze($type, $id = ' ', $order_no = '', $remark = '手动解冻')
     {
         if (!$id && !$order_no) {
             throw new \Exception('参数错误');
@@ -53,7 +58,7 @@ class FreezeService
         }
 
         $walletService = new MemberWalletService();
-        $walletService->unfreeze($freeze->member_id, $freeze->amount, MemberWalletModel::CHANGE_TYPE_UNFREEZE, '手动解冻');
+        $walletService->unfreeze($freeze->member_id, $freeze->amount, $type, $freeze->order_no, $remark);
 
         return true;
     }

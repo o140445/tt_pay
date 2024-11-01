@@ -29,4 +29,10 @@ class Project extends Model
         return $this->hasMany('ProjectChannel', 'project_id', 'id');
     }
 
+    // configArea
+    public function configArea()
+    {
+        return $this->hasOne('ConfigArea', 'id', 'area_id');
+    }
+
 }

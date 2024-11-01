@@ -34,6 +34,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'is_agency', title: __('IsAgency'), searchList: {1:'代理',0:'商户'}, formatter: Table.api.formatter.label},
                         {field: 'is_sandbox', title: __('IsSandbox'), searchList: {"1":__('TypeReal'),"0":__('TypeSandbox')}, formatter: Table.api.formatter.label},
                         {field: 'agency_id', title: __('AgencyId')},
+                        {field: 'area.name', title: __('AreaId'), formatter: Table.api.formatter.label},
                         {field: 'docking_type', title: __('DockingType'), searchList: {"1":__('DockingType1'),"0":__('DockingType2')}, formatter: Table.api.formatter.label},
                         {field: 'last_login_time', title: __('LastLoginTime'), formatter: Table.api.formatter.datetime},
                         {field: 'create_time', title: __('CreateTime'), formatter: Table.api.formatter.datetime},
