@@ -152,7 +152,7 @@ create TABLE if not exists fa_order_in (
     `true_amount` decimal(10,4) Default 0 COMMENT '实际金额',
     `actual_amount` decimal(10,4) Default 0 COMMENT '实际到账金额',
     `fee_amount` decimal(10,4) Default 0 COMMENT '手续费',
-    `channeel_fee_amount` decimal(10,4) Default 0 COMMENT '通道手续费',
+    `channel_fee_amount` decimal(10,4) Default 0 COMMENT '通道手续费',
     `project_id` int NOT NULL COMMENT '项目id',
     `channel_id` int NOT NULL COMMENT '通道id',
     `pay_url` varchar(500) Default '' NOT NULL COMMENT '支付地址',
@@ -174,6 +174,12 @@ create TABLE if not exists fa_order_in (
     KEY `member_id` (`member_id`),
     KEY `area_id` (`area_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='代付单';
+
+ALTER TABLE `fa_order_in` ADD `member_order_no` VARCHAR(255) NOT NULL COMMENT '会员订单号' AFTER `order_no`;
+ALTER TABLE `fa_order_in` ADD `channel_order_no` VARCHAR(255) NOT NULL COMMENT '通道订单号' AFTER `member_order_no`;
+-- 添加索引
+ALTER TABLE `fa_order_in` ADD INDEX `member_order_no` (`member_order_no`);
+ALTER TABLE `fa_order_in` ADD INDEX `channel_order_no` (`channel_order_no`);
 
 
 --- 地区信息
