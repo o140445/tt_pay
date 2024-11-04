@@ -190,4 +190,37 @@ create TABLE if not exists fa_config_area (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='地区信息';
 
-php think crud -t area
+
+CREATE TABLE `fa_profit` (
+     `id` int NOT NULL AUTO_INCREMENT,
+     `area_id` bigint NOT NULL DEFAULT '0' COMMENT '区域ID',
+     `member_id` bigint NOT NULL DEFAULT '0' COMMENT '会员ID',
+     `order_no` varchar(50) NOT NULL COMMENT '订单单号',
+     `order_type` tinyint DEFAULT '1' COMMENT '来源类型 1代收 2代付',
+     `order_amount` decimal(15,4) NOT NULL COMMENT '订单金额',
+     `fee` decimal(15,4) NOT NULL COMMENT '手续费',
+     `channel_fee` decimal(15,4) NOT NULL COMMENT '上游手续费',
+     `commission` decimal(15,4) NOT NULL COMMENT '提成',
+     `profit` decimal(15,4) NOT NULL COMMENT '利润',
+     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+     PRIMARY KEY (`id`),
+     KEY `idx_order_no` (`order_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='利润报表';
+
+-- 回调下游记录
+CREATE TABLE `fa_notify_log` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `order_no` varchar(50) NOT NULL COMMENT '订单单号',
+    `notify_type` tinyint NOT NULL DEFAULT '1' COMMENT '通知类型 1代收 2代付',
+    `notify_url` varchar(255) NOT NULL COMMENT '通知地址',
+    `notify_data` text NOT NULL COMMENT '通知数据',
+    `notify_result` text NOT NULL COMMENT '通知结果',
+    `notify_status` tinyint NOT NULL DEFAULT '0' COMMENT '通知状态',
+    `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_order_no` (`order_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='回调下游记录';
+
+php think crud -t profit

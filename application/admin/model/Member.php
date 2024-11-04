@@ -25,6 +25,10 @@ class Member extends Model
         1 => '代理商',
     ];
 
+    // 对接类型 docking_type
+    CONST DOCKING_TYPE_API = 1;
+    CONST DOCKING_TYPE_WEB = 0;
+
     public function getAgentLists()
     {
         $data = self::where('is_agency', 1)->column('id,username');

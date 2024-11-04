@@ -15,14 +15,14 @@ class In extends Backend
 
     /**
      * In模型对象
-     * @var \app\admin\model\order\In
+     * @var \app\admin\model\order\OrderIn
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\order\In;
+        $this->model = new \app\admin\model\order\OrderIn;
         $this->view->assign("statusList", $this->model->getStatusList());
     }
 

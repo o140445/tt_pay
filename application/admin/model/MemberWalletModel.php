@@ -25,6 +25,12 @@ class MemberWalletModel extends Model
     // 9 提现减少
     const CHANGE_TYPE_WITHDRAW_SUB = 9;
 
+    // 10 代收增加
+    const CHANGE_TYPE_PAY_ADD = 10;
+
+    // 11 提成
+    const CHANGE_TYPE_COMMISSION_ADD = 11;
+
     //manual
     const CHANGE_MANUAL_TYPE = [
         self::CHANGE_TYPE_ADD => '增加',

@@ -215,23 +215,4 @@ if (!function_exists('build_heading')) {
 }
 
 
-// 获取随机字符串
-if (!function_exists('get_random_string')) {
-    function get_random_string($length = 6, $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
-    {
-        $hash = '';
-        $max = strlen($chars) - 1;
-        for ($i = 0; $i < $length; $i++) {
-            $hash .= $chars[mt_rand(0, $max)];
-        }
-        return $hash;
-    }
-}
 
-// 获取单号
-if (!function_exists('get_order_no')) {
-    function get_order_no($prefix = '')
-    {
-        return $prefix . date('YmdHis') . get_random_string();
-    }
-}

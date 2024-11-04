@@ -5,7 +5,7 @@ namespace app\admin\model\order;
 use think\Model;
 
 
-class In extends Model
+class OrderIn extends Model
 {
 
     
@@ -28,11 +28,12 @@ class In extends Model
         'status_text'
     ];
 
-    // 状态 0未支付 1已支付 2失败 3退款
-    const STATUS_UNPAID = 0;
-    const STATUS_PAID = 1;
-    const STATUS_FAILED = 2;
-//    const STATUS_REFUND = 3;
+    // 状态 1未支付 2已支付 3失败 4退款
+    const STATUS_UNPAID = 1;
+    const STATUS_PAID = 2;
+    const STATUS_FAILED = 3;
+//    const STATUS_REFUND = 4;
+
 
     
     public function getStatusList()
