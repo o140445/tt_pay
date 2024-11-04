@@ -6,10 +6,9 @@ use app\admin\model\Channel;
 use app\admin\model\Member;
 use app\admin\model\MemberProjectChannel;
 use app\admin\model\MemberWalletModel;
-use app\admin\model\order\OrderIn;
+use app\admin\model\OrderIn;
 use app\admin\model\OrderNotifyLog;
 use app\admin\model\Profit;
-use app\admin\model\ProjectChannel;
 use fast\Http;
 
 class OrderService
@@ -154,9 +153,9 @@ class OrderService
 
         // 查询订单
         if ($data['order_no']) {
-            $order = OrderIn::where('order_no', $data['order_no'])->find();
+            $order = OrderIn::where('order_no', $data['order_no'])->lock(true)->find();
         } else {
-            $order = OrderIn::where('channel_order_no', $data['channel_no'])->find();
+            $order = OrderIn::where('channel_order_no', $data['channel_no'])->lock(true)->find();
         }
 
         if (!$order) {
@@ -192,24 +191,24 @@ class OrderService
     public function failOrder($order, $data)
     {
         $order->status = OrderIn::STATUS_FAILED;
-        $order->error_msg = $data['error_msg'] ?? '';
-        $order->e_no = $data['e_no'] ?? '';
-        $order->channel_no = $order->channel_no ?: $data['channel_no'];
+        $order->error_msg = $data['msg'] ?? '';
+        $order->e_no = $data['e_no'] ?? $order->e_no;
+        $order->channel_order_no = $data['channel_no'] ?? $order->channel_order_no;
         $order->save();
     }
 
     /**
      * 完成订单
      * @param $order
-     * @param $data ['pay_time', 'true_amount', 'e_no']
+     * @param $data ['pay_date', 'true_amount', 'e_no']
      */
     public function completeOrder($order, $data)
     {
         $order->status = OrderIn::STATUS_PAID;
-        $order->pay_time = $data['pay_time'] ?? date('Y-m-d H:i:s');
+        $order->pay_success_date = $data['pay_date'] ?? date('Y-m-d H:i:s');
         $order->true_amount = $data['true_amount'] ?? $order->amount;
-        $order->e_no = $data['e_no'] ?? '';
-        $order->channel_no = $order->channel_no ?: $data['channel_no'];
+        $order->e_no = $data['e_no'] ?? $order->e_no;
+        $order->channel_order_no =  $data['channel_no'] ?? $order->channel_order_no;
 
         // 计算手续费
         $fee = $this->calculateFee($order);
@@ -220,7 +219,7 @@ class OrderService
 
         // 更新商户余额
         $walletService = new MemberWalletService();
-        $walletService->addBalanceBytype($order->member_id, $order->true_amount, MemberWalletModel::CHANGE_TYPE_PAY_ADD, $order->order_no, '代收完成');
+        $walletService->addBalanceBytype($order->member_id, $order->actual_amount, MemberWalletModel::CHANGE_TYPE_PAY_ADD, $order->order_no, '代收完成');
 
         // 计算提成
         $commission = $this->calculateCommission($order, 0);
@@ -249,11 +248,11 @@ class OrderService
             ->find();
 
         if ($channel){
-            $res['channel_fee_amount'] = $order->amount * $channel->rate / 100 + $channel->fixed_fee;
+            $res['channel_fee_amount'] = $order->amount * $channel->in_rate / 100 + $channel->in_fixed_rate;
         }
 
         if ($memberProjectChannel){
-            $res['fee_amount'] = $order->amount * $memberProjectChannel->rate / 100 + $memberProjectChannel->fixed_fee;
+            $res['fee_amount'] = $order->amount * $memberProjectChannel->rate / 100 + $memberProjectChannel->fixed_rate;
         }
 
         return $res;
@@ -266,7 +265,7 @@ class OrderService
      */
     public function calculateCommission($order, $amount){
         $member = Member::where('status', OrderService::STATUS_OPEN)->find($order->member_id);
-        if (!$member || !$member->agent_id){
+        if (!$member || !$member->agency_id){
             return 0;
         }
         $agent = Member::where('status', OrderService::STATUS_OPEN)->find($member->agent_id);
@@ -287,7 +286,7 @@ class OrderService
             return 0;
         }
 
-        $amount += $order->amount * $memberProjectChannel->rate / 100 + $memberProjectChannel->fixed_fee;
+        $amount += $order->amount * $memberProjectChannel->rate / 100 + $memberProjectChannel->fixed_rate;
 
         $walletService = new MemberWalletService();
         $walletService->addBalanceBytype($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD, '', '代收提成');
@@ -334,13 +333,17 @@ class OrderService
             throw new \Exception('订单不存在或未支付');
         }
 
+        if ($order->notify_url == ''){
+            return true;
+        }
+
         $data = [
             'order_no' => $order->order_no,
             'merchant_order_no' => $order->member_order_no,
             'amount' => $order->true_amount,
             'status' => $order->status,
-            'pay_time' => $order->pay_time,
-            'msg' => $order->error_msg,
+            'pay_success_date' => $order->pay_success_date ?? '',
+            'msg' => $order->error_msg ?? 'OK',
         ];
 
         $rse = Http::post($order->notify_url, $data);
@@ -356,7 +359,7 @@ class OrderService
         $log->save();
 
         // 修改通知次数和状态
-        $order->notify_num += 1;
+        $order->notify_count += 1;
         $order->notify_status = $code;
 
         return $order->save();

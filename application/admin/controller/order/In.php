@@ -2,7 +2,9 @@
 
 namespace app\admin\controller\order;
 
+use app\admin\model\OrderIn;
 use app\common\controller\Backend;
+use app\common\service\OrderService;
 use think\Db;
 
 /**
@@ -15,14 +17,14 @@ class In extends Backend
 
     /**
      * In模型对象
-     * @var \app\admin\model\order\OrderIn
+     * @var \app\admin\model\OrderIn
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\order\OrderIn;
+        $this->model = new \app\admin\model\OrderIn;
         $this->view->assign("statusList", $this->model->getStatusList());
     }
 
@@ -35,6 +37,28 @@ class In extends Backend
      */
 
 
+    public function index()
+    {
+        //设置过滤方法
+        $this->request->filter(['strip_tags', 'trim']);
+        if (false === $this->request->isAjax()) {
+            return $this->view->fetch();
+        }
+        //如果发送的来源是 Selectpage，则转发到 Selectpage
+        if ($this->request->request('keyField')) {
+            return $this->selectpage();
+        }
+        [$where, $sort, $order, $offset, $limit] = $this->buildparams();
+        $list = $this->model
+            ->with(['area'])
+            ->where($where)
+            ->order($sort, $order)
+            ->paginate($limit);
+        $result = ['total' => $list->total(), 'rows' => $list->items()];
+        return json($result);
+    }
+
+
     /**
      * 获取状态列表
      * @return \think\response\Json
@@ -44,29 +68,34 @@ class In extends Backend
         return  json($this->model->getStatusList());
     }
 
+
+
+
     /**
-     * 修改订单状态
+     * 完成订单
      * @param $ids
      */
-    public function statusChange($ids = null)
+    public function complete($ids = null)
     {
         // 判断是否是post请求
         if (false === $this->request->isPost()) {
-            return $this->view->fetch();
+            $this->error('非法请求');
         }
 
-        // 获取post参数
-        $params = $this->request->post('row/a');
-
-        // 判断参数是否为空
-        if (empty($params) || !isset($params['status'])) {
-            $this->error(__('Parameter %s can not be empty', ''));
-        }
-
-
+        $orderService = new OrderService();
         Db::startTrans();
         try {
-            // todo 这里是修改订单状态的逻辑
+
+            $order = $this->model->whereIn('id', $ids)->find();
+            if (!$order) {
+                throw new \Exception('订单不存在');
+            }
+
+            if ($order->status != OrderIn::STATUS_UNPAID) {
+                throw new \Exception('订单状态不正确');
+            }
+
+            $orderService->completeOrder($order, []);
 
         }catch (\Exception $e) {
             Db::rollback();
@@ -75,9 +104,63 @@ class In extends Backend
 
         Db::commit();
 
-        // todo 通知下游
+        //  通知下游
+        Db::startTrans();
+        try {
+            $orderService->notifyDownstream($ids);
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
 
-        $this->success();
+        Db::commit();
+        $this->success("操作成功");
+
+    }
+
+    /**
+     * 失败
+     */
+    public function fail($ids = null)
+    {
+        // 判断是否是post请求
+        if (false === $this->request->isPost()) {
+             $this->error('非法请求');
+        }
+
+        $orderService = new OrderService();
+        Db::startTrans();
+        try {
+
+            $order = $this->model->whereIn('id', $ids)->find();
+            if (!$order) {
+                throw new \Exception('订单不存在');
+            }
+
+            if ($order->status != OrderIn::STATUS_UNPAID) {
+                throw new \Exception('订单状态不正确');
+            }
+
+            $orderService->failOrder($order, ['msg' => '手动失败']);
+
+        }catch (\Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+
+        Db::commit();
+
+        //  通知下游
+        Db::startTrans();
+        try {
+            $orderService->notifyDownstream($ids);
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+
+        Db::commit();
+        $this->success("操作成功");
     }
 
     /**
@@ -85,9 +168,43 @@ class In extends Backend
      */
     public function notify($ids = null)
     {
-        // todo 通知下游
+        // 判断是否是post请求
+        if (false === $this->request->isPost()) {
+            $this->error('非法请求');
+        }
+        //  通知下游
+        Db::startTrans();
+        try {
+            $orderService = new OrderService();
+            $orderService->notifyDownstream($ids);
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
 
-        $this->success();
+        Db::commit();
+        $this->success("操作成功");
+    }
+
+
+    public function add($ids = null)
+    {
+        $this->error('非法请求');
+    }
+
+    public function edit($ids = null)
+    {
+        $this->error('非法请求');
+    }
+
+    public function del($ids = null)
+    {
+        $this->error('非法请求');
+    }
+
+    public function multi($ids = null)
+    {
+        $this->error('非法请求');
     }
 
 }

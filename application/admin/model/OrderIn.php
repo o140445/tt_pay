@@ -1,6 +1,6 @@
 <?php
 
-namespace app\admin\model\order;
+namespace app\admin\model;
 
 use think\Model;
 
@@ -54,5 +54,11 @@ class OrderIn extends Model
         return isset($list[$value]) ? $list[$value] : '';
     }
 
+    // 关联地区
+    // area
+    public function area()
+    {
+        return $this->hasOne('ConfigArea', 'id', 'area_id');
+    }
 
 }

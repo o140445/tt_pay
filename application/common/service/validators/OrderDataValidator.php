@@ -2,7 +2,7 @@
 
 namespace app\common\service\validators;
 
-use app\admin\model\order\OrderIn;
+use app\admin\model\OrderIn;
 
 class OrderDataValidator implements ValidatorInterface
 {
