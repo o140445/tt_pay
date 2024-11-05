@@ -3,7 +3,7 @@
 namespace app\common\service\validators;
 
 use app\admin\model\Member;
-use app\common\service\OrderService;
+use app\common\service\OrderInService;
 use app\common\service\SignService;
 
 class SignatureValidator implements ValidatorInterface
@@ -16,7 +16,7 @@ class SignatureValidator implements ValidatorInterface
             return false;
         }
 
-        $secret = Member::where('status', OrderService::STATUS_OPEN)->find($data['merchant_id'])->api_key;
+        $secret = Member::where('status', OrderInService::STATUS_OPEN)->find($data['merchant_id'])->api_key;
 
         $signService = new SignService();
         $signData = [
@@ -28,6 +28,11 @@ class SignatureValidator implements ValidatorInterface
             'nonce' => $data['notice'],
             'sign' => $data['sign'],
         ];
+
+        if (isset($data['extra'])) {
+            $signData['extra'] = $data['extra'];
+        }
+
         if (!$signService->checkSign($signData, $secret)) {
             $this->errorMessage = "签名验证失败";
             return false;

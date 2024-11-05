@@ -11,7 +11,7 @@ use app\admin\model\OrderNotifyLog;
 use app\admin\model\Profit;
 use fast\Http;
 
-class OrderService
+class OrderInService
 {
     const STATUS_OPEN = 1;
     const STATUS_CLOSE = 0;
@@ -27,7 +27,7 @@ class OrderService
     public function createOrder($params)
     {
         // 订单创建检查
-        $channel_id = MemberProjectChannel::where('status', OrderService::STATUS_OPEN)->where('member_id', $params['merchant_id'])->where('project_id', $params['product_id'])->value('channel_id');
+        $channel_id = MemberProjectChannel::where('status', OrderInService::STATUS_OPEN)->where('member_id', $params['merchant_id'])->where('project_id', $params['product_id'])->where('type', 1)->value('channel_id');
 
         if (!$channel_id) {
             throw new \Exception('未开通支付通道');
@@ -41,7 +41,7 @@ class OrderService
             throw new \Exception($validate->getErrors()[0]);
         }
 
-        $member = Member::where('status', OrderService::STATUS_OPEN)->find($params['merchant_id']);
+        $member = Member::where('status', OrderInService::STATUS_OPEN)->find($params['merchant_id']);
 
         // 设置时区
         date_default_timezone_set($member->area->timezone);
@@ -67,32 +67,30 @@ class OrderService
             throw new \Exception('订单创建失败');
         }
 
-        $channel = Channel::where('status', OrderService::STATUS_OPEN)->find($channel_id);
+        $channel = Channel::where('status', OrderInService::STATUS_OPEN)->find($channel_id);
 
         // 请求支付通道
         $channelRes = $this->requestChannel($order, $channel);
 
         // 支付失败
-        if ($channelRes['status'] == OrderService::CHANNEL_RES_STATUS_FAILED) {
+        if ($channelRes['status'] == OrderInService::CHANNEL_RES_STATUS_FAILED) {
             $order->status = OrderIn::STATUS_FAILED;
             $order->error_msg = $channelRes['msg'];
             $order->save();
 
-            return [
-                'msg' => $channelRes['msg'],
-                'status' => $order->status
-            ];
+        }else{
+            $order->status = OrderIn::STATUS_UNPAID;
+            $order->channel_order_no = $channelRes['order_id'];
+            $order->e_no = $channelRes['e_no'];
+            $order->pay_url = $channelRes['pay_url'];
+            $order->save();
         }
-
-        $order->channel_order_no = $channelRes['order_id'] ?: '';
-        $order->e_no = $channelRes['e_no'] ?: '';
-        $order->pay_url = $channelRes['pay_url'] ?: '';
-        $order->save();
 
         return [
             'order_no' => $order->order_no,
             'pay_url' => $channelRes['pay_url'],
-            'status' => $order->status
+            'status' => $order->status,
+            'msg' => $channelRes['msg'],
         ];
 
     }
@@ -118,7 +116,7 @@ class OrderService
      */
     public function generateOrderNo()
     {
-        $str = get_order_no('DT');
+        $str = get_order_no('DI');
         OrderIn::where('order_no', $str)->find() && $str = $this->generateOrderNo();
         return $str;
     }
@@ -131,7 +129,7 @@ class OrderService
      */
     public function notify($sign, $params)
     {
-        $channel = Channel::where('status', OrderService::STATUS_OPEN)->where('sign', $sign)->find();
+        $channel = Channel::where('status', OrderInService::STATUS_OPEN)->where('sign', $sign)->find();
         if (!$channel) {
             throw new \Exception('通道不存在');
         }
@@ -219,7 +217,7 @@ class OrderService
 
         // 更新商户余额
         $walletService = new MemberWalletService();
-        $walletService->addBalanceBytype($order->member_id, $order->actual_amount, MemberWalletModel::CHANGE_TYPE_PAY_ADD, $order->order_no, '代收完成');
+        $walletService->addBalanceByType($order->member_id, $order->actual_amount, MemberWalletModel::CHANGE_TYPE_PAY_ADD, $order->order_no, '代收完成');
 
         // 计算提成
         $commission = $this->calculateCommission($order, 0);
@@ -239,8 +237,8 @@ class OrderService
             'channel_fee_amount' => 0,
         ];
 
-        $channel = Channel::where('status', OrderService::STATUS_OPEN)->find($order->channel_id);
-        $memberProjectChannel = MemberProjectChannel::where('status', OrderService::STATUS_OPEN)
+        $channel = Channel::where('status', OrderInService::STATUS_OPEN)->find($order->channel_id);
+        $memberProjectChannel = MemberProjectChannel::where('status', OrderInService::STATUS_OPEN)
             ->where('member_id', $order->member_id)
             ->where('project_id', $order->project_id)
             ->where('channel_id', $order->channel_id)
@@ -264,21 +262,21 @@ class OrderService
      * @return float
      */
     public function calculateCommission($order, $amount){
-        $member = Member::where('status', OrderService::STATUS_OPEN)->find($order->member_id);
+        $member = Member::where('status', OrderInService::STATUS_OPEN)->find($order->member_id);
         if (!$member || !$member->agency_id){
             return 0;
         }
-        $agent = Member::where('status', OrderService::STATUS_OPEN)->find($member->agent_id);
+        $agent = Member::where('status', OrderInService::STATUS_OPEN)->find($member->agent_id);
         if (!$agent){
             return 0;
         }
 
-        $memberProjectChannel = MemberProjectChannel::where('status', OrderService::STATUS_OPEN)
+        $memberProjectChannel = MemberProjectChannel::where('status', OrderInService::STATUS_OPEN)
             ->where('member_id', $agent->id)
             ->where('project_id', $order->project_id)
             ->where('channel_id', $order->channel_id)
             ->where('type', 1)
-            ->where('status', OrderService::STATUS_OPEN)
+            ->where('status', OrderInService::STATUS_OPEN)
             ->where('sub_member_id', $member->id)
             ->find();
 
@@ -289,7 +287,7 @@ class OrderService
         $amount += $order->amount * $memberProjectChannel->rate / 100 + $memberProjectChannel->fixed_rate;
 
         $walletService = new MemberWalletService();
-        $walletService->addBalanceBytype($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD, '', '代收提成');
+        $walletService->addBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD, '', '代收提成');
 
 //        if ($agent->agent_id){
 //            $this->calculateCommission($order, $amount);
@@ -301,6 +299,7 @@ class OrderService
     /**
      * 计算利润
      * @param $order
+     * @param int $commission
      */
     public function calculateProfit($order, $commission = 0)
     {

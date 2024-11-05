@@ -194,7 +194,7 @@ class MemberWalletService
      * @param string $order_no
      * @param string $remark
      */
-    public function addBalanceBytype($member_id, $amount, $type , $order_no, $remark = '代收')
+    public function addBalanceByType($member_id, $amount, $type , $order_no, $remark = '代收')
     {
         $amount = abs($amount);
         $wallet = $this->getWalletInfo($member_id);
@@ -205,6 +205,34 @@ class MemberWalletService
         $before_balance = $wallet->balance;
         $wallet->balance = Db::raw('balance + ' . $amount);
         $after_balance = $before_balance + $amount;
+        $wallet->save();
+        $this->addBalanceLog($member_id, $amount, $before_balance, $after_balance, $type, $order_no, $remark);
+
+        return true;
+    }
+
+    /**
+     * 添加余额
+     * @param int $member_id
+     * @param float $amount
+     * @param string $order_no
+     * @param string $remark
+     */
+    public function subBalanceByType($member_id, $amount, $type , $order_no, $remark = '代收')
+    {
+        $amount = abs($amount);
+        $wallet = $this->getWalletInfo($member_id);
+        if (!$wallet) {
+            return false;
+        }
+
+        if ($wallet->balance < $amount) {
+            throw new \Exception('余额不足');
+        }
+
+        $before_balance = $wallet->balance;
+        $wallet->balance = Db::raw('balance - ' . $amount);
+        $after_balance = $before_balance - $amount;
         $wallet->save();
         $this->addBalanceLog($member_id, $amount, $before_balance, $after_balance, $type, $order_no, $remark);
 

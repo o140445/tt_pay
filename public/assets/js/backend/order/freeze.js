@@ -44,7 +44,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {
                             field: 'buttons',
                             operate: false,
-                            title: __('按钮'),
+                            title: __('操作'),
                             table: table,
                             events: Table.api.events.operate,
                             buttons: [

@@ -3,8 +3,10 @@
 namespace app\admin\controller\order;
 
 use app\admin\model\OrderIn;
+use app\admin\model\OrderOut;
 use app\common\controller\Backend;
 use app\common\service\OrderInService;
+use app\common\service\OrderOutService;
 use think\Db;
 
 /**
@@ -12,19 +14,19 @@ use think\Db;
  *
  * @icon fa fa-circle-o
  */
-class In extends Backend
+class Out extends Backend
 {
 
     /**
-     * In模型对象
-     * @var \app\admin\model\OrderIn
+     * Out模型对象
+     * @var \app\admin\model\OrderOut
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\OrderIn;
+        $this->model = new \app\admin\model\OrderOut;
         $this->view->assign("statusList", $this->model->getStatusList());
     }
 
@@ -35,7 +37,6 @@ class In extends Backend
      * 因此在当前控制器中可不用编写增删改查的代码,除非需要自己控制这部分逻辑
      * 需要将application/admin/library/traits/Backend.php中对应的方法复制到当前控制器,然后进行修改
      */
-
 
     public function index()
     {
@@ -59,16 +60,25 @@ class In extends Backend
     }
 
 
-    /**
-     * 获取状态列表
-     * @return \think\response\Json
-     */
-    public function status()
+    public function add($ids = null)
     {
-        return  json($this->model->getStatusList());
+        $this->error('非法请求');
     }
 
+    public function edit($ids = null)
+    {
+        $this->error('非法请求');
+    }
 
+    public function del($ids = null)
+    {
+        $this->error('非法请求');
+    }
+
+    public function multi($ids = null)
+    {
+        $this->error('非法请求');
+    }
 
 
     /**
@@ -82,7 +92,7 @@ class In extends Backend
             $this->error('非法请求');
         }
 
-        $orderService = new OrderInService();
+        $orderService = new OrderOutService();
         Db::startTrans();
         try {
 
@@ -91,11 +101,11 @@ class In extends Backend
                 throw new \Exception('订单不存在');
             }
 
-            if ($order->status != OrderIn::STATUS_UNPAID) {
+            if ($order->status != OrderOut::STATUS_UNPAID) {
                 throw new \Exception('订单状态不正确');
             }
 
-            $orderService->completeOrder($order, []);
+            $orderService->completeOrder($order, ['error_msg' => '手动完成']);
 
         }catch (\Exception $e) {
             Db::rollback();
@@ -128,7 +138,7 @@ class In extends Backend
              $this->error('非法请求');
         }
 
-        $orderService = new OrderInService();
+        $orderService = new OrderOutService();
         Db::startTrans();
         try {
 
@@ -137,11 +147,11 @@ class In extends Backend
                 throw new \Exception('订单不存在');
             }
 
-            if ($order->status != OrderIn::STATUS_UNPAID) {
+            if ($order->status != OrderOut::STATUS_UNPAID) {
                 throw new \Exception('订单状态不正确');
             }
 
-            $orderService->failOrder($order, ['msg' => '手动失败']);
+            $orderService->failOrder($order, ['error_msg' => '手动失败']);
 
         }catch (\Exception $e) {
             Db::rollback();
@@ -161,10 +171,57 @@ class In extends Backend
 
         Db::commit();
         $this->success("操作成功");
+
     }
 
     /**
-     * 通知下游
+     * 退款
+     */
+    public function refund($ids = null)
+    {
+        // 判断是否是post请求
+        if (false === $this->request->isPost()) {
+             $this->error('非法请求');
+        }
+
+        $orderService = new OrderOutService();
+        Db::startTrans();
+        try {
+
+            $order = $this->model->whereIn('id', $ids)->find();
+            if (!$order) {
+                throw new \Exception('订单不存在');
+            }
+
+            if ($order->status != OrderOut::STATUS_PAID) {
+                throw new \Exception('订单状态不正确');
+            }
+
+            $orderService->refundOrder($order, ['error_msg' => '手动退款']);
+
+        }catch (\Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+
+        Db::commit();
+
+        //  通知下游
+        Db::startTrans();
+        try {
+            $orderService->notifyDownstream($ids);
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+
+        Db::commit();
+        $this->success("操作成功");
+
+    }
+
+    /**
+     * 通知
      */
     public function notify($ids = null)
     {
@@ -175,36 +232,14 @@ class In extends Backend
         //  通知下游
         Db::startTrans();
         try {
-            $orderService = new OrderInService();
+            $orderService = new OrderOutService();
             $orderService->notifyDownstream($ids);
         } catch (\Exception $e) {
             Db::rollback();
             $this->error($e->getMessage());
         }
-
         Db::commit();
         $this->success("操作成功");
-    }
-
-
-    public function add($ids = null)
-    {
-        $this->error('非法请求');
-    }
-
-    public function edit($ids = null)
-    {
-        $this->error('非法请求');
-    }
-
-    public function del($ids = null)
-    {
-        $this->error('非法请求');
-    }
-
-    public function multi($ids = null)
-    {
-        $this->error('非法请求');
     }
 
 }

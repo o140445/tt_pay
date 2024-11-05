@@ -50,7 +50,8 @@ class APayChannel implements ChannelInterface
         return [
             'status' => 1, // 状态 1成功 0失败
             'order_id' => '123456', // 订单号
-            'msg' => '下单成功', // 消息
+            'msg' => '下单成功', // 消
+            'e_no' => '123456', // 业务订单号息
         ];
     }
 

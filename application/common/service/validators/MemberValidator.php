@@ -3,7 +3,8 @@
 namespace app\common\service\validators;
 
 use app\admin\model\Member;
-use app\common\service\OrderService;
+use app\common\service\MemberWalletService;
+use app\common\service\OrderInService;
 
 class MemberValidator implements ValidatorInterface
 {
@@ -15,7 +16,7 @@ class MemberValidator implements ValidatorInterface
             return false;
         }
 
-        $member = Member::where('status', OrderService::STATUS_OPEN)->find($data['merchant_id']);
+        $member = Member::where('status', OrderInService::STATUS_OPEN)->find($data['merchant_id']);
         if (!$member) {
             $this->errorMessage = "商户不存在";
             return false;
@@ -35,6 +36,16 @@ class MemberValidator implements ValidatorInterface
                 return false;
             }
         }
+
+        // 余额检查 out
+        if ($data['type'] == "OUT") {
+            $memberWallet = $member->wallet;
+            if ($memberWallet->balance < $data['amount']) {
+                $this->errorMessage = "余额不足";
+                return false;
+            }
+        }
+
 
         return true;
     }

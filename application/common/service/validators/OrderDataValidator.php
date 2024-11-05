@@ -3,6 +3,7 @@
 namespace app\common\service\validators;
 
 use app\admin\model\OrderIn;
+use app\admin\model\OrderOut;
 
 class OrderDataValidator implements ValidatorInterface
 {
@@ -23,7 +24,7 @@ class OrderDataValidator implements ValidatorInterface
         if ($data['type'] == "IN") {
             $order = OrderIn::where('member_order_no', $data['merchant_order_no'])->find();
         } else {
-//            $order = OrderOut::where('member_order_no', $data['merchant_order_no'])->find();
+            $order = OrderOut::where('member_order_no', $data['merchant_order_no'])->find();
         }
 
         if ($order) {

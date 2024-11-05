@@ -2,8 +2,10 @@
 
 namespace app\api\controller\v1;
 
+use app\admin\model\OrderOut;
 use app\common\controller\Api;
-use app\common\service\OrderService;
+use app\common\service\OrderInService;
+use app\common\service\OrderOutService;
 use think\Db;
 use think\Log;
 
@@ -53,7 +55,7 @@ class Pay extends Api
 
         Db::startTrans();
         try {
-            $orderService = new OrderService();
+            $orderService = new OrderInService();
             $res = $orderService->createOrder($params);
         }catch (\Exception $e) {
             Db::rollback();
@@ -63,7 +65,7 @@ class Pay extends Api
         Db::commit();
 
         // 失败
-        if ($res['status'] == OrderService::CHANNEL_RES_STATUS_FAILED) {
+        if ($res['status'] == OrderInService::CHANNEL_RES_STATUS_FAILED) {
             Log::write('代收请求失败：error' . $res['msg'] .', data:' . json_encode($params), 'error');
             $this->error($res['msg']);
         }
@@ -74,10 +76,10 @@ class Pay extends Api
     /**
      * 代收回调
      * @ApiMethod (POST)
-     * @ApiRoute    (api/v1/pay/notify/{sign})
+     * @ApiRoute    (api/v1/pay/innotify/{sign})
      * @ApiReturnParams   (name="code", type="integer", required=true, sample="0")
      */
-    public function notify($sign)
+    public function innotify($sign)
     {
         $params = $this->request->post();
         // 写请求日志
@@ -85,11 +87,83 @@ class Pay extends Api
 
         Db::startTrans();
         try {
-            $orderService = new OrderService();
+            $orderService = new OrderInService();
             $res = $orderService->notify($sign, $params);
         }catch (\Exception $e) {
             Db::rollback();
             Log::write('代收请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
+            $this->error($e->getMessage());
+        }
+        Db::commit();
+
+        // 成功
+        if ($res['order_id']) {
+            Db::startTrans();
+            try {
+                $orderService->notifyDownstream($res['order_id']);
+            }catch (\Exception $e) {
+                Db::rollback();
+                Log::write('代付通知下游失败：error' . $e->getMessage() .', order_id:' . $res['order_id'], 'error');
+                $this->error($e->getMessage());
+            }
+            Db::commit();
+        }
+
+        echo $res['msg'];
+    }
+
+    /**
+     * 代付
+     */
+    public function out()
+    {
+        $params = $this->request->post();
+        if (empty($params['amount']) || empty($params['merchant_id']) || empty($params['product_id']) || empty($params['merchant_order_no']) || empty($params['sign']) || empty($params['notify_url']) || empty($params['nonce']) || empty($params['extra'])) {
+            $this->error('参数错误');
+        }
+
+        // 写请求日志
+        Log::write('代付请求参数：data' . json_encode($params), 'info');
+
+        Db::startTrans();
+        try {
+            $orderService = new OrderOutService();
+            $res = $orderService->createOutOrder($params);
+        }catch (\Exception $e) {
+            Db::rollback();
+            Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
+            $this->error($e->getMessage());
+        }
+        Db::commit();
+
+        // 失败
+        if ($res['status'] == OrderInService::CHANNEL_RES_STATUS_FAILED) {
+            Log::write('代付请求失败：error' . $res['msg'] .', data:' . json_encode($params), 'error');
+            $this->error($res['msg']);
+        }
+
+        $this->success('返回成功', $res);
+    }
+
+    /**
+     * 代付回调
+     * @ApiMethod (POST)
+     * @ApiRoute    (api/v1/pay/outnotify/{sign})
+     * @ApiReturnParams   (name="code", type="integer", required=true, sample="0")
+     */
+    public function outnotify($sign)
+    {
+        $params = $this->request->post();
+        // 写请求日志
+        Log::write('代付请求参数：data' . json_encode($params), 'info');
+
+        Db::startTrans();
+        try {
+            $orderService = new OrderOutService();
+            $res = $orderService->notify($sign, $params);
+        }catch (\Exception $e) {
+            Db::rollback();
+            Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
             $this->error($e->getMessage());
         }
         Db::commit();

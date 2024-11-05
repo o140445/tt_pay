@@ -3,7 +3,7 @@
 namespace app\common\service\validators;
 
 use app\admin\model\Project;
-use app\common\service\OrderService;
+use app\common\service\OrderInService;
 
 class ProjectValidator implements ValidatorInterface
 {
@@ -15,7 +15,7 @@ class ProjectValidator implements ValidatorInterface
             return false;
         }
 
-        $product = Project::where('status', OrderService::STATUS_OPEN)->find($data['product_id']);
+        $product = Project::where('status', OrderInService::STATUS_OPEN)->find($data['product_id']);
         if (!$product) {
             $this->errorMessage = "产品不存在";
             return false;

@@ -3,7 +3,7 @@
 namespace app\common\service\validators;
 
 use app\admin\model\Channel;
-use app\common\service\OrderService;
+use app\common\service\OrderInService;
 
 class ChannelValidator implements ValidatorInterface
 {
@@ -15,7 +15,7 @@ class ChannelValidator implements ValidatorInterface
             return false;
         }
 
-        $channel = Channel::where('status', OrderService::STATUS_OPEN)->find($data['channel_id']);
+        $channel = Channel::where('status', OrderInService::STATUS_OPEN)->find($data['channel_id']);
         if (!$channel) {
             $this->errorMessage = "渠道不存在";
             return false;

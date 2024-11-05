@@ -31,6 +31,20 @@ class MemberWalletModel extends Model
     // 11 提成
     const CHANGE_TYPE_COMMISSION_ADD = 11;
 
+    // 12 代付解冻
+    const CHANGE_TYPE_PAY_UNFREEZE = 12;
+
+    // 13 代付减少
+    const CHANGE_TYPE_PAY_SUB = 13;
+
+    // 14 代付退款
+    const CHANGE_TYPE_PAY_REFUND = 14;
+
+    // 15 提成退款
+    const CHANGE_TYPE_COMMISSION_REFUND = 15;
+
+
+
     //manual
     const CHANGE_MANUAL_TYPE = [
         self::CHANGE_TYPE_ADD => '增加',

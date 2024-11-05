@@ -143,7 +143,7 @@ create TABLE if not exists fa_withdraw_order (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='提款单';
 
 
---- 代付单
+--- 代收单
 create TABLE if not exists fa_order_in (
     `id` int NOT NULL AUTO_INCREMENT,
     `order_no` varchar(255)  NOT NULL COMMENT '订单号',
@@ -180,6 +180,7 @@ ALTER TABLE `fa_order_in` ADD `channel_order_no` VARCHAR(255) NOT NULL COMMENT '
 -- 添加索引
 ALTER TABLE `fa_order_in` ADD INDEX `member_order_no` (`member_order_no`);
 ALTER TABLE `fa_order_in` ADD INDEX `channel_order_no` (`channel_order_no`);
+ALTER TABLE `fa_order_in` ADD INDEX `create_time` (`create_time`);
 
 
 --- 地区信息
@@ -223,4 +224,41 @@ CREATE TABLE `fa_notify_log` (
     KEY `idx_order_no` (`order_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='回调下游记录';
 
-php think crud -t profit
+
+
+--- 代付单
+create TABLE if not exists fa_order_out (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `order_no` varchar(255)  NOT NULL COMMENT '订单号',
+    `member_id` int NOT NULL COMMENT '会员id',
+    `member_order_no` varchar(255)  NOT NULL COMMENT '会员订单号',
+    `channel_order_no` varchar(255)  NOT NULL COMMENT '通道订单号',
+    `amount` decimal(10,4) Default 0 COMMENT '金额',
+    `fee_amount` decimal(10,4) Default 0 COMMENT '手续费',
+    `channel_fee_amount` decimal(10,4) Default 0 COMMENT '通道手续费',
+    `project_id` int NOT NULL COMMENT '项目id',
+    `channel_id` int NOT NULL COMMENT '通道id',
+    `order_ip` varchar(255) Default '' NOT NULL COMMENT '订单ip',
+    `error_msg` varchar(255) Default '' NOT NULL COMMENT '消息',
+    `e_no` varchar(255) Default '' NOT NULL COMMENT 'E单号',
+    `status` smallint Default 0 COMMENT '状态',
+    `extra` text  NOT NULL COMMENT '额外信息',
+    `pay_success_date` timestamp  COMMENT '支付成功时间',
+    `notify_url` varchar(500) Default '' NOT NULL COMMENT '通知地址',
+    `notify_status` smallint Default 0 COMMENT '通知状态',
+    `notify_count` int Default 0 COMMENT '通知次数',
+    `area_id` int Default 0 COMMENT '地区id',
+    `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    KEY `order_no` (`order_no`),
+    KEY `member_id` (`member_id`),
+    KEY `member_no` (`member_order_no`),
+    KEY `channel_no` (`channel_order_no`),
+    KEY `create_time` (`create_time`),
+    KEY `area_id` (`area_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='代付单';
+
+ALTER TABLE `fa_order_out` ADD `actual_amount` INT NOT NULL DEFAULT '0' COMMENT '实际到账金额' AFTER `amount`;
+
+php think crud -t order_out
