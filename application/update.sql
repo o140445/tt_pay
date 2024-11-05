@@ -261,4 +261,18 @@ create TABLE if not exists fa_order_out (
 
 ALTER TABLE `fa_order_out` ADD `actual_amount` INT NOT NULL DEFAULT '0' COMMENT '实际到账金额' AFTER `amount`;
 
+
+-- 单据请求返回记录
+CREATE TABLE `fa_order_request_log` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `order_no` varchar(50) NOT NULL COMMENT '订单单号',
+    `order_type` tinyint NOT NULL DEFAULT '1' COMMENT '订单类型 1代收 2代付',
+    `request_type` tinyint NOT NULL DEFAULT '1' COMMENT '请求类型 1请求 2返回',
+    `request_data` text NOT NULL COMMENT '请求数据',
+    `response_data` text NOT NULL COMMENT '返回数据',
+    `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_order_no` (`order_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='单据请求返回记录';
+
 php think crud -t order_out

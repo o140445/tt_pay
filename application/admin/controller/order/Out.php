@@ -105,6 +105,8 @@ class Out extends Backend
                 throw new \Exception('订单状态不正确');
             }
 
+            // 设置时区
+            date_default_timezone_set($order->area->timezone);
             $orderService->completeOrder($order, ['error_msg' => '手动完成']);
 
         }catch (\Exception $e) {
@@ -151,6 +153,8 @@ class Out extends Backend
                 throw new \Exception('订单状态不正确');
             }
 
+            // 设置时区
+            date_default_timezone_set($order->area->timezone);
             $orderService->failOrder($order, ['error_msg' => '手动失败']);
 
         }catch (\Exception $e) {
@@ -196,7 +200,8 @@ class Out extends Backend
             if ($order->status != OrderOut::STATUS_PAID) {
                 throw new \Exception('订单状态不正确');
             }
-
+            // 设置时区
+            date_default_timezone_set($order->area->timezone);
             $orderService->refundOrder($order, ['error_msg' => '手动退款']);
 
         }catch (\Exception $e) {

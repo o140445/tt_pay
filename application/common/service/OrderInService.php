@@ -8,6 +8,7 @@ use app\admin\model\MemberProjectChannel;
 use app\admin\model\MemberWalletModel;
 use app\admin\model\OrderIn;
 use app\admin\model\OrderNotifyLog;
+use app\admin\model\OrderRequestLog;
 use app\admin\model\Profit;
 use fast\Http;
 
@@ -45,6 +46,7 @@ class OrderInService
 
         // 设置时区
         date_default_timezone_set($member->area->timezone);
+
         // 创建订单
         $order = new OrderIn();
         $order->order_no = $this->generateOrderNo();
@@ -85,6 +87,10 @@ class OrderInService
             $order->pay_url = $channelRes['pay_url'];
             $order->save();
         }
+
+        // 写入请求日志
+        $log = new OrderRequestService();
+        $log->create($order->order_no, OrderRequestLog::REQUEST_TYPE_REQUEST, OrderRequestLog::ORDER_TYPE_IN, $channelRes['request_data'], $channelRes['response_data']);
 
         return [
             'order_no' => $order->order_no,
@@ -156,6 +162,9 @@ class OrderInService
             $order = OrderIn::where('channel_order_no', $data['channel_no'])->lock(true)->find();
         }
 
+        // 设置时区
+        date_default_timezone_set($order->area->timezone);
+
         if (!$order) {
             throw new \Exception( '订单不存在');
         }
@@ -166,6 +175,16 @@ class OrderInService
                 'msg' => $paymentService->response()
             ];
         }
+
+        // 写入请求日志
+        $log = new OrderRequestService();
+        $log->create(
+            $order->order_no,
+            OrderRequestLog::REQUEST_TYPE_RESPONSE,
+            OrderRequestLog::ORDER_TYPE_IN,
+            json_encode($params),
+             '');
+
 
         // 支付成功
         if ($data['status'] == OrderIn::STATUS_PAID) {

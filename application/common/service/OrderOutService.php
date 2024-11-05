@@ -9,6 +9,7 @@ use app\admin\model\MemberWalletModel;
 use app\admin\model\OrderIn;
 use app\admin\model\OrderNotifyLog;
 use app\admin\model\OrderOut;
+use app\admin\model\OrderRequestLog;
 use app\admin\model\Profit;
 use app\admin\model\ProjectChannel;
 use fast\Http;
@@ -88,6 +89,15 @@ class OrderOutService
         }
 
 
+        // 写入请求日志
+        $log = new OrderRequestService();
+        $log->create(
+            $order->order_no,
+            OrderRequestLog::REQUEST_TYPE_REQUEST,
+            OrderRequestLog::ORDER_TYPE_OUT,
+            $channel_res['request_data'],
+            $channel_res['response_data']);
+
         return [
             'order_no' => $order->order_no,
             'status' => $order->status,
@@ -150,6 +160,18 @@ class OrderOutService
                 'msg' => $paymentService->response()
             ];
         }
+
+        // 设置时区
+        date_default_timezone_set($order->area->timezone);
+
+        // 写入请求日志
+        $log = new OrderRequestService();
+        $log->create(
+            $order->order_no,
+            OrderRequestLog::REQUEST_TYPE_RESPONSE,
+            OrderRequestLog::ORDER_TYPE_OUT,
+            json_encode($data),
+            '');
 
         // 完成订单
         if ($data['status'] == OrderOut::STATUS_PAID && $order->status == OrderOut::STATUS_UNPAID) {
@@ -401,6 +423,9 @@ class OrderOutService
         if ($order->notify_url == ''){
             return true;
         }
+
+        // 设置时区
+        date_default_timezone_set($order->area->timezone);
 
         $data = [
             'order_no' => $order->order_no,

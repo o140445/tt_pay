@@ -39,6 +39,8 @@ class APayChannel implements ChannelInterface
             'msg' => '下单失败xxx', // 消息
             'order_id' => '123456', // 订单号
             'e_no' => '123456', // 业务订单号
+            'request_data' => json_encode($params), // 请求数据
+            'response_data' => json_encode($params), // 响应数据
         ];
     }
 
@@ -52,6 +54,8 @@ class APayChannel implements ChannelInterface
             'order_id' => '123456', // 订单号
             'msg' => '下单成功', // 消
             'e_no' => '123456', // 业务订单号息
+            'request_data' => json_encode($params), // 请求数据
+            'response_data' => json_encode($params), // 响应数据
         ];
     }
 
