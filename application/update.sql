@@ -312,7 +312,7 @@ CREATE TABLE `fa_profit_stat` (
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
-    KEY `idx_date` (`date`),
+    KEY `idx_date` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='利润报表统计';
 
 -- 商户每日统计
@@ -335,7 +335,7 @@ CREATE TABLE `fa_member_stat` (
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
-    KEY `idx_date` (`date`),
+    KEY `idx_date` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商户每日统计';
 
 -- 渠道每日统计
@@ -364,4 +364,4 @@ CREATE TABLE `fa_channel_stat` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='渠道每日统计';
 
 
-php think crud -t profit_stat
+php think crud -t member_stat
