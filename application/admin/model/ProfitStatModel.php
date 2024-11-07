@@ -4,7 +4,7 @@ namespace app\admin\model;
 
 use think\Model;
 
-class ProfitStat extends Model
+class ProfitStatModel extends Model
 {
     // 表名
     protected $name = 'profit_stat';

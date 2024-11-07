@@ -18,4 +18,6 @@ return [
     'app\admin\command\Addon',
     'app\admin\command\Api',
     'app\command\MemberStat',
+    'app\command\ChannelStat',
+    'app\command\ProfitsStat',
 ];

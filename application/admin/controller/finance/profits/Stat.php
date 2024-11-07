@@ -2,7 +2,7 @@
 
 namespace app\admin\controller\finance\profits;
 
-use app\admin\model\ProfitStat;
+use app\admin\model\ProfitStatModel;
 use app\common\controller\Backend;
 
 /**
@@ -15,14 +15,14 @@ class Stat extends Backend
 
     /**
      * Stat模型对象
-     * @var \app\admin\model\profitStat
+     * @var \app\admin\model\ProfitStatModel
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new ProfitStat();
+        $this->model = new ProfitStatModel();
 
     }
 

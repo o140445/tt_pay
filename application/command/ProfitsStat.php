@@ -2,27 +2,22 @@
 
 namespace app\command;
 
-use app\admin\model\ProfitStat as ProfitStatModel;
+use app\admin\model\ProfitStatModel;
 use think\console\Command;
 use think\Log;
 
-class ProfitStat extends Command
+class ProfitsStat extends Command
 {
     protected function configure()
     {
-        $this->setName('member:stat')
-            ->setDescription('会员统计');
+        $this->setName('profits:stat')
+            ->setDescription('利润统计');
     }
-
-    /**
-     * 执行定时任务
-     * 命令 php /www/wwwroot/tikpay/public/index.php /addons/crontab/profitCount/index
-     */
 
     protected function execute($input, $output)
     {
         // 查询昨天的利润
-        $start = date('Y-m-d 00:00:00', strtotime('-1 day'));
+        $start = date('Y-m-d 00:00:00', strtotime('-5 day'));
         $end = date('Y-m-d 23:59:59');
 
         $sql = "SELECT 
@@ -44,6 +39,7 @@ class ProfitStat extends Command
             FROM fa_profit WHERE create_time BETWEEN '{$start}' AND '{$end}' GROUP BY area_id, date";
 
         $profit = db()->query($sql);
+
         if ($profit) {
             foreach ($profit as $item) {
                 $data = [
@@ -66,17 +62,18 @@ class ProfitStat extends Command
                 $count = ProfitStatModel::where('area_id', $item['area_id'])
                     ->where('date', $item['date'])
                     ->find();
-
                 if ($count) {
                     ProfitStatModel::where('area_id', $item['area_id'])
                         ->where('date',  $item['date'])
                         ->update($data);
                     Log::write('利润统计更新:' . $item['area_id'] . ' _ ' . $item['date'], 'info');
+                    $output->writeln('利润统计更新:' . $item['area_id'] . ' _ ' . $item['date']);
                 } else {
                     $data['area_id'] = $item['area_id'];
                     $data['date'] =  $item['date'];
                     ProfitStatModel::create($data);
                     Log::write('利润统计新增:' . $item['area_id'] . ' _ ' . $item['date'], 'info');
+                    $output->writeln('利润统计新增:' . $item['area_id'] . ' _ ' . $item['date']);
                 }
 
             }
@@ -86,5 +83,4 @@ class ProfitStat extends Command
         Log::write('利润统计完成', 'info');
         $output->writeln('利润统计完成');
     }
-
 }

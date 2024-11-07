@@ -17,7 +17,7 @@ class MemberStat extends Command
     protected function execute($input, $output)
     {
         // 查询昨天的会员统计
-        $start = date('Y-m-d 00:00:00', strtotime('-10 day'));
+        $start = date('Y-m-d 00:00:00', strtotime('-1 day'));
         $end = date('Y-m-d 23:59:59');
 
         // 先统计代收单

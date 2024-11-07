@@ -347,21 +347,19 @@ CREATE TABLE `fa_channel_stat` (
     `in_order_success_count` int NOT NULL DEFAULT '0' COMMENT '代收成功订单数',
     `in_order_amount` decimal(15,4) NOT NULL COMMENT '代收订单金额',
     `in_order_success_amount` decimal(15,4) NOT NULL COMMENT '代收成功订单金额',
-    `in_fee` decimal(15,4) NOT NULL COMMENT '代收手续费',
     `in_channel_fee` decimal(15,4) NOT NULL COMMENT '代收上游手续费',
     `in_success_rate` decimal(15,4) NOT NULL COMMENT '代收成功率',
     `out_order_count` int NOT NULL DEFAULT '0' COMMENT '代付订单数',
     `out_order_success_count` int NOT NULL DEFAULT '0' COMMENT '代付成功订单数',
     `out_order_amount` decimal(15,4) NOT NULL COMMENT '代付订单金额',
     `out_order_success_amount` decimal(15,4) NOT NULL COMMENT '代付成功订单金额',
-    `out_fee` decimal(15,4) NOT NULL COMMENT '代付手续费',
     `out_channel_fee` decimal(15,4) NOT NULL COMMENT '代付上游手续费',
     `out_success_rate` decimal(15,4) NOT NULL COMMENT '代付成功率',
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
-    KEY `idx_date` (`date`),
+    KEY `idx_date` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='渠道每日统计';
 
 
-php think crud -t member_stat
+php think crud -t channel_stat
