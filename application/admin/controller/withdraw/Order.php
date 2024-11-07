@@ -125,4 +125,24 @@ class Order extends Backend
         $this->success();
 
     }
+
+    public function del($ids = "")
+    {
+        $this->error('非法请求');
+    }
+
+    public function recyclebin($ids = null)
+    {
+        $this->error('非法请求');
+    }
+
+    public function restore($ids = null)
+    {
+        $this->error('非法请求');
+    }
+
+    public function destroy($ids = null)
+    {
+        $this->error('非法请求');
+    }
 }

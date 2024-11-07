@@ -20,7 +20,10 @@ create TABLE if not  fa_channel (
     `extra` varchar(500)  DEFAULT NULL COMMENT '额外配置',
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE KEY `sign` (`sign`),
+    INDEX `create_time` (`create_time`)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 通道
@@ -61,7 +64,10 @@ create TABLE if not exists fa_member (
     `last_login_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '最后登录时间',
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE KEY `username` (`username`),
+    UNIQUE KEY `email` (`email`),
+    INDEX `create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员表';
 --- 会员添加ip白名单
 ALTER TABLE `fa_member` ADD `ip_white_list` VARCHAR(255) default '' COMMENT 'ip白名单' AFTER `usdt_address`;
@@ -86,7 +92,9 @@ create TABLE if not exists fa_member_wallet_log (
     `type` varchar(255)  NOT NULL COMMENT '类型',
     `remark` varchar(255)  NOT NULL COMMENT '备注',
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    KEY `member_id` (`member_id`),
+    KEY `create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员余额变动记录表';
 
 -- 会员余额变动记录添加业务单号 和 会员id索引
@@ -124,7 +132,9 @@ create TABLE if not exists fa_member_project_channel (
     `rate` decimal(10,4) unsigned NOT NULL DEFAULT '0.0000' COMMENT '成本比例',
     `channel_id` bigint NOT NULL DEFAULT '0' COMMENT '通道id',
     `sub_member_id` int NOT NULL DEFAULT '0' COMMENT '子商户号',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    INDEX `member_id_project_id` (`member_id`, `project_id`),
+    INDEX `channel_id` (`channel_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员通道费率';
 
 --- 提款单
@@ -139,7 +149,10 @@ create TABLE if not exists fa_withdraw_order (
     `remark` varchar(255)  NOT NULL COMMENT '备注',
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    KEY `order_no` (`order_no`),
+    KEY `member_id` (`member_id`),
+    KEY `create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='提款单';
 
 
@@ -172,7 +185,8 @@ create TABLE if not exists fa_order_in (
     PRIMARY KEY (id),
     KEY `order_no` (`order_no`),
     KEY `member_id` (`member_id`),
-    KEY `area_id` (`area_id`)
+    KEY `area_id` (`area_id`),
+    KEY `create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='代付单';
 
 ALTER TABLE `fa_order_in` ADD `member_order_no` VARCHAR(255) NOT NULL COMMENT '会员订单号' AFTER `order_no`;
@@ -206,7 +220,9 @@ CREATE TABLE `fa_profit` (
      `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
      `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
      PRIMARY KEY (`id`),
-     KEY `idx_order_no` (`order_no`)
+     KEY `idx_order_no` (`order_no`),
+     KEY `idx_member_id` (`member_id`),
+    KEY `create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='利润报表';
 
 -- 回调下游记录
@@ -275,4 +291,77 @@ CREATE TABLE `fa_order_request_log` (
     KEY `idx_order_no` (`order_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='单据请求返回记录';
 
-php think crud -t order_out
+-- 利润报表统计
+CREATE TABLE `fa_profit_stat` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `area_id` bigint NOT NULL DEFAULT '0' COMMENT '区域ID',
+    `in_order_count` int NOT NULL DEFAULT '0' COMMENT '代收订单数',
+    `in_order_amount` decimal(15,4) NOT NULL COMMENT '代收订单金额',
+    `in_fee` decimal(15,4) NOT NULL COMMENT '代收手续费',
+    `in_channel_fee` decimal(15,4) NOT NULL COMMENT '代收上游手续费',
+    `in_commission` decimal(15,4) NOT NULL COMMENT '代收提成',
+    `in_profit` decimal(15,4) NOT NULL COMMENT '代收利润',
+    `out_order_count` int NOT NULL DEFAULT '0' COMMENT '代付订单数',
+    `out_order_amount` decimal(15,4) NOT NULL COMMENT '代付订单金额',
+    `out_fee` decimal(15,4) NOT NULL COMMENT '代付手续费',
+    `out_channel_fee` decimal(15,4) NOT NULL COMMENT '代付上游手续费',
+    `out_commission` decimal(15,4) NOT NULL COMMENT '代付提成',
+    `out_profit` decimal(15,4) NOT NULL COMMENT '代付利润',
+    `profit` decimal(15,4) NOT NULL COMMENT '利润',
+    `date` date NOT NULL COMMENT '日期',
+    `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_date` (`date`),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='利润报表统计';
+
+-- 商户每日统计
+CREATE TABLE `fa_member_stat` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `member_id` bigint NOT NULL DEFAULT '0' COMMENT '会员ID',
+    `in_order_count` int NOT NULL DEFAULT '0' COMMENT '代收订单数',
+    `in_order_success_count` int NOT NULL DEFAULT '0' COMMENT '代收成功订单数',
+    `in_order_amount` decimal(15,4) NOT NULL COMMENT '代收订单金额',
+    `in_order_success_amount` decimal(15,4) NOT NULL COMMENT '代收成功订单金额',
+    `in_fee` decimal(15,4) NOT NULL COMMENT '代收手续费',
+    `in_success_rate` decimal(15,4) NOT NULL COMMENT '代收成功率',
+    `out_order_count` int NOT NULL DEFAULT '0' COMMENT '代付订单数',
+    `out_order_success_count` int NOT NULL DEFAULT '0' COMMENT '代付成功订单数',
+    `out_order_amount` decimal(15,4) NOT NULL COMMENT '代付订单金额',
+    `out_order_success_amount` decimal(15,4) NOT NULL COMMENT '代付成功订单金额',
+    `out_fee` decimal(15,4) NOT NULL COMMENT '代付手续费',
+    `out_success_rate` decimal(15,4) NOT NULL COMMENT '代付成功率',
+    `date` date NOT NULL COMMENT '日期',
+    `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_date` (`date`),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商户每日统计';
+
+-- 渠道每日统计
+CREATE TABLE `fa_channel_stat` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `channel_id` bigint NOT NULL DEFAULT '0' COMMENT '通道ID',
+    `date` date NOT NULL COMMENT '日期',
+    `in_order_count` int NOT NULL DEFAULT '0' COMMENT '代收订单数',
+    `in_order_success_count` int NOT NULL DEFAULT '0' COMMENT '代收成功订单数',
+    `in_order_amount` decimal(15,4) NOT NULL COMMENT '代收订单金额',
+    `in_order_success_amount` decimal(15,4) NOT NULL COMMENT '代收成功订单金额',
+    `in_fee` decimal(15,4) NOT NULL COMMENT '代收手续费',
+    `in_channel_fee` decimal(15,4) NOT NULL COMMENT '代收上游手续费',
+    `in_success_rate` decimal(15,4) NOT NULL COMMENT '代收成功率',
+    `out_order_count` int NOT NULL DEFAULT '0' COMMENT '代付订单数',
+    `out_order_success_count` int NOT NULL DEFAULT '0' COMMENT '代付成功订单数',
+    `out_order_amount` decimal(15,4) NOT NULL COMMENT '代付订单金额',
+    `out_order_success_amount` decimal(15,4) NOT NULL COMMENT '代付成功订单金额',
+    `out_fee` decimal(15,4) NOT NULL COMMENT '代付手续费',
+    `out_channel_fee` decimal(15,4) NOT NULL COMMENT '代付上游手续费',
+    `out_success_rate` decimal(15,4) NOT NULL COMMENT '代付成功率',
+    `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_date` (`date`),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='渠道每日统计';
+
+
+php think crud -t profit_stat

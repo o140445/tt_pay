@@ -37,4 +37,23 @@ class Area extends Backend
      */
 
 
+    public function recyclebin($ids = null)
+    {
+        $this->error('非法请求');
+    }
+
+    public function restore($ids = null)
+    {
+        $this->error('非法请求');
+    }
+
+    public function destroy($ids = null)
+    {
+        $this->error('非法请求');
+    }
+
+    public function del($ids = null)
+    {
+        $this->error('非法请求');
+    }
 }

@@ -5,15 +5,10 @@ namespace app\admin\model;
 use think\Model;
 
 
-class Profit extends Model
+class MemberWallerLog extends Model
 {
-
-    
-
-    
-
     // 表名
-    protected $name = 'profit';
+    protected $name = 'member_wallet_log';
     
     // 自动写入时间戳字段
     protected $autoWriteTimestamp = false;
@@ -27,13 +22,7 @@ class Profit extends Model
     protected $append = [
 
     ];
-
-
-    // area
-    public function area()
-    {
-        return $this->hasOne('ConfigArea', 'id', 'area_id');
-    }
+    
 
     
 

@@ -60,6 +60,25 @@ class MemberWalletModel extends Model
         self::CHANGE_TYPE_CYCLE_FREEZE => '循环冻结',
     ];
 
+    // all type
+    const CHANGE_TYPE = [
+        self::CHANGE_TYPE_ADD => '手动增加',
+        self::CHANGE_TYPE_SUB => '手动减少',
+        self::CHANGE_TYPE_FREEZE => '手动冻结',
+        self::CHANGE_TYPE_UNFREEZE => '手动解冻',
+        self::CHANGE_TYPE_PAY_FREEZE => '代付冻结',
+        self::CHANGE_TYPE_WITHDRAW_FREEZE => '提现冻结',
+        self::CHANGE_TYPE_CYCLE_FREEZE => '循环冻结',
+        self::CHANGE_TYPE_WITHDRAW_UNFREEZE => '提现解冻',
+        self::CHANGE_TYPE_WITHDRAW_SUB => '提现减少',
+        self::CHANGE_TYPE_PAY_ADD => '代收增加',
+        self::CHANGE_TYPE_COMMISSION_ADD => '提成',
+        self::CHANGE_TYPE_PAY_UNFREEZE => '代付解冻',
+        self::CHANGE_TYPE_PAY_SUB => '代付减少',
+        self::CHANGE_TYPE_PAY_REFUND => '代付退款',
+        self::CHANGE_TYPE_COMMISSION_REFUND => '提成退款',
+    ];
+
     public function getChangeType($key='')
     {
         $status = [
