@@ -1,7 +1,7 @@
 <?php
 
 return array (
-  'name' => 'TPPay',
+  'name' => 'TikPay',
   'beian' => '',
   'cdnurl' => '',
   'version' => '1.0.1',

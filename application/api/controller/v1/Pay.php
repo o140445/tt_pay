@@ -16,6 +16,13 @@ class Pay extends Api
     public function _initialize()
     {
         parent::_initialize();
+
+        //修改日志路径
+        Log::init([
+            'type'  => 'File',
+            'path'  => LOG_PATH . 'pay/',
+            'level' => ['error', 'info'],
+        ]);
     }
 
     /**

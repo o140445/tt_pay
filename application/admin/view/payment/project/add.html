@@ -36,6 +36,39 @@
         </div>
     </div>
 
+<!--    //扩展字段-->
+    <div class="form-group row">
+        <label for="c-extend" class="control-label col-xs-12 col-sm-2">{:__('代付字段')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <table class="table fieldlist" data-template="basictpl" data-name="row[extend]">
+                <tr>
+                    <td>{:__('字段名称')}</td>
+                    <td>{:__('字段key')}</td>
+                    <td width="100"></td>
+                </tr>
+                <tr>
+                    <td colspan="5"><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></td>
+                </tr>
+            </table>
+
+            <!--请注意实际开发中textarea应该添加个hidden进行隐藏-->
+            <textarea name="row[extend]" class="form-control" cols="30" rows="5" style="display:none;"></textarea>
+            <script id="basictpl" type="text/html">
+                <tr class="form-inline">
+                    <td><input type="text" name="<%=name%>[<%=index%>][title]" class="form-control" size="15" value="<%=row.title%>" placeholder="字段名称"/></td>
+                    <td><input type="text" name="<%=name%>[<%=index%>][value]" class="form-control" size="15" value="<%=row.value%>" placeholder="字段key"/></td>
+
+                    <td>
+                        <!--下面的两个按钮务必保留-->
+                        <span class="btn btn-sm btn-danger btn-remove"><i class="fa fa-times"></i></span>
+                        <span class="btn btn-sm btn-primary btn-dragsort"><i class="fa fa-arrows"></i></span>
+                    </td>
+                </tr>
+            </script>
+        </div>
+    </div>
+
+
 
     <div class="form-group layer-footer">
         <label class="control-label col-xs-12 col-sm-2"></label>

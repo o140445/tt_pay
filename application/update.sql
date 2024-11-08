@@ -37,6 +37,7 @@ create TABLE if not exists fa_project (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `fa_project` ADD `area_id` INT NOT NULL COMMENT '地区id' AFTER `status`;
+ALTER TABLE `fa_project` ADD `extend` varchar(500)  DEFAULT NULL COMMENT '扩展配置' AFTER `area_id`;
 
 -- 通道渠道关联
 create TABLE if not exists fa_project_channel (
