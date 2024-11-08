@@ -3,6 +3,7 @@
 namespace app\admin\controller;
 
 use app\admin\model\Admin;
+use app\admin\model\OrderIn;
 use app\admin\model\User;
 use app\common\controller\Backend;
 use app\common\model\Attachment;
@@ -28,55 +29,88 @@ class Dashboard extends Backend
         } catch (\Exception $e) {
 
         }
-        $column = [];
-        $starttime = Date::unixtime('day', -6);
-        $endtime = Date::unixtime('day', 0, 'end');
-        $joinlist = Db("user")->where('jointime', 'between time', [$starttime, $endtime])
-            ->field('jointime, status, COUNT(*) AS nums, DATE_FORMAT(FROM_UNIXTIME(jointime), "%Y-%m-%d") AS join_date')
-            ->group('join_date')
-            ->select();
-        for ($time = $starttime; $time <= $endtime;) {
-            $column[] = date("Y-m-d", $time);
-            $time += 86400;
-        }
-        $userlist = array_fill_keys($column, 0);
-        foreach ($joinlist as $k => $v) {
-            $userlist[$v['join_date']] = $v['nums'];
+
+        $today = date('Y-m-d');
+
+        // 今日订单 总单量，完成订单，总金额，完成金额
+        $todayOrder = "SELECT 
+            COUNT(id) as total, 
+            SUM(amount) as amount,
+            SUM(IF(status = 2, 1, NULL)) as success,
+            SUM(IF(status = 2, amount, 0)) as success_amount
+            FROM fa_order_in WHERE create_time >= '{$today}'";
+
+        $todayOrder = Db::query($todayOrder);
+
+        // 今日代付 总单量，完成订单，总金额，完成金额
+        $todayOutOrder = "SELECT 
+            COUNT(id) as total, 
+            SUM(amount) as amount,
+            SUM(IF(status = 2, 1, NULL)) as success,
+            SUM(IF(status = 2, amount, 0)) as success_amount
+            FROM fa_order_out WHERE create_time >= '{$today}'";
+
+        $todayOutOrder = Db::query($todayOutOrder);
+
+        // 利润统计 今日利润，昨日利润，本月利润 ，总利润
+        $profit = "SELECT 
+            SUM(IF(create_time >= '{$today}', profit, 0)) as today_profit,
+            SUM(IF(create_time >= DATE_SUB(CURDATE(), INTERVAL 1 DAY), profit, 0)) as yesterday_profit,
+            SUM(IF(create_time >= DATE_FORMAT(NOW(),'%Y-%m-01'), profit, 0)) as month_profit,
+            SUM(profit) as total_profit
+            FROM fa_profit";
+
+        $profit = Db::query($profit);
+
+        // 余额统计，可用余额，冻结余额，
+        $member_wallet = "SELECT 
+            SUM(balance) as balance,
+            SUM(blocked_balance) as blocked_balance
+            FROM fa_member_wallet";
+
+        $member_wallet = Db::query($member_wallet);
+
+        // 用户统计 代理总数，商户总数
+        $member = "SELECT 
+            COUNT(IF(is_agency = 1, 1, NULL)) as agent,
+            COUNT(IF(is_agency = 0, 1, NULL)) as merchant
+            FROM fa_member";
+
+        $member = Db::query($member);
+
+        // 金额处理为两位小数
+        if ($todayOrder) {
+            $todayOrder[0]['amount'] = $todayOrder[0]['amount'] ? number_format($todayOrder[0]['amount'], 2) : 0;
+            $todayOrder[0]['success_amount'] = $todayOrder[0]['amount'] ? number_format($todayOrder[0]['success_amount'], 2) : 0;
         }
 
-        $dbTableList = Db::query("SHOW TABLE STATUS");
-        $addonList = get_addon_list();
-        $totalworkingaddon = 0;
-        $totaladdon = count($addonList);
-        foreach ($addonList as $index => $item) {
-            if ($item['state']) {
-                $totalworkingaddon += 1;
-            }
+        if ($todayOutOrder) {
+            $todayOutOrder[0]['amount'] = $todayOutOrder[0]['amount'] ? number_format($todayOutOrder[0]['amount'], 2) : 0;
+            $todayOutOrder[0]['success_amount'] = $todayOutOrder[0]['success_amount'] ? number_format($todayOutOrder[0]['success_amount'], 2) : 0;
         }
+
+        if ($profit) {
+            $profit[0]['today_profit'] = number_format($profit[0]['today_profit'], 2);
+            $profit[0]['yesterday_profit'] = number_format($profit[0]['yesterday_profit'], 2);
+            $profit[0]['month_profit'] = number_format($profit[0]['month_profit'], 2);
+            $profit[0]['total_profit'] = number_format($profit[0]['total_profit'], 2);
+        }
+
+        if ($member_wallet) {
+            $member_wallet[0]['balance'] = number_format($member_wallet[0]['balance'], 2);
+            $member_wallet[0]['blocked_balance'] = number_format($member_wallet[0]['blocked_balance'], 2);
+        }
+
         $this->view->assign([
-            'totaluser'         => User::count(),
-            'totaladdon'        => $totaladdon,
-            'totaladmin'        => Admin::count(),
-            'totalcategory'     => \app\common\model\Category::count(),
-            'todayusersignup'   => User::whereTime('jointime', 'today')->count(),
-            'todayuserlogin'    => User::whereTime('logintime', 'today')->count(),
-            'sevendau'          => User::whereTime('jointime|logintime|prevtime', '-7 days')->count(),
-            'thirtydau'         => User::whereTime('jointime|logintime|prevtime', '-30 days')->count(),
-            'threednu'          => User::whereTime('jointime', '-3 days')->count(),
-            'sevendnu'          => User::whereTime('jointime', '-7 days')->count(),
-            'dbtablenums'       => count($dbTableList),
-            'dbsize'            => array_sum(array_map(function ($item) {
-                return $item['Data_length'] + $item['Index_length'];
-            }, $dbTableList)),
-            'totalworkingaddon' => $totalworkingaddon,
-            'attachmentnums'    => Attachment::count(),
-            'attachmentsize'    => Attachment::sum('filesize'),
-            'picturenums'       => Attachment::where('mimetype', 'like', 'image/%')->count(),
-            'picturesize'       => Attachment::where('mimetype', 'like', 'image/%')->sum('filesize'),
+            'todayOrder' => $todayOrder[0],
+            'todayOutOrder' => $todayOutOrder[0],
+            'profit' => $profit[0],
+            'member_wallet' => $member_wallet[0],
+            'member' => $member[0],
         ]);
 
-        $this->assignconfig('column', array_keys($userlist));
-        $this->assignconfig('userdata', array_values($userlist));
+//        $this->assignconfig('column', array_keys($userlist));
+//        $this->assignconfig('userdata', array_values($userlist));
 
         return $this->view->fetch();
     }

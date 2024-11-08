@@ -71,7 +71,7 @@ class Index extends Backend
             $this->success(__("You've logged in, do not login again"), $url);
         }
         //保持会话有效时长，单位:小时
-        $keeyloginhours = 24;
+        $keeyloginhours = 1;
         if ($this->request->isPost()) {
             $username = $this->request->post('username');
             $password = $this->request->post('password', '', null);
@@ -97,7 +97,7 @@ class Index extends Backend
                 $this->error($validate->getError(), $url, ['token' => $this->request->token()]);
             }
             AdminLog::setTitle(__('Login'));
-            $result = $this->auth->login($username, $password, $keeplogin ? $keeyloginhours * 3600 : 0);
+            $result = $this->auth->login($username, $password,  $keeyloginhours * 3600 );
             if ($result === true) {
                 Hook::listen("admin_login_after", $this->request);
                 $this->success(__('Login successful'), $url, ['url' => $url, 'id' => $this->auth->id, 'username' => $username, 'avatar' => $this->auth->avatar]);
