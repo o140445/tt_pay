@@ -214,5 +214,25 @@ if (!function_exists('build_heading')) {
     }
 }
 
+// build_auth_tree
+if (!function_exists('build_auth_tree')) {
+
+    /**
+     * 生成权限树
+     * @param array $list
+     * @param array $auth
+     * @return string
+     */
+    function build_auth_tree($name, $list, $auth)
+    {
+        $html = '';
+        foreach ($list as $k => $v) {
+            $checked = in_array($k, $auth) ? 'checked' : '';
+            $html .= '<div class="checkbox"><label><input type="checkbox" name="' . $name . '[]" value="' . $k . '" ' . $checked . '> ' . $v . '</label></div>';
+
+        }
+        return $html;
+    }
+}
 
 

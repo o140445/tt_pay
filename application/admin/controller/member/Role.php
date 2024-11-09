@@ -4,6 +4,8 @@ namespace app\admin\controller\member;
 
 use app\common\controller\Backend;
 use app\common\model\MemberRole;
+use app\common\model\MemberRule;
+use fast\Tree;
 
 /**
  * 商家角色管理
@@ -18,10 +20,62 @@ class Role extends Backend
      */
     protected $model = null;
 
+    protected $rulelist = [];
+
     public function _initialize()
     {
         parent::_initialize();
         $this->model = new MemberRole();
+
+        $memberRule = new MemberRule();
+        $ruleList = collection($memberRule->order('weigh', 'desc')->order('id', 'asc')->select())->toArray();
+        foreach ($ruleList as $k => &$v) {
+            $v['title'] = __($v['title']);
+            $v['remark'] = __($v['remark']);
+        }
+        unset($v);
+        Tree::instance()->init($ruleList);
+        $this->rulelist = Tree::instance()->getTreeList(Tree::instance()->getTreeArray(0), 'title');
+        $ruledata = [0 => __('None')];
+        foreach ($this->rulelist as $k => &$v) {
+            if (!$v['ismenu']) {
+                continue;
+            }
+            $ruledata[$v['id']] = $v['title'];
+        }
+        unset($v);
+
+        $this->view->assign('authdata', $ruledata);
+
+    }
+
+    public function edit($ids = null)
+    {
+        $row = $this->model->get($ids);
+        if (!$row) {
+            $this->error(__('No Results were found'));
+        }
+
+        // get 请求
+        if ($this->request->isGet()) {
+            $row['rules'] = explode(',', $row['rules']);
+            $this->view->assign("row", $row);
+            return $this->view->fetch();
+        }
+
+        // post 请求
+        $params = $this->request->post("row/a");
+        if ($params) {
+            $params['rules'] = implode(',', $params['rules']);
+        }
+
+        $result = $row->allowField(true)->save($params);
+
+        if ($result !== false) {
+            $this->success();
+        } else {
+            $this->error();
+        }
 
     }
 
