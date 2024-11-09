@@ -23,12 +23,13 @@ class APayChannel implements ChannelInterface
      */
     public function pay($channel, $params) : array
     {
+        $status = rand(0, 1);
         return [
-            'status' => 0, // 状态 1成功 0失败
+            'status' => $status, // 状态 1成功 0失败
             'pay_url' => 'http://www.baidu.com', // 支付地址
-            'msg' => '下单失败xxx', // 消息
-            'order_id' => '123456', // 订单号
-            'e_no' => '123456', // 业务订单号
+            'msg' => $status ? '下单成功' : '下单失败', // 消息
+            'order_id' => get_order_no('AP'), // 订单号
+            'e_no' => '', // 业务订单号
             'request_data' => json_encode($params), // 请求数据
             'response_data' => json_encode($params), // 响应数据
         ];
@@ -39,11 +40,12 @@ class APayChannel implements ChannelInterface
      */
     public function outPay($channel, $params) : array
     {
+        $status = rand(0, 1);
         return [
-            'status' => 1, // 状态 1成功 0失败
-            'order_id' => '123456', // 订单号
-            'msg' => '下单成功', // 消
-            'e_no' => '123456', // 业务订单号息
+            'status' => $status, // 状态 1成功 0失败
+            'order_id' => get_order_no('AP'), // 订单号
+            'msg' => $status ? '下单成功' : '下单失败', // 消息
+            'e_no' => '', // 业务订单号息
             'request_data' => json_encode($params), // 请求数据
             'response_data' => json_encode($params), // 响应数据
         ];
