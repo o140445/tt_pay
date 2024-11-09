@@ -168,6 +168,7 @@ class Stat extends Backend
         // 循环
         while (strtotime($start) <= strtotime($end)) {
             $data['xAxis'][] = $start;
+
             foreach ($list as $key => $item) {
                 if (!isset($data['series'][$key])) {
                     $data['series'][$key] = [
@@ -183,7 +184,7 @@ class Stat extends Backend
         }
 
         // 处理area
-        $data['series'] = array_values($data['series']);
+        $data['series'] = isset($data['series']) ? array_values($data['series']) : [];
         return json(['code' => 1, 'data' => $data, 'msg' => 'success']);
     }
 
