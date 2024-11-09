@@ -34,7 +34,12 @@ class ChannelValidator implements ValidatorInterface
         }
 
         // 金额检查 最大最小
-        if ($data['amount'] < $channel->min_amount || $data['amount'] > $channel->max_amount) {
+        if ($data['amount'] < $channel->min_amount && $channel->min_amount != 0) {
+            $this->errorMessage = "金额不在范围内" . $channel->min_amount . "-" . $channel->max_amount;
+            return false;
+        }
+
+        if ($data['amount'] > $channel->max_amount && $channel->max_amount != 0) {
             $this->errorMessage = "金额不在范围内" . $channel->min_amount . "-" . $channel->max_amount;
             return false;
         }
