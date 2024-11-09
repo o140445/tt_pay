@@ -64,7 +64,7 @@ class loaderTest extends \PHPUnit_Framework_TestCase
 
     public function testParseClass()
     {
-        $this->assertEquals('app\index\controller\User', Loader::parseClass('index', 'controller', 'user'));
+        $this->assertEquals('app\index\controller\Users', Loader::parseClass('index', 'controller', 'user'));
         $this->assertEquals('app\index\controller\user\Type', Loader::parseClass('index', 'controller', 'user.type'));
         $this->assertEquals('app\admin\model\UserType', Loader::parseClass('admin', 'model', 'user_type'));
     }

@@ -16,7 +16,7 @@ use think\Validate;
 /**
  * 会员中心
  */
-class User extends Frontend
+class Users extends Frontend
 {
     protected $layout = 'default';
     protected $noNeedLogin = ['login', 'register', 'third'];
