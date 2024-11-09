@@ -21,7 +21,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Project')}:</label>
         <div class="col-xs-12 col-sm-8">
-            {:build_select('row[project_id]', $projectList, $row['project_id'])}
+            {:build_select('row[project_id]', $projectList, $row['project_id'], ['data-rule'=>'required'])}
         </div>
     </div>
 
@@ -29,9 +29,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Channel')}:</label>
         <div class="col-xs-12 col-sm-8">
-            <select id="c-channel_id" data-rule="required" class="form-control selectpicker" name="row[channel_id]">
-                <option value="">请选择</option>
-            </select>
+            {:build_select('row[channel_id]', $channelList, $row['channel_id'], ['id'=>'c-channel_id', 'data-rule'=>'required'])}
         </div>
     </div>
 

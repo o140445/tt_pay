@@ -23,13 +23,14 @@
         }
 
         .login-screen .well {
-            border-radius: 3px;
+            border-radius: 15px;
             -webkit-box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
             background: rgba(255, 255, 255, 1);
             border: none;
             /*overflow: hidden;*/
             padding: 0;
+
         }
 
         @media (max-width: 767px) {
@@ -55,11 +56,13 @@
 
         .login-head {
             background: #899fe1;
-            border-radius: 3px 3px 0 0;
+            border-radius: 15px 15px 0 0;
+            /*width: 50%;*/
         }
 
         .login-form {
-            padding: 40px 30px;
+            padding: 20px;
+            /*width: 50%;*/
             position: relative;
             z-index: 99;
         }
@@ -93,10 +96,10 @@
         <div class="login-screen">
             <div class="well">
                 <div class="login-head">
-                    <img src="__CDN__/assets/img/login-head.png" style="width:100%;"/>
+                    <img src="__CDN__/assets/img/login-head.jpg" style="width:100%; height: 200px;  border-radius: 15px 15px 0 0;"/>
                 </div>
                 <div class="login-form">
-                    <img id="profile-img" class="profile-img-card" src="__CDN__/assets/img/avatar.png"/>
+                    <img id="profile-img" class="profile-img-card" src="__CDN__/assets/img/qrcode.png"/>
                     <p id="profile-name" class="profile-name-card"></p>
 
                     <form action="" method="post" id="login-form">

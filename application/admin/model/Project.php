@@ -29,6 +29,12 @@ class Project extends Model
         return $this->hasMany('ProjectChannel', 'project_id', 'id');
     }
 
+    // channel 多对多
+    public function channel()
+    {
+        return $this->belongsToMany('Channel', 'project_channel', 'channel_id', 'project_id');
+    }
+
     // configArea
     public function configArea()
     {

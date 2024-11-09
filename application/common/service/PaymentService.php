@@ -9,6 +9,10 @@ class PaymentService
 {
     protected ChannelInterface $channel;
 
+    const PAY_CHANNEL = [
+        'APay' => 'APay',
+    ];
+
     public function __construct(string $code)
     {
        switch ($code) {
@@ -35,7 +39,7 @@ class PaymentService
         return $this->channel->payNotify($channel, $data);
     }
 
-    public function config()
+    public function getConfig()
     {
         return $this->channel->config();
     }

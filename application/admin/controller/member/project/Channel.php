@@ -127,10 +127,20 @@ class Channel extends Backend
             $projectList = Project::where('status', 1)->column('id, name');
             $subMemberList = Member::where('status', 1)->where('is_agency', 0)->column('id, username');
             // projectList 变为
-            $projectList[0] = '请选择项目';
             $this->view->assign('projectList', $projectList);
             $this->view->assign('subMemberList', $subMemberList);
             $row->with(['member']);
+
+
+            $project = Project::with(['channel'])->find($row['project_id']);
+            $channelList = [];
+            if ($project->channel) {
+                foreach ($project['channel'] as $channel) {
+                    $channelList[$channel['id']] = $channel['title'];
+                }
+            }
+            $this->view->assign('channelList', $channelList);
+
             return $this->view->fetch();
         }
         $params = $this->request->post('row/a');

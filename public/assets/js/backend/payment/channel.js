@@ -42,9 +42,83 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             Table.api.bindevent(table);
         },
         add: function () {
+            // 跟据支付方式显示对应的配置
+             $(document).on("change", "select[name='row[code]']", function () {
+                    var code = $(this).val();
+                    var form = $(this).closest('form');
+                    if (code) {
+                        Fast.api.ajax({
+                            url: 'payment/channel/config',
+                            type: 'GET',
+                            data: {code: code},
+                            dataType: 'json',
+
+                        }, function (data, ret) {
+                            if (data.length === 0) {
+                                form.find('.extra').html('');
+                                return;
+                            }
+                            console.log(data);
+                            var html = '';
+                            for (var i in data) {
+                                html += '<div class="form-group">' +
+                                        '<label class="col-xs-12 col-sm-2 control-label">' + data[i].name + '</label>' +
+                                        '<div class="col-xs-12 col-sm-8">' +
+                                            '<input type="text" class="form-control" data-rule="required" name="row[extra][' + i + '][value]" value="' + data[i].value + '">' +
+                                            '<input type="text" style="display: none" class="form-control" data-rule="required" name="row[extra][' + i + '][key]" value="' + data[i].key + '">' +
+                                            '<input type="text" style="display: none" class="form-control" data-rule="required" name="row[extra][' + i + '][name]" value="' + data[i].name + '">' +
+                                        '</div>' +
+                                    '</div>';
+                            }
+                            form.find('.extra').html(html);
+                        });
+                    }
+                });
+
+
             Controller.api.bindevent();
+
         },
         edit: function () {
+
+            // 跟据支付方式显示对应的配置
+            $(document).on("change", "select[name='row[code]']", function () {
+                    var code = $(this).val();
+                    var form = $(this).closest('form');
+
+                    // 清空当前的渠道选项
+                    form.find('.extra').html('');
+
+                    if (code) {
+                        Fast.api.ajax({
+                            url: 'payment/channel/config',
+                            type: 'GET',
+                            data: {code: code},
+                            dataType: 'json',
+
+                        }, function (data, ret) {
+                            if (data.length === 0) {
+                                form.find('.extra').html('');
+                                return;
+                            }
+                            console.log(data);
+                            var html = '';
+                            for (var i in data) {
+                                html += '<div class="form-group">' +
+                                        '<label class="col-xs-12 col-sm-2 control-label">' + data[i].name + '</label>' +
+                                        '<div class="col-xs-12 col-sm-8">' +
+                                            '<input type="text" class="form-control" data-rule="required" name="row[extra][' + i + '][value]" value="' + data[i].value + '">' +
+                                            '<input type="text" style="display: none" class="form-control" data-rule="required" name="row[extra][' + i + '][key]" value="' + data[i].key + '">' +
+                                            '<input type="text" style="display: none" class="form-control" data-rule="required" name="row[extra][' + i + '][name]" value="' + data[i].name + '">' +
+                                        '</div>' +
+                                    '</div>';
+                            }
+                            form.find('.extra').html(html);
+                        });
+                    }
+                });
+
+
             Controller.api.bindevent();
         },
         api: {

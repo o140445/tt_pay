@@ -22,6 +22,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
                 pk: 'id',
                 sortName: 'id',
+                showToggle: false,
+                showColumns: false,
+                showExport: false,
+                search: false,
+
                 queryParams: function (params) {
                     var filter = JSON.parse(params.filter);
                     var type = Fast.api.query('type');
@@ -43,12 +48,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'member_id', title: __('MemberId')},
                         {field: 'project.name', title: __('Project')},
                         {field: 'channel.title', title: __('Channel')},
-                        {field: 'type', title: __('Type')},
+                        {field: 'type', title: __('Type'), searchList: {1:__('代收'),2:__('代付')}, formatter: Table.api.formatter.normal},
                         {field: 'sub_member_id', title: __('SubMemberId')},
-                        {field: 'status', title: __('Status')},
-                        {field: 'fixed_rate', title: __('Fixed_rate'), operate:false},
+                        {field: 'status', title: __('Status'), searchList: {0:__('关闭'),1:__('正常')}, formatter: Table.api.formatter.status},
+                        {field: 'fixed_rate', title: __('固定税率'), operate:false},
                         // 显示 % 号
-                        {field: 'rate', title: __('Rate'), operate:false, formatter: function (value, row, index) {
+                        {field: 'rate', title: __('税率'), operate:false, formatter: function (value, row, index) {
                             return value + '%';
                             }
                         },
@@ -122,7 +127,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     data: { project_id: project_id },
                     method: 'GET'
                 }, function (res) {
-                    // 清空当前的渠道选项
+                    // 清空当前的渠道选项 name="row[channel_id]"
                     $("#c-channel_id").html('<option value="">请选择</option>');
 
                     console.log(res);
@@ -132,7 +137,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     });
 
                     // 刷新 selectpicker 状态
-                    $("#c-channel_id").selectpicker('refresh');
+                    // $("#c-channel_id").selectpicker('refresh');
                     return false;
                 });
             });

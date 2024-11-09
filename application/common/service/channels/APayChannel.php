@@ -11,20 +11,10 @@ class APayChannel implements ChannelInterface
     {
         return [
             [
-                'name'=>'商户ID',
-                'key'=>'merchant_id',
+                'name'=>'测试',
+                'key'=>'test',
                 'value'=>'',
            ],
-            [
-                'name'=>'商户密钥',
-                'key'=>'merchant_key',
-                'value'=>'',
-            ],
-            [
-                'name'=>'支付地址',
-                'key'=>'pay_url',
-                'value'=>'',
-            ]
         ];
     }
 
