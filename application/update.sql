@@ -1,6 +1,6 @@
 
 -- 渠道
-create TABLE if not  fa_channel (
+create TABLE if not exists fa_channel (
     `id` int NOT NULL AUTO_INCREMENT,
     `title` varchar(255)  NOT NULL COMMENT '通道名称',
     `code` varchar(255) NOT NULL COMMENT '通道编码',
@@ -30,14 +30,13 @@ create TABLE if not  fa_channel (
 create TABLE if not exists fa_project (
     `id` int NOT NULL AUTO_INCREMENT,
     `title` varchar(255)  NOT NULL COMMENT '项目名称',
+    `area_id` int NOT NULL COMMENT '地区id',
+    `extend` varchar(500)  DEFAULT NULL COMMENT '扩展配置',
     `status` smallint DEFAULT NULL COMMENT '状态',
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-ALTER TABLE `fa_project` ADD `area_id` INT NOT NULL COMMENT '地区id' AFTER `status`;
-ALTER TABLE `fa_project` ADD `extend` varchar(500)  DEFAULT NULL COMMENT '扩展配置' AFTER `area_id`;
+) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
 
 -- 通道渠道关联
 create TABLE if not exists fa_project_channel (
@@ -60,6 +59,9 @@ create TABLE if not exists fa_member (
     `is_sandbox` smallint Default 0 COMMENT '是否沙箱',
     `is_agency` smallint Default 0 COMMENT '是否代理',
     `agency_id` int Default 0 COMMENT '代理id',
+    `role_id` int Default 1 COMMENT '角色id',
+    `area_id` int Default 0 COMMENT '地区id',
+    `ip_white_list` varchar(255)  default '' COMMENT 'ip白名单',
     `usdt_address` varchar(255)  default '' COMMENT 'usdt地址',
     `docking_type` tinyint Default 0 COMMENT '对接类型 1:api 0:手动',
     `last_login_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '最后登录时间',
@@ -69,10 +71,7 @@ create TABLE if not exists fa_member (
     UNIQUE KEY `username` (`username`),
     UNIQUE KEY `email` (`email`),
     INDEX `create_time` (`create_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员表';
---- 会员添加ip白名单
-ALTER TABLE `fa_member` ADD `ip_white_list` VARCHAR(255) default '' COMMENT 'ip白名单' AFTER `usdt_address`;
-ALTER TABLE `fa_member` ADD `area_id` INT NOT NULL COMMENT '地区id' AFTER `ip_white_list`;
+) ENGINE=InnoDB AUTO_INCREMENT=90000 DEFAULT CHARSET=utf8mb4 COMMENT='会员表';
 
 -- 会员钱包
 create TABLE if not exists fa_member_wallet (
@@ -87,6 +86,7 @@ create TABLE if not exists fa_member_wallet (
 create TABLE if not exists fa_member_wallet_log (
     `id` int NOT NULL AUTO_INCREMENT,
     `member_id` int NOT NULL COMMENT '会员id',
+    `order_no` varchar(255)  NOT NULL COMMENT '业务单号',
     `amount` decimal(10,4) Default 0 COMMENT '变动金额',
     `before_balance` decimal(10,4) Default 0 COMMENT '变动前余额',
     `after_balance` decimal(10,4) Default 0 COMMENT '变动后余额',
@@ -95,13 +95,9 @@ create TABLE if not exists fa_member_wallet_log (
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     PRIMARY KEY (id),
     KEY `member_id` (`member_id`),
+    KEY `order_no` (`order_no`),
     KEY `create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员余额变动记录表';
-
--- 会员余额变动记录添加业务单号 和 会员id索引
-ALTER TABLE `fa_member_wallet_log` ADD `order_no` VARCHAR(255) NOT NULL COMMENT '业务单号' AFTER `member_id`;
-ALTER TABLE `fa_member_wallet_log` ADD INDEX `member_id` (`member_id`);
-ALTER TABLE `fa_member_wallet_log` ADD INDEX `order_no` (`order_no`);
 
 -- 会员冻结列表
 create TABLE if not exists fa_member_wallet_freeze (
@@ -122,7 +118,7 @@ create TABLE if not exists fa_member_wallet_freeze (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员冻结列表';
 
 
---- 会员通道费率
+-- 会员通道费率
 create TABLE if not exists fa_member_project_channel (
    `id` int NOT NULL AUTO_INCREMENT,
    `status` tinyint NOT NULL DEFAULT '1' COMMENT '状态',
@@ -138,7 +134,7 @@ create TABLE if not exists fa_member_project_channel (
     INDEX `channel_id` (`channel_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员通道费率';
 
---- 提款单
+-- 提款单
 create TABLE if not exists fa_withdraw_order (
     `id` int NOT NULL AUTO_INCREMENT,
     `order_no` varchar(255)  NOT NULL COMMENT '订单号',
@@ -157,10 +153,12 @@ create TABLE if not exists fa_withdraw_order (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='提款单';
 
 
---- 代收单
+-- 代收单
 create TABLE if not exists fa_order_in (
     `id` int NOT NULL AUTO_INCREMENT,
     `order_no` varchar(255)  NOT NULL COMMENT '订单号',
+    `member_order_no` varchar(255)  NOT NULL COMMENT '会员订单号',
+    `channel_order_no` varchar(255)  NOT NULL COMMENT '通道订单号',
     `member_id` int NOT NULL COMMENT '会员id',
     `amount` decimal(10,4) Default 0 COMMENT '金额',
     `true_amount` decimal(10,4) Default 0 COMMENT '实际金额',
@@ -187,18 +185,14 @@ create TABLE if not exists fa_order_in (
     KEY `order_no` (`order_no`),
     KEY `member_id` (`member_id`),
     KEY `area_id` (`area_id`),
+    KEY `member_order_no` (`member_order_no`),
+    KEY `channel_order_no` (`channel_order_no`),
     KEY `create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='代付单';
 
-ALTER TABLE `fa_order_in` ADD `member_order_no` VARCHAR(255) NOT NULL COMMENT '会员订单号' AFTER `order_no`;
-ALTER TABLE `fa_order_in` ADD `channel_order_no` VARCHAR(255) NOT NULL COMMENT '通道订单号' AFTER `member_order_no`;
--- 添加索引
-ALTER TABLE `fa_order_in` ADD INDEX `member_order_no` (`member_order_no`);
-ALTER TABLE `fa_order_in` ADD INDEX `channel_order_no` (`channel_order_no`);
-ALTER TABLE `fa_order_in` ADD INDEX `create_time` (`create_time`);
 
 
---- 地区信息
+-- 地区信息
 create TABLE if not exists fa_config_area (
     `id` int NOT NULL AUTO_INCREMENT,
     `name` varchar(255)  NOT NULL COMMENT '地区名称',
@@ -243,7 +237,7 @@ CREATE TABLE `fa_notify_log` (
 
 
 
---- 代付单
+-- 代付单
 create TABLE if not exists fa_order_out (
     `id` int NOT NULL AUTO_INCREMENT,
     `order_no` varchar(255)  NOT NULL COMMENT '订单号',
@@ -251,6 +245,7 @@ create TABLE if not exists fa_order_out (
     `member_order_no` varchar(255)  NOT NULL COMMENT '会员订单号',
     `channel_order_no` varchar(255)  NOT NULL COMMENT '通道订单号',
     `amount` decimal(10,4) Default 0 COMMENT '金额',
+    `actual_amount` decimal(10,4) Default 0 COMMENT '实际到账金额',
     `fee_amount` decimal(10,4) Default 0 COMMENT '手续费',
     `channel_fee_amount` decimal(10,4) Default 0 COMMENT '通道手续费',
     `project_id` int NOT NULL COMMENT '项目id',
@@ -272,11 +267,9 @@ create TABLE if not exists fa_order_out (
     KEY `member_id` (`member_id`),
     KEY `member_no` (`member_order_no`),
     KEY `channel_no` (`channel_order_no`),
-    KEY `create_time` (`create_time`),
-    KEY `area_id` (`area_id`)
+    KEY `create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='代付单';
 
-ALTER TABLE `fa_order_out` ADD `actual_amount` INT NOT NULL DEFAULT '0' COMMENT '实际到账金额' AFTER `amount`;
 
 
 -- 单据请求返回记录
@@ -362,5 +355,38 @@ CREATE TABLE `fa_channel_stat` (
     KEY `idx_date` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='渠道每日统计';
 
+-- 会员菜单
+create TABLE if not exists fa_member_rule (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `type` enum('menu','file') NOT NULL DEFAULT 'file' COMMENT 'menu为菜单,file为权限节点',
+    `pid` int unsigned NOT NULL DEFAULT '0' COMMENT '父ID',
+    `name` varchar(100) NOT NULL DEFAULT '' COMMENT '规则名称',
+    `title` varchar(50) NOT NULL DEFAULT '' COMMENT '规则名称',
+    `icon` varchar(50) NOT NULL DEFAULT '' COMMENT '图标',
+    `condition` varchar(255) NOT NULL DEFAULT '' COMMENT '条件',
+    `remark` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
+    `ismenu` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否为菜单',
+    `createtime` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+    `updatetime` int unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+    `weigh` int NOT NULL DEFAULT '0' COMMENT '权重',
+    `status` varchar(30) NOT NULL DEFAULT '' COMMENT '状态',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `name` (`name`),
+    KEY `pid` (`pid`),
+    KEY `weigh` (`weigh`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=0  COMMENT='商家菜单节点表';
 
-php think crud -t channel_stat
+-- 会员角色
+create TABLE if not exists fa_member_role (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `title` varchar(50) NOT NULL DEFAULT '' COMMENT '角色名称',
+    `rules` varchar(255) NOT NULL DEFAULT '' COMMENT '规则',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 COMMENT='商家角色表';
+
+-- 初始化角色 1商户，2代理
+INSERT INTO `fa_member_role` (`id`,  `title`, `rules`) VALUES
+(1,  '商户', ''),
+(2,  '代理', '');
+
+php think crud -t member_rule

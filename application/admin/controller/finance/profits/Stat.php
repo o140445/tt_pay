@@ -213,14 +213,23 @@ class Stat extends Backend
         $data = [];
         $list = [];
 
-        foreach ($in_order_res as $key => $item) {
-            $list['in'][$item['date']] = $item['profit'];
-            $list['in']['name'] = '代收金额';
+        if (!isset($in_order_res) || empty($in_order_res)) {
+            $list['in'] = ['name' => '代收金额'];
+        } else {
+            foreach ($in_order_res as $key => $item) {
+                $list['in'][$item['date']] = $item['profit'];
+                $list['in']['name'] = '代收金额';
+            }
+
         }
 
-        foreach ($out_order_res as $key => $item) {
-            $list['out'][$item['date']] = $item['profit'];
-            $list['out']['name'] = '代付金额';
+        if (!isset($out_order_res) || empty($out_order_res)) {
+            $list['out'] = ['name' => '代付金额'];
+        } else {
+            foreach ($out_order_res as $key => $item) {
+                $list['out'][$item['date']] = $item['profit'];
+                $list['out']['name'] = '代付金额';
+            }
         }
 
 

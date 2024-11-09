@@ -13,7 +13,10 @@ class Index extends Frontend
 
     public function index()
     {
-        $this->success('Hello, world!');
+        echo  json_encode([
+            'code' => 200,
+            'msg' => '非法请求',
+        ]);
 //        return
     }
 
