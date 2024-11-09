@@ -16,6 +16,10 @@ use fast\Http;
 
 class OrderOutService
 {
+
+    // TYPE_OUT 代付
+    const TYPE_OUT = "OUT";
+
     /**
      * 创建代付订单
      * @param $data
@@ -34,7 +38,7 @@ class OrderOutService
         }
 
         $params['channel_id'] = $channel_id;
-        $params['type'] = "OUT";
+        $params['type'] = self::TYPE_OUT;
 
         $validate = new OrderValidator();
         if (!$validate->validateOrder($params)) {

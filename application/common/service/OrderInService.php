@@ -21,6 +21,10 @@ class OrderInService
     const CHANNEL_RES_STATUS_SUCCESS = 1;
     const CHANNEL_RES_STATUS_FAILED = 0;
 
+    // TYPE_IN
+    const TYPE_IN = 'IN';
+
+
     /**
      * 创建订单
      * @param $params
@@ -35,7 +39,7 @@ class OrderInService
         }
 
         $params['channel_id'] = $channel_id;
-        $params['type'] = "IN";
+        $params['type'] = self::TYPE_IN;
 
         $validate = new OrderValidator();
         if (!$validate->validateOrder($params)) {

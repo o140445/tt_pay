@@ -5,6 +5,7 @@ namespace app\common\service\validators;
 use app\admin\model\Member;
 use app\common\service\MemberWalletService;
 use app\common\service\OrderInService;
+use app\common\service\OrderOutService;
 
 class MemberValidator implements ValidatorInterface
 {
@@ -28,6 +29,12 @@ class MemberValidator implements ValidatorInterface
             return false;
         }
 
+        // 代理不支持创建
+        if ($member->is_agency) {
+            $this->errorMessage = "代理不支持创建";
+            return false;
+        }
+
         // ip白名单检查
         if ($member->ip_white_list) {
             $ip = request()->ip();
@@ -38,7 +45,7 @@ class MemberValidator implements ValidatorInterface
         }
 
         // 余额检查 out
-        if ($data['type'] == "OUT") {
+        if ($data['type'] == OrderOutService::TYPE_OUT) {
             $memberWallet = $member->wallet;
             if ($memberWallet->balance < $data['amount']) {
                 $this->errorMessage = "余额不足";

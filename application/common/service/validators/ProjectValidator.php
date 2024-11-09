@@ -21,6 +21,20 @@ class ProjectValidator implements ValidatorInterface
             return false;
         }
 
+        // 代付扩展字段检查
+        if ($product->is_in == OrderInService::STATUS_OPEN) {
+            $extend = json_decode($product->extend, true); //[{"title":"类型","value":"type"},{"title":"账号","value":"pix"},{"title":"xx","value":"ww"}]
+            $extra = $data['extra']; //{"type":"1","pix":"123456","xx":"ww"}
+
+            // 代付扩展字段检查
+            foreach ($extend as $item) {
+                if (!isset($extra[$item['value']])) {
+                    $this->errorMessage = $item['title'] . "是必需的";
+                    return false;
+                }
+            }
+        }
+
 
         return true;
     }
