@@ -2,7 +2,7 @@
 
 namespace app\command;
 
-use app\admin\model\ProfitStatModel;
+use app\common\model\merchant\ProfitStatModel;
 use think\console\Command;
 use think\Log;
 

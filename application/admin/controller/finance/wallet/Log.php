@@ -2,9 +2,9 @@
 
 namespace app\admin\controller\finance\wallet;
 
-use app\admin\model\MemberWallerLog;
-use app\admin\model\MemberWalletModel;
 use app\common\controller\Backend;
+use app\common\model\merchant\MemberWallerLog;
+use app\common\model\merchant\MemberWalletModel;
 
 /**
  * 会员余额变动记录管理
@@ -16,7 +16,7 @@ class Log extends Backend
 
     /**
      * Log模型对象
-     * @var \app\admin\model\MemberWallerLog
+     * @var \app\common\model\merchant\MemberWallerLog
      */
     protected $model = null;
 

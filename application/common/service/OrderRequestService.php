@@ -2,7 +2,7 @@
 
 namespace app\common\service;
 
-use app\admin\model\OrderRequestLog;
+use app\common\model\merchant\OrderRequestLog;
 
 class OrderRequestService
 {

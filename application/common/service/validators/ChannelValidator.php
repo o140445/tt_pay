@@ -2,7 +2,7 @@
 
 namespace app\common\service\validators;
 
-use app\admin\model\Channel;
+use app\common\model\merchant\Channel;
 use app\common\service\OrderInService;
 use app\common\service\OrderOutService;
 

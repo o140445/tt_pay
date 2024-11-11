@@ -2,7 +2,7 @@
 
 namespace app\common\service\validators;
 
-use app\admin\model\Project;
+use app\common\model\merchant\Project;
 use app\common\service\OrderInService;
 
 class ProjectValidator implements ValidatorInterface

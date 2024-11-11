@@ -14,14 +14,14 @@ class Area extends Backend
 
     /**
      * Area模型对象
-     * @var \app\admin\model\ConfigArea
+     * @var \app\common\model\merchant\ConfigArea
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\ConfigArea;
+        $this->model = new \app\common\model\merchant\ConfigArea;
     }
 
 

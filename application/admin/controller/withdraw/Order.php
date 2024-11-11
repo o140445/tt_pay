@@ -3,8 +3,6 @@
 namespace app\admin\controller\withdraw;
 
 use app\common\controller\Backend;
-use app\common\service\FreezeService;
-use app\common\service\MemberWalletService;
 use app\common\service\WithdrawService;
 use think\Db;
 
@@ -18,14 +16,14 @@ class Order extends Backend
 
     /**
      * Order模型对象
-     * @var \app\admin\model\WithdrawOrder
+     * @var \app\common\model\merchant\WithdrawOrder
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\WithdrawOrder;
+        $this->model = new \app\common\model\merchant\WithdrawOrder;
         $this->view->assign("statusList", $this->model->getStatusList());
     }
 

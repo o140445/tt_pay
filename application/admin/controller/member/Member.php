@@ -2,10 +2,10 @@
 
 namespace app\admin\controller\member;
 
-use app\admin\model\ConfigArea;
-use app\admin\model\Member as MemberModel;
-use app\admin\model\MemberWalletModel;
 use app\common\controller\Backend;
+use app\common\model\merchant\ConfigArea;
+use app\common\model\merchant\Member as MemberModel;
+use app\common\model\merchant\MemberWalletModel;
 use app\common\service\FreezeService;
 use app\common\service\MemberWalletService;
 use think\Db;

@@ -14,14 +14,14 @@ class Stat extends Backend
 
     /**
      * Stat模型对象
-     * @var \app\admin\model\ChannelStatModel
+     * @var \app\common\model\merchant\ChannelStatModel
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\ChannelStatModel;
+        $this->model = new \app\common\model\merchant\ChannelStatModel;
 
     }
 

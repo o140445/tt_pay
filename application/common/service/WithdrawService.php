@@ -2,8 +2,8 @@
 
 namespace app\common\service;
 
-use app\admin\model\MemberWalletModel;
-use app\admin\model\WithdrawOrder;
+use app\common\model\merchant\MemberWalletModel;
+use app\common\model\merchant\WithdrawOrder;
 
 class WithdrawService
 {

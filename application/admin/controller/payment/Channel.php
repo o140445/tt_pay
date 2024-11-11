@@ -11,7 +11,7 @@ use think\exception\PDOException;
 class Channel extends Backend
 {
     /**
-     * @var \app\admin\model\Channel
+     * @var \app\common\model\merchant\Channel
      */
     protected $model = null;
 
@@ -19,7 +19,7 @@ class Channel extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\Channel;
+        $this->model = new \app\common\model\merchant\Channel;
         $this->view->assign("statusList", $this->model->getStatusList());
 
         $configChannelList = PaymentService::PAY_CHANNEL;

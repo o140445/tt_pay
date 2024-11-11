@@ -389,4 +389,7 @@ INSERT INTO `fa_member_role` (`id`,  `title`, `rules`) VALUES
 (1,  '商户', ''),
 (2,  '代理', '');
 
+-- member add token
+ALTER TABLE `fa_member` ADD `token` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'token' AFTER `api_key`;
+
 php think crud -t member_rule

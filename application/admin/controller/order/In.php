@@ -2,8 +2,8 @@
 
 namespace app\admin\controller\order;
 
-use app\admin\model\OrderIn;
 use app\common\controller\Backend;
+use app\common\model\merchant\OrderIn;
 use app\common\service\OrderInService;
 use think\Db;
 
@@ -17,14 +17,14 @@ class In extends Backend
 
     /**
      * In模型对象
-     * @var \app\admin\model\OrderIn
+     * @var \app\common\model\merchant\OrderIn
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\OrderIn;
+        $this->model = new \app\common\model\merchant\OrderIn;
         $this->view->assign("statusList", $this->model->getStatusList());
     }
 

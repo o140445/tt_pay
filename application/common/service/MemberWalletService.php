@@ -2,11 +2,9 @@
 
 namespace app\common\service;
 
-use app\admin\model\MemberWalletFreezeModel;
-use app\admin\model\MemberWalletModel;
-use app\admin\model\MemberWalletLogModel;
+use app\common\model\merchant\MemberWalletLogModel;
+use app\common\model\merchant\MemberWalletModel;
 use think\Db;
-use think\Model;
 
 class MemberWalletService
 {

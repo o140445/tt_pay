@@ -2,8 +2,8 @@
 
 namespace app\common\service\validators;
 
-use app\admin\model\OrderIn;
-use app\admin\model\OrderOut;
+use app\common\model\merchant\OrderIn;
+use app\common\model\merchant\OrderOut;
 
 class OrderDataValidator implements ValidatorInterface
 {

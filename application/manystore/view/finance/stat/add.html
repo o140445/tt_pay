@@ -1,0 +1,105 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Member_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-member_id" data-rule="required" data-source="member/index" class="form-control selectpage" name="row[member_id]" type="text" value="">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('In_order_count')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-in_order_count" data-rule="required" class="form-control" name="row[in_order_count]" type="number" value="0">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('In_order_success_count')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-in_order_success_count" data-rule="required" class="form-control" name="row[in_order_success_count]" type="number" value="0">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('In_order_amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-in_order_amount" data-rule="required" class="form-control" step="0.0001" name="row[in_order_amount]" type="number">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('In_order_success_amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-in_order_success_amount" data-rule="required" class="form-control" step="0.0001" name="row[in_order_success_amount]" type="number">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('In_fee')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-in_fee" data-rule="required" class="form-control" step="0.0001" name="row[in_fee]" type="number">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('In_success_rate')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-in_success_rate" data-rule="required" class="form-control" step="0.0001" name="row[in_success_rate]" type="number">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Out_order_count')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-out_order_count" data-rule="required" class="form-control" name="row[out_order_count]" type="number" value="0">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Out_order_success_count')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-out_order_success_count" data-rule="required" class="form-control" name="row[out_order_success_count]" type="number" value="0">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Out_order_amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-out_order_amount" data-rule="required" class="form-control" step="0.0001" name="row[out_order_amount]" type="number">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Out_order_success_amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-out_order_success_amount" data-rule="required" class="form-control" step="0.0001" name="row[out_order_success_amount]" type="number">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Out_fee')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-out_fee" data-rule="required" class="form-control" step="0.0001" name="row[out_fee]" type="number">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Out_success_rate')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-out_success_rate" data-rule="required" class="form-control" step="0.0001" name="row[out_success_rate]" type="number">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Date')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-date" data-rule="required" class="form-control datetimepicker" data-date-format="YYYY-MM-DD" data-use-current="true" name="row[date]" type="text" value="{:date('Y-m-d')}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Create_time')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-create_time" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[create_time]" type="text" value="{:date('Y-m-d H:i:s')}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Update_time')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-update_time" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[update_time]" type="text" value="{:date('Y-m-d H:i:s')}">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+        </div>
+    </div>
+</form>

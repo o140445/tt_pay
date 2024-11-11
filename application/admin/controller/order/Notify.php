@@ -2,8 +2,8 @@
 
 namespace app\admin\controller\order;
 
-use app\admin\model\OrderNotifyLog;
 use app\common\controller\Backend;
+use app\common\model\merchant\OrderNotifyLog;
 
 class Notify  extends Backend
 {

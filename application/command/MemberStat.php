@@ -3,7 +3,7 @@
 namespace app\command;
 
 
-use app\admin\model\MemberStatModel;
+use app\common\model\merchant\MemberStatModel;
 use think\console\Command;
 
 class MemberStat extends Command

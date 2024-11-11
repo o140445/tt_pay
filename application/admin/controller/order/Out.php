@@ -2,10 +2,8 @@
 
 namespace app\admin\controller\order;
 
-use app\admin\model\OrderIn;
-use app\admin\model\OrderOut;
 use app\common\controller\Backend;
-use app\common\service\OrderInService;
+use app\common\model\merchant\OrderOut;
 use app\common\service\OrderOutService;
 use think\Db;
 
@@ -19,14 +17,14 @@ class Out extends Backend
 
     /**
      * Out模型对象
-     * @var \app\admin\model\OrderOut
+     * @var \app\common\model\merchant\OrderOut
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\OrderOut;
+        $this->model = new \app\common\model\merchant\OrderOut;
         $this->view->assign("statusList", $this->model->getStatusList());
     }
 

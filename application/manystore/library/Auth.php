@@ -2,6 +2,7 @@
 
 namespace app\manystore\library;
 
+use app\common\model\merchant\Member;
 use app\manystore\model\Manystore;
 use fast\Random;
 use fast\Tree;
@@ -38,28 +39,29 @@ class Auth extends ManystoreAuth
      */
     public function login($username, $password, $keeptime = 0)
     {
-        $manystore = Manystore::get(['username' => $username]);
+        $manystore = Member::get(['username' => $username]);
         if (!$manystore) {
             $this->setError('Username is incorrect');
             return false;
         }
-        if ($manystore['status'] == 'hidden') {
+        if ($manystore['status'] == Member::STATUS_DISABLE) {
             $this->setError('Admin is forbidden');
             return false;
         }
-        if (Config::get('fastadmin.login_failure_retry') && $manystore->loginfailure >= 10 && time() - $manystore->updatetime < 86400) {
-            $this->setError('Please try again after 1 day');
-            return false;
-        }
-        if ($manystore->password != md5(md5($password) . $manystore->salt)) {
-            $manystore->loginfailure++;
-            $manystore->save();
+
+//        if (Config::get('fastadmin.login_failure_retry') && $manystore->loginfailure >= 10 && time() - $manystore->updatetime < 86400) {
+//            $this->setError('Please try again after 1 day');
+//            return false;
+//        }
+        //                $params['password'] = md5($params['password'].$params['salt']);
+//        var_dump($manystore->password,  $manystore->salt, $password);die();
+        if ($manystore->password != md5($password . $manystore->salt)) {
             $this->setError('Password is incorrect');
             return false;
         }
-        $manystore->loginfailure = 0;
-        $manystore->logintime = time();
-        $manystore->loginip = request()->ip();
+//        $manystore->loginfailure = 0;
+        $manystore->last_login_time = date('Y-m-d H:i:s');
+//        $manystore->loginip = request()->ip();
         $manystore->token = Random::uuid();
         $manystore->save();
         Session::set("manystore", $manystore->toArray());
@@ -182,19 +184,19 @@ class Auth extends ManystoreAuth
         }
         //判断是否同一时间同一账号只能在一个地方登录
         if (Config::get('fastadmin.login_unique')) {
-            $my = Manystore::get($manystore['id']);
+            $my = Member::get($manystore['id']);
             if (!$my || $my['token'] != $manystore['token']) {
                 $this->logout();
                 return false;
             }
         }
         //判断管理员IP是否变动
-        if (Config::get('fastadmin.loginip_check')) {
-            if (!isset($manystore['loginip']) || $manystore['loginip'] != request()->ip()) {
-                $this->logout();
-                return false;
-            }
-        }
+//        if (Config::get('fastadmin.loginip_check')) {
+//            if (!isset($manystore['loginip']) || $manystore['loginip'] != request()->ip()) {
+//                $this->logout();
+//                return false;
+//            }
+//        }
         $this->logined = true;
         return true;
     }

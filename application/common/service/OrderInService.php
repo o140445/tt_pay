@@ -2,14 +2,14 @@
 
 namespace app\common\service;
 
-use app\admin\model\Channel;
-use app\admin\model\Member;
-use app\admin\model\MemberProjectChannel;
-use app\admin\model\MemberWalletModel;
-use app\admin\model\OrderIn;
-use app\admin\model\OrderNotifyLog;
-use app\admin\model\OrderRequestLog;
-use app\admin\model\Profit;
+use app\common\model\merchant\Channel;
+use app\common\model\merchant\Member;
+use app\common\model\merchant\MemberProjectChannel;
+use app\common\model\merchant\MemberWalletModel;
+use app\common\model\merchant\OrderIn;
+use app\common\model\merchant\OrderNotifyLog;
+use app\common\model\merchant\OrderRequestLog;
+use app\common\model\merchant\Profit;
 use fast\Http;
 
 class OrderInService

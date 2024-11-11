@@ -2,7 +2,6 @@
 
 namespace app\api\controller\v1;
 
-use app\admin\model\OrderOut;
 use app\common\controller\Api;
 use app\common\service\OrderInService;
 use app\common\service\OrderOutService;

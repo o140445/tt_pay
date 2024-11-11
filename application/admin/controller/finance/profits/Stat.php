@@ -2,11 +2,9 @@
 
 namespace app\admin\controller\finance\profits;
 
-use app\admin\model\ConfigArea;
-use app\admin\model\MemberStatModel;
-use app\admin\model\OrderIn;
-use app\admin\model\ProfitStatModel;
 use app\common\controller\Backend;
+use app\common\model\merchant\ConfigArea;
+use app\common\model\merchant\ProfitStatModel;
 
 /**
  * 利润报表统计
@@ -18,7 +16,7 @@ class Stat extends Backend
 
     /**
      * Stat模型对象
-     * @var \app\admin\model\ProfitStatModel
+     * @var \app\common\model\merchant\ProfitStatModel
      */
     protected $model = null;
 

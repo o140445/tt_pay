@@ -14,14 +14,14 @@ class Profit extends Backend
 
     /**
      * Profit模型对象
-     * @var \app\admin\model\Profit
+     * @var \app\common\model\merchant\Profit
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\Profit;
+        $this->model = new \app\common\model\merchant\Profit;
 
     }
 

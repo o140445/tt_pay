@@ -2,11 +2,10 @@
 
 namespace app\admin\controller\order;
 
-use app\admin\model\MemberWalletModel;
 use app\common\controller\Backend;
-use app\admin\model\Freeze as FreezeModel;
+use app\common\model\merchant\Freeze as FreezeModel;
+use app\common\model\merchant\MemberWalletModel;
 use app\common\service\FreezeService;
-use app\common\service\MemberWalletService;
 use think\Db;
 
 /**
@@ -19,7 +18,7 @@ class Freeze extends Backend
 
     /**
      * Freeze模型对象
-     * @var \app\admin\model\Freeze
+     * @var \app\common\model\merchant\Freeze
      */
     protected $model = null;
 

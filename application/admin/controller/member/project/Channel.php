@@ -2,10 +2,10 @@
 
 namespace app\admin\controller\member\project;
 
-use app\admin\model\Member;
-use app\admin\model\MemberProjectChannel as ChannelModel;
-use app\admin\model\Project;
 use app\common\controller\Backend;
+use app\common\model\merchant\Member;
+use app\common\model\merchant\MemberProjectChannel as ChannelModel;
+use app\common\model\merchant\Project;
 use think\Db;
 use think\exception\PDOException;
 use think\exception\ValidateException;
@@ -20,7 +20,7 @@ class Channel extends Backend
 
     /**
      * Channel模型对象
-     * @var \app\admin\model\MemberProjectChannel
+     * @var \app\common\model\merchant\MemberProjectChannel
      */
     protected $model = null;
 

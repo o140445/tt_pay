@@ -112,9 +112,9 @@ class Rule extends Backend
                     }
                 }
                 //这里需要针对name做唯一验证
-                $ruleValidate = \think\Loader::validate('MemberAuthRule');
+                $ruleValidate = \think\Loader::validate('MemberRule');
                 $ruleValidate->rule([
-                    'name' => 'require|format|unique:MemberAuthRule,name,' . $row->id,
+                    'name' => 'require|format|unique:MemberRule,name,' . $row->id,
                 ]);
                 $result = $row->validate()->save($params);
                 if ($result === false) {
