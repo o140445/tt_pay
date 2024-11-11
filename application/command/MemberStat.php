@@ -25,7 +25,7 @@ class MemberStat extends Command
             member_id,
             count(1) as in_order_count,
             sum(amount) as in_order_amount,
-            sum(fee_amount) as in_fee,
+            sum(if(status = 2, fee_amount, 0)) as in_fee,
             sum(if(status = 2, 1, 0)) as in_order_success_count,
             sum(if(status = 2, actual_amount, 0)) as in_order_success_amount,
             DATE_FORMAT(create_time, '%Y-%m-%d') as date
@@ -38,7 +38,7 @@ class MemberStat extends Command
             member_id,
             count(1) as out_order_count,
             sum(amount) as out_order_amount,
-            sum(fee_amount) as out_fee,
+            sum(if(status = 2, fee_amount, 0)) as out_fee,
             sum(if(status = 2, 1, 0)) as out_order_success_count,
             sum(if(status = 2, actual_amount, 0)) as out_order_success_amount,
             DATE_FORMAT(create_time, '%Y-%m-%d') as date

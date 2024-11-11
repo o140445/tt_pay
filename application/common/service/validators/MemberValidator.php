@@ -37,7 +37,7 @@ class MemberValidator implements ValidatorInterface
         // ip白名单检查
         if ($member->ip_white_list) {
             $ip = request()->ip();
-            if (!in_array($ip, explode(',', $member->ip_whitelist))) {
+            if (!in_array($ip, explode(',', $member->ip_white_list))) {
                 $this->errorMessage = "IP不在白名单中";
                 return false;
             }

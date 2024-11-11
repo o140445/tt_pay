@@ -72,7 +72,7 @@ class WithdrawService
         }
 
         if ($order->status != WithdrawOrder::STATUS_WAIT) {
-            throw new \Exception('提现单状态错误');
+            throw new \Exception('提现单已经处理，无法编辑');
         }
 
         // 检查金额 如果金额不一致则解冻原金额 冻结新金额
