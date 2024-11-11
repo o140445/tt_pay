@@ -27,8 +27,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 searchFormVisible: true,
                 columns: [
                     [
-                        {checkbox: true},
-                        {field: 'id', title: __('Id')},
                         {field: 'order_no', title: __('Order_no'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'amount', title: __('Amount'), operate:false},
                         {field: 'usdt_amount', title: __('Usdt_amount'), operate:false},

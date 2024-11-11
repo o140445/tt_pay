@@ -8,12 +8,36 @@
         </div>
     </div>
 
-
-    <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Extra')}:</label>
+    <div class="form-group" style="display: none;">
+        <label class="control-label col-xs-12 col-sm-2">:</label>
         <div class="col-xs-12 col-sm-8">
-            <textarea id="c-extra" data-rule="required" class="form-control " rows="5" name="row[extra]" cols="50"></textarea>
+            <input id="c-product_id" class="form-control" step="0.0001" name="row[product_id]" type="number" value="{$project_id}">
         </div>
+    </div>
+
+
+    <div class="extend">
+        <!--        // 循环输出-->
+        <!--        <div class="form-group"><label class="col-xs-12 col-sm-2 control-label">' + data[i].name + '</label><div class="col-xs-12 col-sm-8"><input type="text" class="form-control" data-rule="required" name="row[extra][' + data[i].key + ']" value="' + data[i].value + '"></div></div>-->
+        {foreach name="area_config" item="vo"}
+        <div class="form-group" >
+            <label class="control-label col-xs-12 col-sm-2">{$vo.title}:</label>
+
+            <div class="col-xs-12 col-sm-8 fixed col-sm-8">
+                {if $vo.type eq 'text'}
+                <input type="text" class="form-control" data-rule="required" name="row[extra][{$vo.key}]" value="">
+                {elseif $vo.type eq 'select'}
+                <select class="form-control" name="row[extra][{$vo.key}]" data-rule="required">
+                    <option value="">请选择</option>
+                    {foreach name="vo.options" item="option"}
+                    <option value="{$option.value}">{$option.label}</option>
+                    {/foreach}
+                </select>
+                {/if}
+                <span class="help-block">{$vo.tips}</span>
+            </div>
+        </div>
+        {/foreach}
     </div>
 
 

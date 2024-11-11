@@ -4,9 +4,13 @@ namespace app\manystore\controller\order;
 
 
 use app\common\controller\ManystoreBase;
+use app\common\model\merchant\MemberProjectChannel;
 use app\common\model\merchant\OrderOut;
+use app\common\model\merchant\Project;
 use app\common\service\OrderOutService;
+use think\Config;
 use think\Db;
+use think\Exception;
 
 /**
  * 代付单
@@ -65,28 +69,22 @@ class Out extends ManystoreBase
         if ($this->request->isPost()) {
             $params = $this->request->post("row/a");
             if ($params) {
-                $params = $this->preExcludeFields($params);
-
-                if($this->storeIdFieldAutoFill && STORE_ID ){
-                    $params['store_id'] = STORE_ID;
+                if (empty($params['amount'])) {
+                    $this->error('金额不能为空');
                 }
-
-                if($this->shopIdAutoCondition && SHOP_ID){
-                    $params['shop_id'] = SHOP_ID;
+                foreach ($params['extra'] as $key => $value) {
+                    if (empty($value)) {
+                        $this->error('不能为空');
+                    }
                 }
 
                 $result = false;
                 Db::startTrans();
                 try {
-                    //是否采用模型验证
-                    if ($this->modelValidate) {
-                        $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));
-                        $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.add' : $name) : $this->modelValidate;
-                        $this->model->validateFailException(true)->validate($validate);
-                    }
-                    $result = $this->model->allowField(true)->save($params);
+                    $orderService = new OrderOutService();
+                    $result = $orderService->memberCreateOrder(STORE_ID, $params);
                     Db::commit();
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     Db::rollback();
                     $this->error($e->getMessage());
                 }
@@ -99,6 +97,24 @@ class Out extends ManystoreBase
             }
             $this->error(__('Parameter %s can not be empty', ''));
         }
+
+        // 获取通道扩展字段
+        $data = MemberProjectChannel::where('member_id', STORE_ID)
+            ->with(['member', 'member.area'])
+            ->where('status', MemberProjectChannel::STATUS_ON)
+            ->where('type', MemberProjectChannel::TYPE_OUT)
+            ->select();
+
+        if (empty($data)) {
+            $this->error('请先添加代付通道');
+        }
+
+        $config = Config::get('out_config');
+        $area = $data[0]->member->area->name;
+
+        $this->view->assign('area_config', $config[$area]);
+        $this->view->assign('project_id', $data[0]->project_id);
+
         return $this->view->fetch();
     }
 

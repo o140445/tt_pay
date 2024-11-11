@@ -26,8 +26,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 fixedRightNumber: 1,
                 columns: [
                     [
-                        {checkbox: true},
-                        {field: 'id', title: __('Id')},
                         {field: 'member_id', title: __('Member_id')},
                         {field: 'order_no', title: __('Order_no'), operate: 'LIKE'},
                         {field: 'order_type', title: __('单据类型'), searchList: {"1":__('代收'),"2":__('代付')}, formatter: Table.api.formatter.normal},

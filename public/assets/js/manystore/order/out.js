@@ -27,8 +27,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 searchFormVisible: true,
                 columns: [
                     [
-                        {checkbox: true},
-                        {field: 'id', title: __('Id')},
+
                         {field: 'order_no', title: __('Order_no'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'member_order_no', title: __('Member_order_no'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'amount', title: __('Amount'), operate:false},
@@ -49,7 +48,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             }
                         },
                         {field: 'notify_count', title: __('Notify_count'), operate: false},
-
+                        {field: 'extra', title: __('收款信息'), operate: false, table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'error_msg', title: __('Error_msg'), operate: false, table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'e_no', title: __('E_no'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
 

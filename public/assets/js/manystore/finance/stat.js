@@ -26,8 +26,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 fixedRightNumber: 1,
                 columns: [
                     [
-                        {checkbox: true},
-                        {field: 'id', title: __('Id')},
                         {field: 'member_id', title: __('Member_id')},
                         {field: 'date', title: __('Date'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
                         {field: 'in_order_count', title: __('In_order_count'),operate:false},

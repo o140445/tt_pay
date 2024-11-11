@@ -108,6 +108,21 @@ class OrderOutService
     }
 
     /**
+     * 会员创建订单
+     * @param $member_id
+     * @param $params
+     * @return array
+     * @throws \Exception
+     */
+    public function memberCreateOrder($member_id, $params)
+    {
+        $params['merchant_id'] = $member_id;
+        $params['merchant_order_no'] = get_order_no('SDO'.$member_id);
+        $params['notify_url'] = '';
+        return $this->createOutOrder($params);
+    }
+
+    /**
      * 请求通道
      * @param $order
      * @return array

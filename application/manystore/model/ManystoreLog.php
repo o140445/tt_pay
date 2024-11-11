@@ -35,8 +35,8 @@ class ManystoreLog extends Model
         $store_id = 0;
         $username =  __('Unknown');
         if($auth->isLogin()){
-            $shop_id =  SHOP_ID;
-            $store_id = STORE_ID;
+            $shop_id =  0;
+            $store_id = 0;
             $username = $auth->username;
         }
         $content = self::$content;

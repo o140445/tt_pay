@@ -34,6 +34,10 @@ class MemberProjectChannel extends Model
         self::TYPE_OUT => '代收'
     ];
 
+    // status 1启用 0禁用
+    const STATUS_ON = 1;
+    const STATUS_OFF = 0;
+
     public function getTypeList()
     {
         return self::TYPE_TEXT;
