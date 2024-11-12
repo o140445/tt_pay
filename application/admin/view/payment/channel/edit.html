@@ -1,5 +1,13 @@
 <form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
     {:token()}
+
+    <div class="form-group">
+        <label for="c-area_id" class="control-label col-xs-12 col-sm-2">{:__('区域')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_select('row[area_id]', $configAreaList, $row.area_id, ['data-rule'=>'required'])}
+        </div>
+    </div>
+
     <div class="form-group">
         <label for="c-title" class="control-label col-xs-12 col-sm-2">{:__('Title')}:</label>
         <div class="col-xs-12 col-sm-8">
@@ -38,12 +46,13 @@
 
     <div class="extra">
 <!--        // 循环输出-->
-<!--        <div class="form-group"><label class="col-xs-12 col-sm-2 control-label">' + data[i].name + '</label><div class="col-xs-12 col-sm-8"><input type="text" class="form-control" data-rule="required" name="row[extra][' + data[i].key + ']" value="' + data[i].value + '"></div></div>-->
-        {foreach name="row.extra" item="vo"}
+        {foreach name="row.extra" key="key" item="vo"}
             <div class="form-group" >
                 <label class="control-label col-xs-12 col-sm-2">{$vo.name}:</label>
                 <div class="col-xs-12 col-sm-8">
-                    <input type="text" class="form-control" data-rule="required" name="row[extra][{$vo.key}]" value="{$vo.value}">
+                    <input type="text" class="form-control" data-rule="required" name="row[extra][{$key}][value]" value="{$vo.value}">
+                    <input type="text" style="display: none" class="form-control" data-rule="required" name="row[extra][{$key}][key]" value="{$vo.key}">
+                    <input type="text" style="display: none" class="form-control" data-rule="required" name="row[extra][{$key}][name]" value="{$vo.name}">
                 </div>
             </div>
         {/foreach}

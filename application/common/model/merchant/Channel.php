@@ -28,4 +28,10 @@ class Channel extends Model
     {
         return ['0' => __('Hidden'), '1' => __('Normal')];
     }
+
+    //config_area
+    public function configArea()
+    {
+        return $this->hasOne('ConfigArea', 'id', 'area_id');
+    }
 }

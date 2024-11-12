@@ -17,6 +17,7 @@ create TABLE if not exists fa_channel (
     `out_rate` decimal(10,4) DEFAULT NULL COMMENT '出款费率',
     `in_fiexd_rate` decimal(10,4) DEFAULT NULL COMMENT '入款固定费率',
     `out_fiexd_rate` decimal(10,4) DEFAULT NULL COMMENT '出款固定费率',
+    `area_id` int NOT NULL DEFAULT 0 COMMENT '地区id',
     `extra` varchar(500)  DEFAULT NULL COMMENT '额外配置',
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -36,7 +37,7 @@ create TABLE if not exists fa_project (
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (id)
-) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8;
 
 -- 通道渠道关联
 create TABLE if not exists fa_project_channel (
@@ -51,15 +52,14 @@ create TABLE if not exists fa_project_channel (
 create TABLE if not exists fa_member (
     `id` int NOT NULL AUTO_INCREMENT,
     `username` varchar(255)  NOT NULL COMMENT '用户名',
-    `email` varchar(255)  NOT NULL COMMENT '邮箱',
     `password` varchar(255)  NOT NULL COMMENT '密码',
     `salt` varchar(255)  NOT NULL COMMENT '盐',
     `status` smallint Default 1 COMMENT '状态',
+    `token` varchar(255) NOT NULL DEFAULT '' COMMENT 'token',
     `api_key` varchar(255)  NOT NULL COMMENT 'api_key',
     `is_sandbox` smallint Default 0 COMMENT '是否沙箱',
     `is_agency` smallint Default 0 COMMENT '是否代理',
     `agency_id` int Default 0 COMMENT '代理id',
-    `role_id` int Default 1 COMMENT '角色id',
     `area_id` int Default 0 COMMENT '地区id',
     `ip_white_list` varchar(255)  default '' COMMENT 'ip白名单',
     `usdt_address` varchar(255)  default '' COMMENT 'usdt地址',
@@ -69,9 +69,8 @@ create TABLE if not exists fa_member (
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (id),
     UNIQUE KEY `username` (`username`),
-    UNIQUE KEY `email` (`email`),
     INDEX `create_time` (`create_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=90000 DEFAULT CHARSET=utf8mb4 COMMENT='会员表';
+) ENGINE=InnoDB AUTO_INCREMENT=90001 DEFAULT CHARSET=utf8mb4 COMMENT='会员表';
 
 -- 会员钱包
 create TABLE if not exists fa_member_wallet (
@@ -355,41 +354,13 @@ CREATE TABLE `fa_channel_stat` (
     KEY `idx_date` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='渠道每日统计';
 
--- 会员菜单
-create TABLE if not exists fa_member_rule (
-    `id` int unsigned NOT NULL AUTO_INCREMENT,
-    `type` enum('menu','file') NOT NULL DEFAULT 'file' COMMENT 'menu为菜单,file为权限节点',
-    `pid` int unsigned NOT NULL DEFAULT '0' COMMENT '父ID',
-    `name` varchar(100) NOT NULL DEFAULT '' COMMENT '规则名称',
-    `title` varchar(50) NOT NULL DEFAULT '' COMMENT '规则名称',
-    `icon` varchar(50) NOT NULL DEFAULT '' COMMENT '图标',
-    `condition` varchar(255) NOT NULL DEFAULT '' COMMENT '条件',
-    `remark` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
-    `ismenu` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否为菜单',
-    `createtime` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
-    `updatetime` int unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
-    `weigh` int NOT NULL DEFAULT '0' COMMENT '权重',
-    `status` varchar(30) NOT NULL DEFAULT '' COMMENT '状态',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `name` (`name`),
-    KEY `pid` (`pid`),
-    KEY `weigh` (`weigh`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=0  COMMENT='商家菜单节点表';
+-- 添加会员角色默认数据 1商户 2代理
+INSERT INTO `fa_manystore_auth_group` (`id`, `shop_id`, `pid`, `name`, `rules`, `createtime`, `updatetime`, `status`)
+VALUES
+    (1, 0, 0, '商户', '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,61,62,63,64,65,66,67', 0, 0, 'normal'),
+    (2, 0, 0, '代理', '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,48,49,50,51,52,53,54,55,56,59,60,61,62,63,65,66,67', 0, 0, 'normal');
 
--- 会员角色
-create TABLE if not exists fa_member_role (
-    `id` int unsigned NOT NULL AUTO_INCREMENT,
-    `title` varchar(50) NOT NULL DEFAULT '' COMMENT '角色名称',
-    `rules` varchar(255) NOT NULL DEFAULT '' COMMENT '规则',
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 COMMENT='商家角色表';
 
--- 初始化角色 1商户，2代理
-INSERT INTO `fa_member_role` (`id`,  `title`, `rules`) VALUES
-(1,  '商户', ''),
-(2,  '代理', '');
 
--- member add token
-ALTER TABLE `fa_member` ADD `token` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'token' AFTER `api_key`;
 
 php think crud -t member_rule

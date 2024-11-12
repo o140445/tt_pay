@@ -2,6 +2,8 @@
 
 namespace app\admin\controller\member;
 
+use app\admin\model\AuthGroupAccess;
+use app\admin\model\ManystoreAuthGroupAccess;
 use app\common\controller\Backend;
 use app\common\model\merchant\ConfigArea;
 use app\common\model\merchant\Member as MemberModel;
@@ -92,16 +94,16 @@ class Member extends Backend
         $result = false;
         Db::startTrans();
         try {
-            //是否采用模型验证
-            if ($this->modelValidate) {
-                $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));
-                $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.add' : $name) : $this->modelValidate;
-                $this->model->validateFailException()->validate($validate);
-            }
 
             // 密码长度检查
             if (strlen($params['password']) < 6 || strlen($params['password']) > 20) {
                 $this->error('密码长度必须在6-20之间');
+            }
+
+            // username 是否重复
+            $member = MemberModel::where('username', $params['username'])->find();
+            if ($member) {
+                $this->error('用户名已存在');
             }
 
             // 密码加密
@@ -119,6 +121,14 @@ class Member extends Backend
                 'balance' => 0,
                 'blocked_balance' => 0
             ]);
+
+            // 关联角色
+            ManystoreAuthGroupAccess::create(
+                [
+                    'uid' => $this->model->id,
+                    'group_id' => $params['is_agency'] ? 2 : 1 // 机构用户默认为代理
+                ]
+            );
 
             Db::commit();
         } catch (ValidateException|PDOException|Exception $e) {
@@ -182,14 +192,12 @@ class Member extends Backend
             }
 
             //username 和 email 是否传递
-            if ((!isset($params['username']) && !isset($params['email'])) || (empty($params['username']) && empty($params['email']))){
-                $this->error('用户名或邮箱不能为空');
+            if (!isset($params['username']) || empty($params['username'])){
+                $this->error('用户名不能为空');
             }
 
             // username 和 email 是否重复
-            $member = MemberModel::
-                    where('username', $params['username'])
-                    ->whereor('email', $params['email'])->find();
+            $member = MemberModel::where('username', $params['username'])->find();
             if ($member && $member->id != $row->id) {
                 $this->error('用户名或邮箱已存在');
             }

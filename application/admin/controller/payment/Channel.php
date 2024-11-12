@@ -3,6 +3,7 @@
 namespace app\admin\controller\payment;
 
 use app\common\controller\Backend;
+use app\common\model\merchant\ConfigArea;
 use app\common\service\PaymentService;
 use think\Db;
 use think\Exception;
@@ -15,7 +16,6 @@ class Channel extends Backend
      */
     protected $model = null;
 
-
     public function _initialize()
     {
         parent::_initialize();
@@ -24,9 +24,34 @@ class Channel extends Backend
 
         $configChannelList = PaymentService::PAY_CHANNEL;
         $configChannelList[0] = __('请选择');
+
+        $configAreaList = ConfigArea::column('id,name');
+        $configAreaList[0] = __('请选择');
+        $this->view->assign('configAreaList', $configAreaList);
         $this->view->assign('configChannelList', $configChannelList);
     }
 
+    public function index()
+    {
+//        config_area
+        //设置过滤方法
+        $this->request->filter(['strip_tags', 'trim']);
+        if (false === $this->request->isAjax()) {
+            return $this->view->fetch();
+        }
+        //如果发送的来源是 Selectpage，则转发到 Selectpage
+        if ($this->request->request('keyField')) {
+            return $this->selectpage();
+        }
+        [$where, $sort, $order, $offset, $limit] = $this->buildparams();
+        $list = $this->model
+            ->with(['configArea'])
+            ->where($where)
+            ->order($sort, $order)
+            ->paginate($limit);
+        $result = ['total' => $list->total(), 'rows' => $list->items()];
+        return json($result);
+    }
 
 
     public function add()
@@ -46,12 +71,26 @@ class Channel extends Backend
         $result = false;
         Db::startTrans();
         try {
-            //是否采用模型验证
-            if ($this->modelValidate) {
-                $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));
-                $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.add' : $name) : $this->modelValidate;
-                $this->model->validateFailException()->validate($validate);
+
+            // 参数检查
+            if (empty($params['title'])) {
+                throw new Exception('通道名称不能为空');
             }
+
+            if (empty($params['code'])) {
+                throw new Exception('通道编码不能为空');
+            }
+
+            if (empty($params['area_id'])) {
+                throw new Exception('地区不能为空');
+            }
+
+            // 检查是否存在
+            $res = $this->model->where('title', $params['title'])->find();
+            if ($res) {
+                throw new Exception('通道名称已存在');
+            }
+
             $params['sign'] = $this->getSign();
             $params['extra'] = $params['extra'] ? json_encode($params['extra']) : '[]';
             $result = $this->model->allowField(true)->save($params);

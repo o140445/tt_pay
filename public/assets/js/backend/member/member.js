@@ -27,7 +27,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {checkbox: true},
                         {field: 'id', title: __('Id'), sortable: true},
                         {field: 'username', title: __('UserName')},
-                        {field: 'email', title: __('Email')},
                         {field: 'wallet.balance', title: __('Balance'), operate:false, formatter: Table.api.formatter.price},
                         {field: 'wallet.blocked_balance', title: __('BlockedBalance'), operate:false},
                         {field: 'status', title: __('Status'), searchList: {0:'禁用',1:'正常'}, formatter: Table.api.formatter.toggle},
