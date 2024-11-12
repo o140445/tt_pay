@@ -306,7 +306,7 @@ class OrderOutService
             ->find();
 
         if ($channel){
-            $res['channel_fee_amount'] = $order->amount * $channel->in_rate / 100 + $channel->in_fixed_rate;
+            $res['channel_fee_amount'] = $order->amount * $channel->out_rate / 100 + $channel->out_fixed_rate;
         }
 
         if ($memberProjectChannel){

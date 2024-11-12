@@ -38,12 +38,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'last_login_time', title: __('LastLoginTime'), formatter: Table.api.formatter.datetime},
                         {field: 'create_time', title: __('CreateTime'), formatter: Table.api.formatter.datetime},
                         {field: 'update_time', title: __('UpdateTime'), formatter: Table.api.formatter.datetime},
-                        {
-                            field: 'buttons',
-                            operate: false,
-                            title: __('按钮'),
-                            table: table,
-                            events: Table.api.events.operate,
+                        {field: 'operate', title: __('Operate'), table: table, formatter: Table.api.formatter.operate, events: Table.api.events.operate,
                             buttons: [
                                 {
                                     name: 'ajax',
@@ -91,11 +86,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     }
                                 },
                             ],
-                            formatter: Table.api.formatter.buttons
-                        },
-
-
-                        {field: 'operate', title: __('Operate'), table: table, formatter: Table.api.formatter.operate, events: Table.api.events.operate}
+                        }
                     ]
                 ]
             });
