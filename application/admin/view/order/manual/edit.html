@@ -1,0 +1,75 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Order_no')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-order_no" data-rule="required" class="form-control" name="row[order_no]" type="text" value="{$row.order_no|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Channel_order_no')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-channel_order_no" data-rule="required" class="form-control" name="row[channel_order_no]" type="text" value="{$row.channel_order_no|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-amount" data-rule="required" class="form-control" step="0.0001" name="row[amount]" type="number" value="{$row.amount|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Channel_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-channel_id" data-rule="required" data-source="channel/index" class="form-control selectpage" name="row[channel_id]" type="text" value="{$row.channel_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Area_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-area_id" data-rule="required" data-source="area/index" class="form-control selectpage" name="row[area_id]" type="text" value="{$row.area_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-status" data-rule="required" class="form-control" name="row[status]" type="number" value="{$row.status|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Data')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-data" data-rule="required" class="form-control " rows="5" name="row[data]" cols="50">{$row.data|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('E_no')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-e_no" data-rule="required" class="form-control" name="row[e_no]" type="text" value="{$row.e_no|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Msg')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-msg" data-rule="required" class="form-control" name="row[msg]" type="text" value="{$row.msg|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Create_time')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-create_time" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[create_time]" type="text" value="{:$row.create_time?datetime($row.create_time):''}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Update_time')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-update_time" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[update_time]" type="text" value="{:$row.update_time?datetime($row.update_time):''}">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+        </div>
+    </div>
+</form>
