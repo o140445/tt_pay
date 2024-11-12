@@ -7,11 +7,6 @@ use think\Model;
 
 class OrderIn extends Model
 {
-
-    
-
-    
-
     // 表名
     protected $name = 'order_in';
     
@@ -61,4 +56,9 @@ class OrderIn extends Model
         return $this->hasOne('ConfigArea', 'id', 'area_id');
     }
 
+    // order_request
+    public function orderRequest()
+    {
+        return $this->hasOne('OrderRequestLog', 'order_no', 'order_no');
+    }
 }

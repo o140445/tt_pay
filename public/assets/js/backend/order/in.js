@@ -60,6 +60,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             formatter:Table.api.formatter.status,
                         },
 
+                        {field: 'pay_url', title: __('支付地址'), operate: false},
                         {field: 'notify_count', title: __('Notify_count'), operate: false},
                         {field: 'e_no', title: __('E_no'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'error_msg', title: __('Error_msg'), operate: false, table: table, class: 'autocontent', formatter: Table.api.formatter.content},
