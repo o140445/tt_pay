@@ -74,7 +74,11 @@ class Channel extends Backend
 
             $this->view->assign('member', $member);
             $projectList = Project::where('status', 1)->column('id, name');
-            $subMemberList = Member::where('status', 1)->where('is_agency', 0)->column('id, username');
+            $subMemberList = [];
+            if ($member->is_agency) {
+                $subMemberList = Member::where('status', 1)->where('is_agency', 0)->column('id, username');
+                $subMemberList = array_merge(['0' => '请选择代理'], $subMemberList);
+            }
             // projectList 变为
             $projectList[0] = '请选择项目';
             $this->view->assign('projectList', $projectList);

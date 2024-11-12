@@ -16,7 +16,7 @@ class OrderManualService
         $order->channel_id = $params['channel_id'];
         $order->area_id = $channel->area_id;
         $order->order_no = $this->generateOrderNo();
-        $order->status = 0;
+        $order->status = 1;
         $order->data = json_encode($params['extra']);
         $order->save();
 
