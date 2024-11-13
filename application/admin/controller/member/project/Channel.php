@@ -130,7 +130,7 @@ class Channel extends Backend
         if (false === $this->request->isPost()) {
             $this->view->assign('row', $row);
             $projectList = Project::where('status', 1)->column('id, name');
-            $subMemberList = Member::where('status', 1)->where('agency_id', $ids)->column('id, username');
+            $subMemberList = Member::where('status', 1)->where('agency_id', $row->member_id)->column('id, username');
             // projectList 变为
             $this->view->assign('projectList', $projectList);
             $this->view->assign('subMemberList', $subMemberList);
