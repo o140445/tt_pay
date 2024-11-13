@@ -3,6 +3,8 @@
 namespace app\api\controller\v1;
 
 use app\common\controller\Api;
+use app\common\model\merchant\OrderIn;
+use app\common\model\merchant\OrderOut;
 use app\common\service\OrderInService;
 use app\common\service\OrderOutService;
 use think\Cache;
@@ -80,7 +82,7 @@ class Pay extends Api
 
         Cache::rm($lock);
         // 失败
-        if ($res['status'] == OrderInService::CHANNEL_RES_STATUS_FAILED) {
+        if ($res['status'] == OrderIn::STATUS_FAILED) {
             Log::write('代收请求失败：error' . $res['msg'] .', data:' . json_encode($params), 'error');
             $this->error($res['msg']);
         }
@@ -160,7 +162,7 @@ class Pay extends Api
         Cache::rm($lock);
 
         // 失败
-        if ($res['status'] == OrderInService::CHANNEL_RES_STATUS_FAILED) {
+        if ($res['status'] == OrderOut::STATUS_FAILED) {
             Log::write('代付请求失败：error' . $res['msg'] .', data:' . json_encode($params), 'error');
             $this->error($res['msg']);
         }
