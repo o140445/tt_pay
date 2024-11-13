@@ -86,7 +86,7 @@ class Dashboard extends Backend
 
         if ($profit) {
             $profit[0]['today_profit'] = $profit[0]['today_profit'] ? number_format($profit[0]['today_profit'], 2) : 0;
-            $profit[0]['yesterday_profit'] = $profit[0]['yesterday_profit'] ? number_format($profit[0]['yesterday_profit'], 2) : 0;
+            $profit[0]['yesterday_profit'] = $profit[0]['yesterday_profit'] ? number_format($profit[0]['yesterday_profit'] - $profit[0]['today_profit'], 2) : 0;
             $profit[0]['month_profit'] = $profit[0]['month_profit'] ? number_format($profit[0]['month_profit'], 2) : 0;
             $profit[0]['total_profit'] = $profit[0]['total_profit'] ? number_format($profit[0]['total_profit'], 2) : 0;
         }

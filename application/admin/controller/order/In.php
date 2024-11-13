@@ -94,7 +94,8 @@ class In extends Backend
             if ($order->status != OrderIn::STATUS_UNPAID) {
                 throw new \Exception('订单状态不正确');
             }
-
+            // 设置时区
+            date_default_timezone_set($order->area->timezone);
             $orderService->completeOrder($order, []);
 
         }catch (\Exception $e) {
@@ -140,6 +141,8 @@ class In extends Backend
             if ($order->status != OrderIn::STATUS_UNPAID) {
                 throw new \Exception('订单状态不正确');
             }
+
+            date_default_timezone_set($order->area->timezone);
 
             $orderService->failOrder($order, ['msg' => '手动失败']);
 

@@ -120,7 +120,7 @@ class Stat extends Backend
         //开始时间 7天前
         $start = date('Y-m-d', strtotime('-9 days'));
         //结束时间
-        $end = date('Y-m-d');
+        $end = date('Y-m-d 23:59:59');
 
         $profit_res = "SELECT
             area_id,
@@ -195,7 +195,7 @@ class Stat extends Backend
         //开始时间 7天前
         $start = date('Y-m-d', strtotime('-9 days'));
         //结束时间
-        $end = date('Y-m-d');
+        $end = date('Y-m-d 23:59:59');
 
         $in_order_sql = "SELECT
             SUM(IF(status = 2, true_amount, 0)) AS profit,
