@@ -31,8 +31,8 @@ class SignService
                $sign .= $key . '=' . $value . '&';
            }
         }
-
-        $sign .= 'secret=' . $secret;
+        $sign = rtrim($sign, '&' );
+        $sign .=  $secret;
 
         // 大写
         return strtoupper(md5($sign));
