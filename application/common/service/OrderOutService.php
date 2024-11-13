@@ -378,7 +378,7 @@ class OrderOutService
         $amount = $profit->commission;
 
         $walletService = new MemberWalletService();
-        $walletService->subBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_REFUND, '', '代付退款提成');
+        $walletService->subBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_REFUND, $order->order_no, '代付退款提成');
 
         return $amount;
     }
