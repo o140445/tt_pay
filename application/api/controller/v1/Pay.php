@@ -5,6 +5,7 @@ namespace app\api\controller\v1;
 use app\common\controller\Api;
 use app\common\service\OrderInService;
 use app\common\service\OrderOutService;
+use think\Cache;
 use think\Db;
 use think\Log;
 
@@ -59,6 +60,12 @@ class Pay extends Api
         // 写请求日志
         Log::write('代收请求参数：data' . json_encode($params), 'info');
 
+        // 加锁同一个单号同时只能有一个请求
+        $lock = $params['merchant_order_no'] . '_lock';
+        Cache::get($lock) && $this->error('请勿重复提交');
+
+        Cache::set($lock, 1, 10);
+
         Db::startTrans();
         try {
             $orderService = new OrderInService();
@@ -66,10 +73,12 @@ class Pay extends Api
         }catch (\Exception $e) {
             Db::rollback();
             Log::write('代收请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
+            Cache::rm($lock);
             $this->error($e->getMessage());
         }
         Db::commit();
 
+        Cache::rm($lock);
         // 失败
         if ($res['status'] == OrderInService::CHANNEL_RES_STATUS_FAILED) {
             Log::write('代收请求失败：error' . $res['msg'] .', data:' . json_encode($params), 'error');
@@ -131,16 +140,24 @@ class Pay extends Api
         // 写请求日志
         Log::write('代付请求参数：data' . json_encode($params), 'info');
 
+        // 加锁同一个单号同时只能有一个请求
+        $lock = $params['merchant_order_no'] . '_lock';
+        Cache::get($lock) && $this->error('请勿重复提交');
+
+        Cache::set($lock, 1, 10);
+
         Db::startTrans();
         try {
             $orderService = new OrderOutService();
             $res = $orderService->createOutOrder($params);
         }catch (\Exception $e) {
             Db::rollback();
+            Cache::rm($lock);
             Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
             $this->error($e->getMessage());
         }
         Db::commit();
+        Cache::rm($lock);
 
         // 失败
         if ($res['status'] == OrderInService::CHANNEL_RES_STATUS_FAILED) {

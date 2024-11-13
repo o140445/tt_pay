@@ -62,7 +62,7 @@ class Dashboard extends ManystoreBase
                 ->column('sum(actual_amount) as amount', 'date(create_time)');
 
         }else{
-            $users = Member::where('agent_id', STORE_ID)->column('id');
+            $users = Member::where('agency_id', STORE_ID)->column('id');
             $total_user = count($users);
             $today_commission = Profit::where('member_id', 'in', $users)
                 ->where('create_time', '>=', date('Y-m-d 00:00:00'))

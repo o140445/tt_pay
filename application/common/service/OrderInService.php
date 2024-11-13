@@ -289,7 +289,7 @@ class OrderInService
         if (!$member || !$member->agency_id){
             return 0;
         }
-        $agent = Member::where('status', OrderInService::STATUS_OPEN)->find($member->agent_id);
+        $agent = Member::where('status', OrderInService::STATUS_OPEN)->find($member->agency_id);
         if (!$agent){
             return 0;
         }
@@ -312,7 +312,7 @@ class OrderInService
         $walletService = new MemberWalletService();
         $walletService->addBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD, '', '代收提成');
 
-//        if ($agent->agent_id){
+//        if ($agent->agency_id){
 //            $this->calculateCommission($order, $amount);
 //        }
 
