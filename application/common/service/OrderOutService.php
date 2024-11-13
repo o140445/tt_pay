@@ -347,7 +347,7 @@ class OrderOutService
         $amount += $order->amount * $memberProjectChannel->rate / 100 + $memberProjectChannel->fixed_rate;
 
         $walletService = new MemberWalletService();
-        $walletService->addBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD, '', '代付提成');
+        $walletService->addBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD, $order->order_no, '代付提成');
 
 //        if ($agent->agency_id){
 //            $this->calculateCommission($order, $amount);
