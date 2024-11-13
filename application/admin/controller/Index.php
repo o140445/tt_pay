@@ -71,7 +71,7 @@ class Index extends Backend
             $this->success(__("You've logged in, do not login again"), $url);
         }
         //保持会话有效时长，单位:小时
-        $keeyloginhours = 1;
+        $keeyloginhours = 2;
         if ($this->request->isPost()) {
             $username = $this->request->post('username');
             $password = $this->request->post('password', '', null);

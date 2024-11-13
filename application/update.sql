@@ -17,7 +17,7 @@ create TABLE if not exists fa_channel (
     `out_rate` decimal(10,4) DEFAULT 0 COMMENT '出款费率',
     `in_fixed_rate` decimal(10,4) DEFAULT 0 COMMENT '入款固定费率',
     `out_fixed_rate` decimal(10,4) DEFAULT 0 COMMENT '出款固定费率',
-    `area_id` int NOT NULL DEFAULT 0 COMMENT '地区id',
+    `area_id` int  DEFAULT 0 COMMENT '地区id',
     `extra` varchar(500)  DEFAULT NULL COMMENT '额外配置',
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -30,9 +30,9 @@ create TABLE if not exists fa_channel (
 -- 通道
 create TABLE if not exists fa_project (
     `id` int NOT NULL AUTO_INCREMENT,
-    `name` varchar(255)  NOT "" COMMENT '项目名称',
-    `area_id` int NOT 0 COMMENT '地区id',
-    `extend` varchar(500)  DEFAULT "" COMMENT '扩展配置',
+    `name` varchar(255)  NOT NULL COMMENT '项目名称',
+    `area_id` int NOT NULL DEFAULT 0 COMMENT '地区id',
+    `extend`  varchar(500)  NOT NULL COMMENT '扩展配置',
     `status` smallint DEFAULT 1 COMMENT '状态',
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -354,24 +354,19 @@ CREATE TABLE `fa_channel_stat` (
     KEY `idx_date` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='渠道每日统计';
 
--- 添加会员角色默认数据 1商户 2代理
-INSERT INTO `fa_manystore_auth_group` (`id`, `shop_id`, `pid`, `name`, `rules`, `createtime`, `updatetime`, `status`)
-VALUES
-    (1, 0, 0, '商户', '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,61,62,63,64,65,66,67', 0, 0, 'normal'),
-    (2, 0, 0, '代理', '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,48,49,50,51,52,53,54,55,56,59,60,61,62,63,65,66,67', 0, 0, 'normal');
 
 -- 手动订单
 CREATE TABLE `fa_order_manual` (
     `id` int NOT NULL AUTO_INCREMENT,
     `order_no` varchar(50) NOT NULL COMMENT '订单单号',
-    `channel_order_no` varchar(50) NOT NULL COMMENT '通道订单号',
+    `channel_order_no` varchar(50) NOT NULL DEFAULT '' COMMENT '通道订单号',
     `amount` decimal(15,4) NOT NULL COMMENT '订单金额',
     `channel_id` bigint NOT NULL DEFAULT '0' COMMENT '通道ID',
     `area_id` bigint NOT NULL DEFAULT '0' COMMENT '区域ID',
     `status` tinyint NOT NULL DEFAULT '0' COMMENT '订单状态 0未支付 1已支付 2支付失败 3退款',
     `data` text NOT NULL COMMENT '订单数据',
-    `e_no` varchar(50) NOT NULL COMMENT 'E单号',
-    `msg` varchar(255) NOT NULL COMMENT '消息',
+    `e_no` varchar(50) NOT NULL  DEFAULT '' COMMENT 'E单号',
+    `msg` varchar(255) NOT NULL   DEFAULT '' COMMENT '消息',
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
@@ -381,5 +376,10 @@ CREATE TABLE `fa_order_manual` (
     KEY `idx_order_no` (`order_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='手动订单';
 
+-- 添加会员角色默认数据 1商户 2代理
+INSERT INTO `fa_manystore_auth_group` (`id`, `shop_id`, `pid`, `name`, `rules`, `createtime`, `updatetime`, `status`)
+VALUES
+    (1, 0, 0, '商户', '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,61,62,63,64,65,66,67', 0, 0, 'normal'),
+    (2, 0, 0, '代理', '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,48,49,50,51,52,53,54,55,56,59,60,61,62,63,65,66,67', 0, 0, 'normal');
 
 php think crud -t order_manual
