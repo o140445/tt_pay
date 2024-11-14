@@ -21,4 +21,7 @@ interface ChannelInterface
 
     // 返回
     public function response() : string;
+
+    // getNotifyType
+    public function getNotifyType($params) : string;
 }

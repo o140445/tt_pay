@@ -110,7 +110,7 @@ class Pay extends Api
      * @ApiRoute    (api/v1/pay/innotify/{sign})
      * @ApiReturnParams   (name="code", type="integer", required=true, sample="0")
      */
-    public function innotify($sign)
+    public function innotify($code)
     {
         $params = $this->request->post();
         // 写请求日志
@@ -119,7 +119,7 @@ class Pay extends Api
         Db::startTrans();
         try {
             $orderService = new OrderInService();
-            $res = $orderService->notify($sign, $params);
+            $res = $orderService->notify($code, $params);
         }catch (\Exception $e) {
             Db::rollback();
             Log::write('代收请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
@@ -203,7 +203,7 @@ class Pay extends Api
      * @ApiRoute    (api/v1/pay/outnotify/{sign})
      * @ApiReturnParams   (name="code", type="integer", required=true, sample="0")
      */
-    public function outnotify($sign)
+    public function outnotify($code)
     {
         $params = $this->request->post();
         // 写请求日志
@@ -212,7 +212,7 @@ class Pay extends Api
         Db::startTrans();
         try {
             $orderService = new OrderOutService();
-            $res = $orderService->notify($sign, $params);
+            $res = $orderService->notify($code, $params);
         }catch (\Exception $e) {
             Db::rollback();
             Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');

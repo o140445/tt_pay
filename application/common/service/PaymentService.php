@@ -53,4 +53,10 @@ class PaymentService
     {
         return $this->channel->response();
     }
+
+    // 获取回调类型
+    public function getNotifyType($data)
+    {
+        return $this->channel->getNotifyType($data);
+    }
 }

@@ -2,6 +2,8 @@
 
 namespace app\common\service\channels;
 
+use app\common\service\HookService;
+
 class APayChannel implements ChannelInterface
 {
     /**
@@ -99,5 +101,17 @@ class APayChannel implements ChannelInterface
     public function response() : string
     {
         return 'success';
+    }
+
+    /**
+     * getNotifyType 获取通知类型
+     */
+    public function getNotifyType($params) : string
+    {
+        if (isset($params['txId'])) {
+            return HookService::NOTIFY_TYPE_IN;
+        }
+
+        return HookService::NOTIFY_TYPE_OUT_PAY;
     }
 }

@@ -27,6 +27,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'id', title: __('Id'), sortable: true},
                         {field: 'title', title: __('Title'), operate: 'LIKE', },
                         {field: 'code', title: __('Code')},
+                        {field: 'sign', title: __('唯一标识')},
                         {field: 'mch_id', title: __('MchId'), operate: false },
                         {field: 'config_area.name', title: __('地区'), operate: false },
                         {field: 'status', title: __('Status'), searchList: {0:'禁用',1:'正常'}, formatter: Table.api.formatter.toggle},
