@@ -2,6 +2,8 @@
 
 namespace fast;
 
+use think\Exception;
+
 /**
  * Http 请求类
  */
@@ -181,5 +183,45 @@ class Http
                 exit;
             }
         }
+    }
+
+    /**
+     * 发送一个POST请求
+     * @param string $url     请求URL
+     * @param array  $params  请求参数
+     * @param array  $header  请求头
+     * @return mixed|string
+     */
+    public static function postJson($url, $data = [], $header = [])
+    {
+        // json
+        $header = array_merge([
+            'Content-Type' => 'application/json',
+        ], $header);
+
+        try {
+            $client = new \GuzzleHttp\Client();
+
+            if ($header['Content-Type'] == 'application/json') {
+                $response = $client->request('POST', $url, [
+                    'headers' => $header,
+                    'json' => $data,
+                ]);
+
+            } else {
+                $response = $client->request('POST', $url, [
+                    'headers' => $header,
+                    'form_params' => $data,
+                ]);
+            }
+        }catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $responseBodyAsString = $response->getBody()->getContents();
+            return json_decode($responseBodyAsString, true);
+        }catch (\Exception $e) {
+            return ['code' => 0, 'msg' => $e->getMessage()];
+        }
+
+        return json_decode($response->getBody(), true);
     }
 }
