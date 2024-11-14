@@ -18,6 +18,10 @@ class SignService
                 continue;
             }
 
+            if (is_array($value)) {
+                continue;
+            }
+
             $sign .= $key . '=' . $value . '&';
         }
 

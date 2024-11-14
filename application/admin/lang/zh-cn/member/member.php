@@ -26,4 +26,5 @@ return [
     'DockingType1' => 'API',
     'DockingType2' => '网页',
     'AreaId' => '地区',
+    'IpWhiteList' => 'IP白名单',
 ];

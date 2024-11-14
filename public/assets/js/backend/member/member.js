@@ -35,6 +35,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'agency_id', title: __('AgencyId')},
                         {field: 'area.name', title: __('AreaId'), formatter: Table.api.formatter.label},
                         {field: 'docking_type', title: __('DockingType'), searchList: {"1":__('DockingType1'),"0":__('DockingType2')}, formatter: Table.api.formatter.label},
+                        {field: 'ip_white_list', title: __('IpWhiteList'), operate:false},
                         {field: 'last_login_time', title: __('LastLoginTime'), formatter: Table.api.formatter.datetime},
                         {field: 'create_time', title: __('CreateTime'), formatter: Table.api.formatter.datetime},
                         {field: 'update_time', title: __('UpdateTime'), formatter: Table.api.formatter.datetime},

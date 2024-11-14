@@ -70,6 +70,15 @@
             {:build_select('row[agency_id]', $agentLists, $row['agency_id'])}
         </div>
     </div>
+    <!--        ip白名单-->
+    <div class="form-group">
+        <label for="c-ip_white_list" class="control-label col-xs-12 col-sm-2">{:__('IpWhiteList')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-ip_white_list" class="form-control" name="row[ip_white_list]" type="text" value="{$row['ip_white_list']}">
+            <!--            // 提示-->
+            <span class="help-block">{:__('逗号分隔多个')}</span>
+        </div>
+    </div>
     <div class="form-group layer-footer">
         <label class="control-label col-xs-12 col-sm-2"></label>
         <div class="col-xs-12 col-sm-8">
