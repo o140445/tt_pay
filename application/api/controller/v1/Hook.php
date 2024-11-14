@@ -25,11 +25,9 @@ class Hook extends Api
     }
     public function index($code)
     {
-        if (!$this->request->isPost()) {
-            $this->error('请求方式错误');
-        }
 
-        $params = $this->request->post();
+
+        $params = $this->request->param();
 
         //写入日志
         Log::info('Hook: ' . $code . ' ' . json_encode($params));
