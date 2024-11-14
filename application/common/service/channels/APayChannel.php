@@ -65,7 +65,7 @@ class APayChannel implements ChannelInterface
             'channel_no' => $params['txId'], // 渠道订单号
             'amount' => $params['paidAmount'], // 金额
             'pay_date' => date('Y-m-d H:i:s', strtotime($params['paidAt'])), // 支付时间
-            'status' => 1, // 状态 2成功 3失败 4退款
+            'status' => 2, // 状态 2成功 3失败 4退款
             'eno' => $params['endToEndId'], // 业务订单号
             'data' => json_encode($params), // 数据
             'msg' => '支付成功', // 消息

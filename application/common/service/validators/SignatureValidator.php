@@ -11,14 +11,15 @@ class SignatureValidator implements ValidatorInterface
     protected $errorMessage;
 
     public function validate(array $data): bool {
-        if (!isset($data['sign'])) {
-            $this->errorMessage = "参数签名是必需的";
-            return false;
-        }
 
         // 会员后台不需要签名验证
         if (isset($data['is_member'])) {
             return true;
+        }
+
+        if (!isset($data['sign'])) {
+            $this->errorMessage = "参数签名是必需的";
+            return false;
         }
 
         $secret = Member::where('status', OrderInService::STATUS_OPEN)->find($data['merchant_id'])->api_key;
@@ -30,7 +31,7 @@ class SignatureValidator implements ValidatorInterface
             'amount' => $data['amount'],
             'product_id' => $data['product_id'],
             'notify_url' => $data['notify_url'],
-            'nonce' => $data['notice'],
+            'nonce' => $data['nonce'],
             'sign' => $data['sign'],
         ];
 

@@ -73,36 +73,7 @@ class OrderInService
             throw new \Exception('订单创建失败');
         }
 
-        $channel = Channel::where('status', OrderInService::STATUS_OPEN)->find($channel_id);
-
-        // 请求支付通道
-        $channelRes = $this->requestChannel($order, $channel);
-
-        // 支付失败
-        if ($channelRes['status'] == OrderInService::CHANNEL_RES_STATUS_FAILED) {
-            $order->status = OrderIn::STATUS_FAILED;
-            $order->error_msg = $channelRes['msg'];
-            $order->save();
-
-        }else{
-            $order->status = OrderIn::STATUS_UNPAID;
-            $order->channel_order_no = $channelRes['order_id'];
-            $order->e_no = $channelRes['e_no'];
-            $order->pay_url = $channelRes['pay_url'];
-            $order->save();
-        }
-
-        // 写入请求日志
-        $log = new OrderRequestService();
-        $log->create($order->order_no, OrderRequestLog::REQUEST_TYPE_REQUEST, OrderRequestLog::ORDER_TYPE_IN, $channelRes['request_data'], $channelRes['response_data']);
-
-        return [
-            'order_no' => $order->order_no,
-            'pay_url' => $channelRes['pay_url'],
-            'status' => $order->status,
-            'msg' => $channelRes['msg'],
-        ];
-
+        return $order;
     }
 
     /**
@@ -112,11 +83,37 @@ class OrderInService
      *
      * @return array
      */
-    public function requestChannel($order, $channel)
+    public function requestChannel($order)
     {
+        $channel = Channel::where('status', OrderInService::STATUS_OPEN)->find($order->channel_id);
         $paymentService = new PaymentService($channel->code);
         $res = $paymentService->pay($channel, $order);
-        return $res;
+
+        // 支付失败
+        if ($res['status'] == OrderInService::CHANNEL_RES_STATUS_FAILED) {
+            $order->status = OrderIn::STATUS_FAILED;
+            $order->error_msg = $res['msg'];
+            $order->save();
+
+            throw new \Exception($res['msg']);
+        }else{
+            $order->status = OrderIn::STATUS_UNPAID;
+            $order->channel_order_no = $res['order_id'];
+            $order->e_no = $res['e_no'];
+            $order->pay_url = $res['pay_url'];
+            $order->save();
+        }
+
+        // 写入请求日志
+        $log = new OrderRequestService();
+        $log->create($order->order_no, OrderRequestLog::REQUEST_TYPE_REQUEST, OrderRequestLog::ORDER_TYPE_IN, $res['request_data'], $res['response_data']);
+
+        return [
+            'order_no' => $order->order_no,
+            'pay_url' => $res['pay_url'],
+            'status' => $order->status,
+            'msg' => $res['msg'],
+        ];
     }
 
 

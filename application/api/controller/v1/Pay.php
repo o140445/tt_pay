@@ -81,21 +81,25 @@ class Pay extends Api
         Db::startTrans();
         try {
             $orderService = new OrderInService();
-            $res = $orderService->createOrder($params);
+            $order = $orderService->createOrder($params);
         }catch (\Exception $e) {
             Db::rollback();
-            Log::write('代收请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
             Cache::rm($lock);
+
+            Log::write('代收请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
             $this->error($e->getMessage());
         }
-        Db::commit();
 
+        Db::commit();
         Cache::rm($lock);
-        // 失败
-        if ($res['status'] == OrderIn::STATUS_FAILED) {
-            Log::write('代收请求失败：error' . $res['msg'] .', data:' . json_encode($params), 'error');
-            $this->error($res['msg']);
+
+        try {
+            $res = $orderService->requestChannel($order);
+        }catch (\Exception $e) {
+            Log::write('代收请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
+            $this->error($e->getMessage());
         }
+
 
         $this->success('返回成功', $res);
     }
@@ -136,7 +140,7 @@ class Pay extends Api
             Db::commit();
         }
 
-        echo $res['msg'];
+        echo $res['msg']; die();
     }
 
     /**
@@ -173,7 +177,7 @@ class Pay extends Api
         Db::startTrans();
         try {
             $orderService = new OrderOutService();
-            $res = $orderService->createOutOrder($params);
+            $order = $orderService->createOutOrder($params);
         }catch (\Exception $e) {
             Db::rollback();
             Cache::rm($lock);
@@ -183,10 +187,11 @@ class Pay extends Api
         Db::commit();
         Cache::rm($lock);
 
-        // 失败
-        if ($res['status'] == OrderOut::STATUS_FAILED) {
-            Log::write('代付请求失败：error' . $res['msg'] .', data:' . json_encode($params), 'error');
-            $this->error($res['msg']);
+        try {
+            $res = $orderService->requestChannel($order);
+        }catch (\Exception $e) {
+            Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
+            $this->error($e->getMessage());
         }
 
         $this->success('返回成功', $res);
@@ -228,6 +233,6 @@ class Pay extends Api
             Db::commit();
         }
 
-        echo $res['msg'];
+        echo $res['msg']; die();
     }
 }

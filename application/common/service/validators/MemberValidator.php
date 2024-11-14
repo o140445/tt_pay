@@ -23,8 +23,13 @@ class MemberValidator implements ValidatorInterface
         }
 
         //对接类型检查
-        if ($member->docking_type != Member::DOCKING_TYPE_API) {
+        if ($member->docking_type != Member::DOCKING_TYPE_API && !isset($data['is_member'])) {
             $this->errorMessage = "商户类型不支持API对接";
+            return false;
+        }
+
+        if ($member->docking_type == Member::DOCKING_TYPE_API && isset($data['is_member'])) {
+            $this->errorMessage = "商户类型不支持会员后台对接";
             return false;
         }
 

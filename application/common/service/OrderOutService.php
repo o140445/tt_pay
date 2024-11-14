@@ -74,37 +74,7 @@ class OrderOutService
         $feeService = new FreezeService();
         $feeService->freeze($order->member_id, $order->actual_amount, MemberWalletModel::CHANGE_TYPE_PAY_FREEZE, $order->order_no, '代付冻结');
 
-        // 请求通道
-        $channel_res = $this->requestChannel($order);
-        if ($channel_res['status'] == 1) {
-            $order->status = OrderOut::STATUS_UNPAID;
-            $order->channel_order_no = $channel_res['order_id'] ?? '';
-            $order->save();
-
-        } else {
-            $order->status = OrderOut::STATUS_FAILED;
-            $order->error_msg = $channel_res['msg'];
-            $order->save();
-
-            // 解冻
-            $feeService->unfreeze(MemberWalletModel::CHANGE_TYPE_PAY_UNFREEZE, '', $order->order_no, '代付解冻');
-        }
-
-
-        // 写入请求日志
-        $log = new OrderRequestService();
-        $log->create(
-            $order->order_no,
-            OrderRequestLog::REQUEST_TYPE_REQUEST,
-            OrderRequestLog::ORDER_TYPE_OUT,
-            $channel_res['request_data'],
-            $channel_res['response_data']);
-
-        return [
-            'order_no' => $order->order_no,
-            'status' => $order->status,
-            'msg' => $channel_res['msg'],
-        ];
+        return $order;
     }
 
     /**
@@ -120,7 +90,8 @@ class OrderOutService
         $params['merchant_order_no'] = get_order_no('SDO'.$member_id);
         $params['notify_url'] = '';
         $params['is_member'] = 1;
-        return $this->createOutOrder($params);
+        $order =  $this->createOutOrder($params);
+        return  $this->requestChannel($order);
     }
 
     /**
@@ -128,12 +99,44 @@ class OrderOutService
      * @param $order
      * @return array
      */
-    private function requestChannel($order)
+    public function requestChannel($order)
     {
-        $channel = Channel::find($order->channel_id);
+        $channel = Channel::where('status', OrderInService::STATUS_OPEN)->find($order->channel_id);
         $channelService = new PaymentService($channel->code);
         $res = $channelService->outPay($channel, $order);
-        return $res;
+
+        if ($res['status'] == OrderInService::CHANNEL_RES_STATUS_SUCCESS) {
+            $order->status = OrderOut::STATUS_UNPAID;
+            $order->channel_order_no = $res['order_id'] ?? '';
+            $order->save();
+
+        } else {
+            $order->status = OrderOut::STATUS_FAILED;
+            $order->error_msg = $res['msg'];
+            $order->save();
+
+            // 解冻
+            $feeService = new FreezeService();
+            $feeService->unfreeze(MemberWalletModel::CHANGE_TYPE_PAY_UNFREEZE, '', $order->order_no, '代付解冻');
+
+            throw new \Exception($res['msg']);
+        }
+
+
+        // 写入请求日志
+        $log = new OrderRequestService();
+        $log->create(
+            $order->order_no,
+            OrderRequestLog::REQUEST_TYPE_REQUEST,
+            OrderRequestLog::ORDER_TYPE_OUT,
+            $res['request_data'],
+            $res['response_data']);
+
+        return [
+            'order_no' => $order->order_no,
+            'status' => $order->status,
+            'msg' => $res['msg'],
+        ];
     }
 
     /**
