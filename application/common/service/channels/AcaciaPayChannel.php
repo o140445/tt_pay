@@ -101,7 +101,7 @@ class AcaciaPayChannel implements ChannelInterface
             'userId' => (int)$channel['mch_id'],
             'amount' => (float)$params['amount'],
             'pixKeyType' => $extra['pix_type'],
-            'pixKey' => $extra['pix_key'],
+            'pixKey' => $extra['pix_key'] == "PHONE" ? "TELEFONE" : $extra['pix_key'], // PHONE TELEFONE CPF CNPJ
         ];
         $headers = [
             'Content-Type' => 'application/json',

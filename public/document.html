@@ -284,6 +284,15 @@
 
                         <div class="tab-pane active" id="info0">
                             <div class="panel panel-default">
+                                <div class="panel-body">
+                                    正式环境地址：/api/v1/pay/in
+                                    <br>
+                                    沙盒环境地址：/api/v1/sandbox/in
+                                    <br>
+                                    沙盒模式自动回调下小于等于10元的订单会返回支付成功,大于10元的订单会返回支付失败
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
                                 <div class="panel-heading"><strong>Headers</strong></div>
                                 <div class="panel-body">
                                     <table class="table table-hover">
@@ -474,7 +483,15 @@
 
                     <!-- Tab panes -->
                     <div class="tab-content">
-
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                正式环境地址：/api/v1/pay/out
+                                <br>
+                                沙盒环境地址：/api/v1/sandbox/out
+                                <br>
+                                沙盒模式下自动回调小于等于10元的订单会返回支付成功,大于10元的订单会返回支付失败
+                            </div>
+                        </div>
                         <div class="tab-pane active" id="info3">
                             <div class="panel panel-default">
                                 <div class="panel-heading"><strong>Headers</strong></div>
