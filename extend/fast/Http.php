@@ -224,4 +224,32 @@ class Http
 
         return json_decode($response->getBody(), true);
     }
+
+    public static function  post_json($url, $data = null, $header = null)
+    {
+        $curl = curl_init();
+        $basic = array(
+            'Content-Type: application/json',
+        );
+        if ($header) {
+            $basic = array_merge($basic, $header);
+        }
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 3,
+            CURLOPT_TIMEOUT => 5,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($data, true),
+            CURLOPT_HTTPHEADER => $basic,
+        ));
+        $response = curl_exec($curl);
+        curl_close($curl);
+        return $response;
+    }
 }

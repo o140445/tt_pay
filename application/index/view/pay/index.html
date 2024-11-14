@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PIX Payment</title>
     <link rel="stylesheet" href="__CDN__/assets/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+    <link rel="icon" href="__CDN__/assets/img/favicon.ico" type="image/x-icon">
     <style>
         body {
             background-color: #f0f2f5;
@@ -28,6 +30,13 @@
         .container h1 {
             margin-bottom: 20px;
         }
+        .pix-code {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -44,20 +53,31 @@
     <div>
         <img src="{$data.qrcode}" alt="QR Code" class="qrcode">
     </div>
-    <div class="pix-code">
-        <input type="text" id="pixCode" value="{$data.pix_code}" readonly  style="display: none" >
-        <button onclick="copyPixCode()" class="btn btn-primary">
-            Copiar Código PIX
+
+    <div class="pix-code" onclick="copyPixCode()" >
+        <button type="button" class="btn btn-primary" data-clipboard-text="{$data.pix_code}">
+            <span>PIX CÓPIA É COLA</span>
+
+<!--            -->
         </button>
+        <div class="pix_log" >
+            <img src="__CDN__/assets/img/pix.png" alt="" style="width: 60%; height: 60%">
+        </div>
     </div>
 </div>
 <script>
     function copyPixCode() {
-        var pixCode = document.getElementById('pixCode');
-        pixCode.select();
-        pixCode.setSelectionRange(0, 99999); // For mobile devices
-        document.execCommand('copy');
-        alert('Código PIX copiado para a área de transferência');
+
+        // 初始化 Clipboard.js
+        var clipboard = new ClipboardJS('.btn');
+
+        // 复制成功时的提示
+        clipboard.on('success', function (e) {
+            alert('ID de transação copiado');
+        });
+        // 复制失败时的提示
+        clipboard.on('error', function (e) {
+        });
     }
 </script>
 </body>

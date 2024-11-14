@@ -2,9 +2,13 @@
 
 namespace app\common\service\channels;
 
+use app\common\model\merchant\OrderIn;
+use app\common\model\merchant\OrderOut;
 use app\common\service\HookService;
 use fast\Http;
+use think\Cache;
 use think\Config;
+use think\Log;
 
 class AcaciaPayChannel implements ChannelInterface
 {
@@ -15,10 +19,15 @@ class AcaciaPayChannel implements ChannelInterface
     {
         return [
             [
-                'name'=>'用户ID',
-                'key'=>'userId',
+                'name'=>'secureCode',
+                'key'=>'secureCode',
                 'value'=>'',
             ],
+            [
+                'name'=>'银行名称',
+                'key'=>'bankName',
+                'value'=>'',
+            ]
         ];
     }
 
@@ -27,40 +36,33 @@ class AcaciaPayChannel implements ChannelInterface
      */
     public function pay($channel, $params) : array
     {
-        $userId = $this->getExtraConfig($channel, 'userId');
+//        $userId = $this->getExtraConfig($channel, 'userId');
         $data = [
-            'userId' => (int)$userId,
+            'userId' => $params['order_no'],
             'amount' => (float)$params['amount'],
         ];
 
         $headers = [
             'Content-Type' => 'application/json',
-            'PartnerId' => $channel['mch_id'],
-            'AuthKey' => $channel['mch_key'],
+            'partnerId' => $channel['mch_id'],
+            'authKey' => $channel['mch_key'],
         ];
-var_dump($data, $headers);die();
-        $response =Http::postJson($channel['gateway'], $data, $headers);
-        //{
-        //    "tx_id": "SHCP4C3C9KOF",
-        //    "copia_e_cola": "base64_of_qrcode",
-        //    "qrcode": "base64_string_qrcode",
-        //    "valor_cobrado": 5,
-        //    "method_code": "pix",
-        //    "user_id": 10,
-        //    "status": "payment.pending"
-        //}
 
-        if ($response['status'] != 'payment.pending') {
+
+        $response = Http::postJson($channel['gateway'].'/api/pix', $data, $headers);
+        Log::write('AcaciaPayChannel pay response:'.json_encode($response) . ' data:'.json_encode($data) . ' headers:'.json_encode($headers), 'info');
+
+        if (isset($response['error'])) {
             return [
                 'status' => 0,
-                'msg' => '下单失败',
+                'msg' => $response['error'],
             ];
         }
 
         $pay_url = Config::get('pay_url') . '/index/pay/index?order_id=' . $params['order_no'];
 
         // 缓存订单信息$response
-        cache('order_in_info_' . $params['order_no'], $response, ['expire' => 600]);
+        Cache::set('order_info_'.$params['order_no'], json_encode($response), 600);
 
         return [
             'status' => 1, // 状态 1成功 0失败
@@ -92,14 +94,38 @@ var_dump($data, $headers);die();
      */
     public function outPay($channel, $params) : array
     {
-        $status = rand(0, 1);
+
+        $extra = json_decode($params['extra'], true);
+
+        $data = [
+            'userId' => (int)$channel['mch_id'],
+            'amount' => (float)$params['amount'],
+            'pixKeyType' => $extra['pix_type'],
+            'pixKey' => $extra['pix_key'],
+        ];
+        $headers = [
+            'Content-Type' => 'application/json',
+            'PartnerId' => $channel['mch_id'],
+            'AuthKey' => $channel['mch_key'],
+        ];
+
+        $url = $channel['gateway'].'/api/withdraw';
+        $res = Http::post_json($url, $data, $headers);
+
+        if (isset($res['error'])) {
+            return [
+                'status' => 0,
+                'msg' => $res['error'],
+            ];
+        }
+
         return [
-            'status' => $status, // 状态 1成功 0失败
-            'order_id' => get_order_no('AP'), // 订单号
-            'msg' => $status ? '下单成功' : '下单失败', // 消息
+            'status' => 1, // 状态 1成功 0失败
+            'order_id' => $res['tx_id'], // 订单号
+            'msg' =>  '下单成功', // 消息
             'e_no' => '', // 业务订单号息
             'request_data' => json_encode($params), // 请求数据
-            'response_data' => json_encode($params), // 响应数据
+            'response_data' => json_encode($res), // 响应数据
         ];
     }
 
@@ -108,19 +134,32 @@ var_dump($data, $headers);die();
      */
     public function payNotify($channel, $params) : array
     {
-        // todo 签名验证
+        $secureCode = $this->getExtraConfig($channel, 'secureCode');
+        if ($params['secureCode'] != $secureCode) {
+            throw new \Exception('secureCode 验证失败');
+        }
 
-        // todo 状态判断
+       $status = OrderIn::STATUS_UNPAID;
+        if ($params['status'] == 'payment.paid') {
+            $status = OrderIn::STATUS_PAID;
+        }
+        if ($params['status'] == 'payment.failed') {
+            $status = OrderIn::STATUS_FAILED;
+        }
+
+        if ($status == OrderIn::STATUS_UNPAID) {
+            throw new \Exception('支付状态错误');
+        }
 
         return [
-            'order_no' => $params['order_no'], // 订单号
-            'channel_no' => $params['txId'], // 渠道订单号
-            'amount' => $params['paidAmount'], // 金额
-            'pay_date' => date('Y-m-d H:i:s', strtotime($params['paidAt'])), // 支付时间
-            'status' => 2, // 状态 2成功 3失败 4退款
-            'eno' => $params['endToEndId'], // 业务订单号
+            'order_no' => $params['user_id'], // 订单号
+            'channel_no' => $params['tx_id'], // 渠道订单号
+            'amount' => $params['amount'], // 金额
+            'pay_date' => '', // 支付时间
+            'status' => $status, // 状态 2成功 3失败 4退款
+            'eno' => '', // 业务订单号
             'data' => json_encode($params), // 数据
-            'msg' => '支付成功', // 消息
+            'msg' => $status == OrderOut::STATUS_PAID ? '支付成功' : '支付失败', // 消息
         ];
     }
 
@@ -129,19 +168,32 @@ var_dump($data, $headers);die();
      */
     public function outPayNotify($channel, $params) : array
     {
-        // todo 签名验证
+        $secureCode = $this->getExtraConfig($channel, 'secureCode');
+        if ($params['secureCode'] != $secureCode) {
+            throw new \Exception('secureCode 验证失败');
+        }
 
-        // todo 状态判断
+        $status = OrderOut::STATUS_UNPAID;
+        if ($params['status'] == 'withdraw.paid') {
+            $status = OrderOut::STATUS_PAID;
+        }
+        if ($params['status'] == 'withdraw.failed' || $params['status'] == 'withdraw.cancelled') {
+            $status = OrderOut::STATUS_FAILED;
+        }
+
+        if ($status == OrderOut::STATUS_UNPAID) {
+            throw new \Exception('支付状态错误');
+        }
 
         return [
-            'order_no' => $params['order_no'], // 订单号
-            'channel_no' => $params['txId'], // 渠道订单号
-            'amount' => $params['paidAmount'], // 金额
-            'pay_date' => date('Y-m-d H:i:s', strtotime($params['paidAt'])), // 支付时间
-            'status' => 1, // 状态 2成功 3失败 4退款
-            'eno' => $params['endToEndId'], // 业务订单号
+            'order_no' => $params['user_id'], // 订单号
+            'channel_no' => $params['tx_id'], // 渠道订单号
+            'amount' => $params['amount'], // 金额
+            'pay_date' => '', // 支付时间
+            'status' => $status, // 状态 2成功 3失败 4退款
+            'eno' =>  '', // 业务订单号
             'data' => json_encode($params), // 数据
-            'msg' => '支付成功', // 消息
+            'msg' => $status == OrderOut::STATUS_PAID ? '支付成功' : '支付失败', // 消息
         ];
     }
 
@@ -158,6 +210,16 @@ var_dump($data, $headers);die();
      */
     public function getNotifyType($params) : string
     {
-        return "";
+        // 如果status 包含 payment 是代收， withdraw 是代付 其他是其他
+        if (isset($params['status'])) {
+            if (strpos($params['status'], 'payment') !== false) {
+                return HookService::NOTIFY_TYPE_IN;
+            }
+            if (strpos($params['status'], 'withdraw') !== false) {
+                return HookService::NOTIFY_TYPE_OUT_PAY;
+            }
+        }
+
+        return '';
     }
 }

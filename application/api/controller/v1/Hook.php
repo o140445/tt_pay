@@ -25,10 +25,9 @@ class Hook extends Api
     }
     public function index($code)
     {
-
-
         $params = $this->request->param();
-
+        $hared = $this->request->header();
+        $params['header'] = $hared;
         //写入日志
         Log::info('Hook: ' . $code . ' ' . json_encode($params));
         Db::startTrans();
