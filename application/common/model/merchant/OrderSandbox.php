@@ -12,6 +12,18 @@ class OrderSandbox extends Model
     // 表名
     protected $name = 'order_sandbox';
 
+    protected static function init()
+    {
+        self::beforeInsert(function ($row) {
+            $row->create_time = date('Y-m-d H:i:s');
+            $row->update_time = date('Y-m-d H:i:s');
+        });
+
+        self::beforeUpdate(function ($row) {
+            $row->update_time = date('Y-m-d H:i:s');
+        });
+    }
+
     // 自动写入时间戳字段
     protected $autoWriteTimestamp = false;
 

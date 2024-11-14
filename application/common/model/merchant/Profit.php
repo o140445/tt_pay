@@ -7,22 +7,23 @@ use think\Model;
 
 class Profit extends Model
 {
-
-    
-
-    
-
     // 表名
     protected $name = 'profit';
-    
-    // 自动写入时间戳字段
-    protected $autoWriteTimestamp = false;
 
-    // 定义时间戳字段名
-    protected $createTime = false;
-    protected $updateTime = false;
-    protected $deleteTime = false;
+    protected $createTime = 'create_time';
+    protected $updateTime = 'update_time';
 
+    protected static function init()
+    {
+        self::beforeInsert(function ($row) {
+            $row->create_time = date('Y-m-d H:i:s');
+            $row->update_time = date('Y-m-d H:i:s');
+        });
+
+        self::beforeUpdate(function ($row) {
+            $row->update_time = date('Y-m-d H:i:s');
+        });
+    }
     // 追加属性
     protected $append = [
 

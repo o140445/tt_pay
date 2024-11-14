@@ -8,6 +8,14 @@ class OrderRequestLog  extends Model
 {
     protected $name = 'order_request_log';
 
+    protected static function init()
+    {
+        self::beforeInsert(function ($row) {
+            $row->create_time = date('Y-m-d H:i:s');
+        });
+
+    }
+
     const ORDER_TYPE_IN = 1;
     const ORDER_TYPE_OUT = 2;
 
