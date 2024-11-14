@@ -14,7 +14,7 @@ class SignService
         ksort($params);
         foreach ($params as $key => $value) {
             // 过滤空值 和 sign attach 两个字段
-            if ($value == '' || $key == 'sign' || $key == 'channel_id' || $key == 'type') {
+            if ($value == '' || $key == 'sign' || $key == 'channel_id' || $key == 'type' || $key == 'extra') {
                 continue;
             }
 
