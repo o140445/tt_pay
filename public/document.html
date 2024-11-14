@@ -930,46 +930,64 @@
                                     </thead>
                                     <tbody>
                                     <tr>
-                                        <td>amount</td>
+                                        <td>code</td>
+                                        <td>int</td>
+                                        <td>是</td>
+                                        <td>状态 1成功 其他失败</td>
+                                    </tr>
+                                    <tr>
+                                        <td>msg</td>
+                                        <td>sting</td>
+                                        <td>是</td>
+                                        <td>消息</td>
+                                    </tr>
+                                    <tr>
+                                        <td>data</td>
+                                        <td>object</td>
+                                        <td>是</td>
+                                        <td>返回对象</td>
+                                    </tr>
+                                    <tr>
+                                        <td>data.amount</td>
                                         <td>string</td>
                                         <td>是</td>
                                         <td>支付金额</td>
                                     </tr>
                                     <tr>
-                                        <td>merchant_id</td>
+                                        <td>data.merchant_id</td>
                                         <td>int</td>
                                         <td>是</td>
                                         <td>商户ID</td>
                                     </tr>
                                     <tr>
-                                        <td>merchant_order_no</td>
+                                        <td>data.merchant_order_no</td>
                                         <td>string</td>
                                         <td>是</td>
                                         <td>商户订单号</td>
                                     </tr>
                                     <tr>
-                                        <td>merchant_order_no</td>
+                                        <td>data.order_no</td>
                                         <td>string</td>
                                         <td>是</td>
-                                        <td>商户订单号</td>
+                                        <td>平台订单号</td>
                                     </tr>
                                     <tr>
-                                        <td>status</td>
+                                        <td>data.status</td>
                                         <td>int</td>
                                         <td>是</td>
                                         <td>支付状态 1支付中 2成功 3失败 4退款</td>
                                     </tr>
                                     <tr>
-                                        <td>msg</td>
+                                        <td>data.msg</td>
                                         <td>string</td>
                                         <td>是</td>
                                         <td>失败原因</td>
                                     </tr>
                                     <tr>
-                                        <td>pay_success_date</td>
+                                        <td>data.pay_success_date</td>
                                         <td>string</td>
                                         <td>是</td>
-                                        <td>失败原因</td>
+                                        <td>支付成功时间</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -982,12 +1000,17 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <pre id="sample_response5">{
-    "amount":"10",
-    "merchant_id":99999,
-    "merchant_order_no":"112353",
-    "status":2,
-    "msg":"OK",
-    "pay_success_date":"2024-11-13 16:40:57",
+    "code": 1,
+    "msg": "OK",
+    "data": {
+        "amount":"10",
+        "merchant_id":99999,
+        "merchant_order_no":"112353",
+        "order_no":"112353",
+        "status":2,
+        "msg":"OK",
+        "pay_success_date":"2024-11-13 16:40:57",
+   }
 }</pre>
                                     </div>
                                 </div>
@@ -1003,7 +1026,7 @@
             <div class="panel-heading" id="heading-6">
                 <h4 class="panel-title">
                     <span class="label label-primary">POST</span>
-                    <a data-toggle="collapse" data-parent="#accordion0" href="#collapseOne5"> 余额查询<span
+                    <a data-toggle="collapse" data-parent="#accordion0" href="#collapseOne6"> 余额查询<span
                             class="text-muted">/api/v1/query/balance</span></a>
                 </h4>
             </div>
@@ -1015,13 +1038,6 @@
                     <div class="tab-content">
 
                         <div class="tab-pane active" id="info6">
-                            <div class="panel panel-default">
-                                <div class="panel-body">
-                                    代收查询地址：/api/v1/query/in
-                                    <br>
-                                    代付查询地址：/api/v1/query/out
-                                </div>
-                            </div>
                             <div class="panel panel-default">
                                 <div class="panel-heading"><strong>Headers</strong></div>
                                 <div class="panel-body">
@@ -1107,14 +1123,32 @@
                                     </thead>
                                     <tbody>
                                     <tr>
-                                        <td>balance</td>
+                                        <td>code</td>
+                                        <td>int</td>
+                                        <td>是</td>
+                                        <td>状态 1成功 其他失败</td>
+                                    </tr>
+                                    <tr>
+                                        <td>msg</td>
+                                        <td>sting</td>
+                                        <td>是</td>
+                                        <td>消息</td>
+                                    </tr>
+                                    <tr>
+                                        <td>data</td>
+                                        <td>object</td>
+                                        <td>是</td>
+                                        <td>返回对象</td>
+                                    </tr>
+                                    <tr>
+                                        <td>data.balance</td>
                                         <td>string</td>
                                         <td>是</td>
                                         <td>可用金额</td>
                                     </tr>
                                     <tr>
-                                        <td>blocked_balance</td>
-                                        <td>int</td>
+                                        <td>data.blocked_balance</td>
+                                        <td>string</td>
                                         <td>是</td>
                                         <td>冻结金额</td>
                                     </tr>
@@ -1129,8 +1163,12 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <pre id="sample_response6">{
-    "balance":"10000",
-    "blocked_balance":"11",
+    "code": 1,
+    "msg": "OK",
+    "data": {
+        "balance":"10",
+        "blocked_balance":"0",
+    }
 }</pre>
                                     </div>
                                 </div>

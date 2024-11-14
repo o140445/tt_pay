@@ -201,7 +201,6 @@ class Api
         $result = [
             'code' => $code,
             'msg'  => $msg,
-            'time' => Request::instance()->server('REQUEST_TIME'),
             'data' => $data,
         ];
         // 如果未设置类型则使用默认类型判断

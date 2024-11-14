@@ -16,6 +16,11 @@ class SignatureValidator implements ValidatorInterface
             return false;
         }
 
+        // 会员后台不需要签名验证
+        if (isset($data['is_member'])) {
+            return true;
+        }
+
         $secret = Member::where('status', OrderInService::STATUS_OPEN)->find($data['merchant_id'])->api_key;
 
         $signService = new SignService();

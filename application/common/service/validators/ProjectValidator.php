@@ -2,8 +2,10 @@
 
 namespace app\common\service\validators;
 
+use app\common\model\merchant\OrderOut;
 use app\common\model\merchant\Project;
 use app\common\service\OrderInService;
+use app\common\service\OrderOutService;
 
 class ProjectValidator implements ValidatorInterface
 {
@@ -22,7 +24,7 @@ class ProjectValidator implements ValidatorInterface
         }
 
         // 代付扩展字段检查
-        if ($data['type'] == OrderInService::STATUS_OPEN) {
+        if ($data['type'] == OrderOutService::TYPE_OUT && !isset($data['is_member'])) {
             $extend = json_decode($product->extend, true); //[{"title":"类型","value":"type"},{"title":"账号","value":"pix"},{"title":"xx","value":"ww"}]
             $extra = $data['extra']; //{"type":"1","pix":"123456","xx":"ww"}
 
@@ -34,7 +36,6 @@ class ProjectValidator implements ValidatorInterface
                 }
             }
         }
-
 
         return true;
     }

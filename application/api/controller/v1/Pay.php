@@ -54,8 +54,18 @@ class Pay extends Api
      */
     public function in()
     {
+        if (!$this->request->isPost()) {
+            $this->error('请求方式错误');
+        }
+
         $params = $this->request->post();
-        if (empty($params['amount']) || empty($params['merchant_id']) || empty($params['product_id']) || empty($params['merchant_order_no']) || empty($params['sign']) || empty($params['notify_url']) || empty($params['nonce'])) {
+        if (empty($params['amount']) ||
+            empty($params['merchant_id']) ||
+            empty($params['product_id']) ||
+            empty($params['merchant_order_no']) ||
+            empty($params['sign']) ||
+            empty($params['notify_url']) ||
+            empty($params['nonce'])) {
             $this->error('参数错误');
         }
 
@@ -134,8 +144,20 @@ class Pay extends Api
      */
     public function out()
     {
+
+        if (!$this->request->isPost()) {
+            $this->error('请求方式错误');
+        }
+
         $params = $this->request->post();
-        if (empty($params['amount']) || empty($params['merchant_id']) || empty($params['product_id']) || empty($params['merchant_order_no']) || empty($params['sign']) || empty($params['notify_url']) || empty($params['nonce']) || empty($params['extra'])) {
+        if (empty($params['amount']) ||
+            empty($params['merchant_id']) ||
+            empty($params['product_id']) ||
+            empty($params['merchant_order_no']) ||
+            empty($params['sign']) ||
+            empty($params['notify_url']) ||
+            empty($params['nonce']) ||
+            empty($params['extra'])) {
             $this->error('参数错误');
         }
 

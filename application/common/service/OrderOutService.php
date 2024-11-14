@@ -119,6 +119,7 @@ class OrderOutService
         $params['merchant_id'] = $member_id;
         $params['merchant_order_no'] = get_order_no('SDO'.$member_id);
         $params['notify_url'] = '';
+        $params['is_member'] = 1;
         return $this->createOutOrder($params);
     }
 
@@ -471,6 +472,41 @@ class OrderOutService
 
         return $order->save();
 
+    }
+
+    /**
+     * 查询订单
+     * @param $params
+     * @return array
+     * @throws \Exception
+     */
+    public function queryOrder($params)
+    {
+        // 获取用户
+        $member = Member::where('status', OrderInService::STATUS_OPEN)->find($params['merchant_id']);
+        if (!$member){
+            throw new \Exception('用户不存在');
+        }
+        // 签名验证
+        $signService = new SignService();
+        if (!$signService->checkSign($params, $member->api_key)){
+            throw new \Exception('签名错误');
+        }
+
+        $order = OrderOut::where('member_id', $params['merchant_id'])->where('member_order_no', $params['merchant_order_no'])->find();
+        if (!$order){
+            throw new \Exception('订单不存在');
+        }
+
+        return [
+            'order_no' => $order->order_no,
+            'merchant_order_no' => $order->member_order_no,
+            'merchant_id' => $order->member_id,
+            'status' => $order->status,
+            'amount' => $order->amount,
+            'pay_date' => $order->pay_success_date ?? '',
+            'msg' => $order->error_msg ?? 'OK',
+        ];
     }
 
 }

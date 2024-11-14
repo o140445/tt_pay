@@ -2,6 +2,7 @@
 
 namespace app\common\service;
 
+use app\common\model\merchant\Member;
 use app\common\model\merchant\MemberWalletLogModel;
 use app\common\model\merchant\MemberWalletModel;
 use think\Db;
@@ -237,5 +238,30 @@ class MemberWalletService
         return true;
     }
 
+    public function queryBalance($params)
+    {
+        // 查询用户是否存在
+        $member = Member::where('status', 1)->where('id', $params['merchant_id'])->find();
+        if (!$member) {
+            throw new \Exception('用户不存在');
+        }
+
+        // 签名验证
+        $signService = new SignService();
+        if (!$signService->checkSign($params, $member->api_key)) {
+            throw new \Exception('签名错误');
+        }
+
+        $wallet = $this->getWalletInfo($params['merchant_id']);
+        if (!$wallet) {
+            throw new \Exception('用户钱包不存在');
+        }
+
+        return [
+            'balance' => $wallet->balance,
+            'blocked_balance' => $wallet->blocked_balance,
+        ];
+
+    }
 
 }

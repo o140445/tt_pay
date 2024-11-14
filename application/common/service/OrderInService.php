@@ -387,4 +387,37 @@ class OrderInService
         return $order->save();
 
     }
+
+    /**
+     * 查询订单
+     */
+    public function queryOrder($params)
+    {
+
+        $merchant = Member::find((int) $params['merchant_id']);
+        if (!$merchant){
+            throw new \Exception('商户不存在');
+        }
+
+        // 签名验证
+        $signService = new SignService();
+        if (!$signService->checkSign($params, $merchant->api_key)){
+            throw new \Exception('签名错误');
+        }
+
+        $order = OrderIn::where('member_id', $params['merchant_id'])->where('member_order_no', $params['merchant_order_no'])->find();
+        if (!$order){
+            throw new \Exception('订单不存在');
+        }
+
+        return [
+            'order_no' => $order->order_no,
+            'merchant_order_no' => $order->member_order_no,
+            'merchant_id' => $order->member_id,
+            'amount' => $order->status == OrderIn::STATUS_PAID ? $order->true_amount : $order->amount,
+            'status' => $order->status,
+            'pay_success_date' => $order->pay_success_date,
+            'msg' => $order->error_msg,
+        ];
+    }
 }
