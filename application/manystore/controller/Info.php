@@ -43,8 +43,7 @@ class Info extends ManystoreBase
                 $update['password'] = $params['password'];
                 $update['salt'] = $params['salt'];
             }
-            $update['usdt_address'] = $params['usdt_address'];
-            $update['ip_white_list'] = $params['ip_white_list'];
+            $update['usdt_address'] = $params['usdt_address'] ?? '';
 
             if ($this->model->where('id', STORE_ID)->update($update) !== false) {
                 $this->success();
