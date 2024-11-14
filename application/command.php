@@ -20,4 +20,5 @@ return [
     'app\command\MemberStat',
     'app\command\ChannelStat',
     'app\command\ProfitsStat',
+    'app\command\SandboxOrder',
 ];

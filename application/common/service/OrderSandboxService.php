@@ -98,7 +98,7 @@ class OrderSandboxService
         $data = [
             'order_no' => $order->order_no,
             'merchant_order_no' => $order->member_order_no,
-            'amount' => $order->true_amount,
+            'amount' => $order->amount,
             'status' => $order->status,
             'pay_success_date' => $order->create_time ?? '',
             'msg' => $order->error_msg ?? 'OK',

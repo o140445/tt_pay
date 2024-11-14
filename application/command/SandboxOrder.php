@@ -25,7 +25,7 @@ class SandboxOrder extends Command
             // 如果是未完成的订单，修改状态
             if ($item->status == 1) {
                 // 金额小于10的订单，直接成功，否则失败
-                if ($item->amount < 10) {
+                if ($item->amount <= 10) {
                     $item->status = 2;
                     $item->save();
                 } else {
@@ -33,7 +33,6 @@ class SandboxOrder extends Command
                     $item->save();
                 }
             }
-
             $orderService->notify($item->order_no);
             $output->writeln('订单号：' . $item->order_no . ' 通知成功');
         }
