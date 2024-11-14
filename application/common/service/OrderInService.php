@@ -209,9 +209,8 @@ class OrderInService
     public function failOrder($order, $data)
     {
         $order->status = OrderIn::STATUS_FAILED;
-        $order->error_msg = $data['msg'] ?? '';
-        $order->e_no = $data['e_no'] ?? $order->e_no;
-        $order->channel_order_no = $data['channel_no'] ?? $order->channel_order_no;
+        $order->error_msg = isset($data['msg']) &&  !empty($data['msg']) ? $data['msg'] : '支付失败';
+
         $order->save();
     }
 
@@ -223,10 +222,10 @@ class OrderInService
     public function completeOrder($order, $data)
     {
         $order->status = OrderIn::STATUS_PAID;
-        $order->pay_success_date = $data['pay_date'] ?? date('Y-m-d H:i:s');
-        $order->true_amount = $data['true_amount'] ?? $order->amount;
-        $order->e_no = $data['e_no'] ?? $order->e_no;
-        $order->channel_order_no =  $data['channel_no'] ?? $order->channel_order_no;
+        $order->pay_success_date = isset($data['pay_date']) &&  !empty($data['pay_date']) ? $data['pay_date'] : date('Y-m-d H:i:s');
+        $order->true_amount = isset($data['amount']) &&  !empty($data['amount']) ? $data['amount'] : $order->amount;
+        $order->e_no = isset($data['e_no']) &&  !empty($data['e_no']) ? $data['e_no'] : $order->e_no;
+        $order->channel_order_no =  isset($data['channel_no']) &&  !empty($data['channel_no']) ? $data['channel_no'] : $order->channel_order_no;
 
         // 计算手续费
         $fee = $this->calculateFee($order);

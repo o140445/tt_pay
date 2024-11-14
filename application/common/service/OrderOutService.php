@@ -159,14 +159,14 @@ class OrderOutService
             ];
         }
 
-        if (!$data['order_no'] && !$data['channel_no']) {
+        if (!$res['order_no'] && !$res['channel_no']) {
             throw new \Exception('参数错误, 订单号或渠道订单号不存在');
         }
 
-        if ($data['order_no']) {
-            $order = OrderOut::where('order_no', $data['order_no'])->find();
+        if ($res['order_no']) {
+            $order = OrderOut::where('order_no', $res['order_no'])->find();
         } else {
-            $order = OrderOut::where('channel_order_no', $data['channel_no'])->find();
+            $order = OrderOut::where('channel_order_no', $res['channel_no'])->find();
         }
 
         // 订单不存在
@@ -191,27 +191,27 @@ class OrderOutService
             $order->order_no,
             OrderRequestLog::REQUEST_TYPE_RESPONSE,
             OrderRequestLog::ORDER_TYPE_OUT,
-            json_encode($data),
+            json_encode($res),
             '');
 
         // 完成订单
-        if ($data['status'] == OrderOut::STATUS_PAID && $order->status == OrderOut::STATUS_UNPAID) {
-            $this->completeOrder($order, $data);
+        if ($res['status'] == OrderOut::STATUS_PAID && $order->status == OrderOut::STATUS_UNPAID) {
+            $this->completeOrder($order, $res);
         }
 
         // 失败订单
-        if ($data['status'] == OrderOut::STATUS_FAILED && $order->status == OrderOut::STATUS_UNPAID) {
-            $this->failOrder($order, $data);
+        if ($res['status'] == OrderOut::STATUS_FAILED && $order->status == OrderOut::STATUS_UNPAID) {
+            $this->failOrder($order, $res);
         }
 
         // 退款订单
-        if ($data['status'] == OrderOut::STATUS_REFUND && $order->status == OrderOut::STATUS_PAID) {
-            $this->refundOrder($order, $data);
+        if ($res['status'] == OrderOut::STATUS_REFUND && $order->status == OrderOut::STATUS_PAID) {
+            $this->refundOrder($order, $res);
         }
 
         // 直接退款
-        if ($data['status'] == OrderOut::STATUS_REFUND && $order->status == OrderOut::STATUS_UNPAID) {
-            $this->failOrder($order, $data);
+        if ($res['status'] == OrderOut::STATUS_REFUND && $order->status == OrderOut::STATUS_UNPAID) {
+            $this->failOrder($order, $res);
         }
 
         return [
@@ -228,9 +228,9 @@ class OrderOutService
     public function completeOrder($order, $data)
     {
         $order->status = OrderOut::STATUS_PAID;
-        $order->pay_success_date = $data['pay_success_date'] ?? date('Y-m-d H:i:s');
-        $order->channel_order_no =  $data['channel_no'] ?? $order->channel_order_no;
-        $order->e_no = $data['e_no'] ?? '';
+        $order->pay_success_date = isset($data['pay_date']) && $data['pay_date'] ? $data['pay_date'] : date('Y-m-d H:i:s');
+        $order->channel_order_no =  isset($data['channel_no']) && $data['channel_no'] ? $data['channel_no'] : $order->channel_order_no;
+        $order->e_no = isset($data['e_no']) && $data['e_no'] ? $data['e_no'] : '';
 
         $order->save();
         // 解冻
@@ -257,8 +257,7 @@ class OrderOutService
     public function failOrder($order, $data)
     {
         $order->status = OrderOut::STATUS_FAILED;
-        $order->error_msg = $data['error_msg'] ?? '';
-        $order->channel_order_no =  $data['channel_no'] ?? $order->channel_order_no;
+        $order->error_msg = isset($data['msg']) && $data['msg'] ? $data['msg'] : '支付失败';
         $order->save();
 
         // 解冻

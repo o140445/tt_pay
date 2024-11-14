@@ -30,8 +30,8 @@ class MemberProjectChannel extends Model
     const TYPE_OUT = 2; // 代收
 
     const TYPE_TEXT = [
-        self::TYPE_IN => '代付',
-        self::TYPE_OUT => '代收'
+        self::TYPE_IN => '代收',
+        self::TYPE_OUT => '代付'
     ];
 
     // status 1启用 0禁用

@@ -105,13 +105,14 @@ class AcaciaPayChannel implements ChannelInterface
         ];
         $headers = [
             'Content-Type' => 'application/json',
-            'PartnerId' => $channel['mch_id'],
-            'AuthKey' => $channel['mch_key'],
+            'partnerId' => $channel['mch_id'],
+            'authKey' => $channel['mch_key'],
         ];
 
         $url = $channel['gateway'].'/api/withdraw';
-        $res = Http::post_json($url, $data, $headers);
+        $res = Http::postJson($url, $data, $headers);
 
+        Log::write('AcaciaPayChannel outPay response:'.json_encode($res) . ' data:'.json_encode($data) . ' headers:'.json_encode($headers), 'info');
         if (isset($res['error'])) {
             return [
                 'status' => 0,
@@ -135,7 +136,7 @@ class AcaciaPayChannel implements ChannelInterface
     public function payNotify($channel, $params) : array
     {
         $secureCode = $this->getExtraConfig($channel, 'secureCode');
-        if ($params['secureCode'] != $secureCode) {
+        if ($params['header']['securecode'] != $secureCode) {
             throw new \Exception('secureCode 验证失败');
         }
 
@@ -143,7 +144,7 @@ class AcaciaPayChannel implements ChannelInterface
         if ($params['status'] == 'payment.paid') {
             $status = OrderIn::STATUS_PAID;
         }
-        if ($params['status'] == 'payment.failed') {
+        if ($params['status'] == 'payment.canceled') {
             $status = OrderIn::STATUS_FAILED;
         }
 
@@ -152,12 +153,12 @@ class AcaciaPayChannel implements ChannelInterface
         }
 
         return [
-            'order_no' => $params['user_id'], // 订单号
-            'channel_no' => $params['tx_id'], // 渠道订单号
-            'amount' => $params['amount'], // 金额
+            'order_no' => $params['data']['user_id'], // 订单号
+            'channel_no' => $params['data']['tx_id'], // 渠道订单号
+            'amount' => $params['data']['amount'], // 金额
             'pay_date' => '', // 支付时间
             'status' => $status, // 状态 2成功 3失败 4退款
-            'eno' => '', // 业务订单号
+            'e_no' => '', // 业务订单号
             'data' => json_encode($params), // 数据
             'msg' => $status == OrderOut::STATUS_PAID ? '支付成功' : '支付失败', // 消息
         ];
@@ -169,7 +170,7 @@ class AcaciaPayChannel implements ChannelInterface
     public function outPayNotify($channel, $params) : array
     {
         $secureCode = $this->getExtraConfig($channel, 'secureCode');
-        if ($params['secureCode'] != $secureCode) {
+        if ($params['header']['securecode'] != $secureCode) {
             throw new \Exception('secureCode 验证失败');
         }
 
@@ -186,12 +187,11 @@ class AcaciaPayChannel implements ChannelInterface
         }
 
         return [
-            'order_no' => $params['user_id'], // 订单号
-            'channel_no' => $params['tx_id'], // 渠道订单号
-            'amount' => $params['amount'], // 金额
+            'order_no' => $params['data']['user_id'], // 订单号
+            'channel_no' => $params['data']['tx_id'], // 渠道订单号
             'pay_date' => '', // 支付时间
             'status' => $status, // 状态 2成功 3失败 4退款
-            'eno' =>  '', // 业务订单号
+            'e_no' =>  '', // 业务订单号
             'data' => json_encode($params), // 数据
             'msg' => $status == OrderOut::STATUS_PAID ? '支付成功' : '支付失败', // 消息
         ];
