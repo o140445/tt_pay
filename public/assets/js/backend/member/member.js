@@ -31,7 +31,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'wallet.blocked_balance', title: __('BlockedBalance'), operate:false},
                         {field: 'status', title: __('Status'), searchList: {0:'禁用',1:'正常'}, formatter: Table.api.formatter.toggle},
                         {field: 'is_agency', title: __('IsAgency'), searchList: {1:'代理',0:'商户'}, formatter: Table.api.formatter.label},
-                        {field: 'is_sandbox', title: __('IsSandbox'), searchList: {"1":__('TypeReal'),"0":__('TypeSandbox')}, formatter: Table.api.formatter.label},
+                        {field: 'is_sandbox', title: __('IsSandbox'), searchList: {"0":__('TypeReal'),"1":__('TypeSandbox')}, formatter: Table.api.formatter.label},
                         {field: 'agency_id', title: __('AgencyId')},
                         {field: 'area.name', title: __('AreaId'), formatter: Table.api.formatter.label},
                         {field: 'docking_type', title: __('DockingType'), searchList: {"1":__('DockingType1'),"0":__('DockingType2')}, formatter: Table.api.formatter.label},

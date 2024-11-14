@@ -16,7 +16,7 @@ class OrderValidator
     public function __construct() {
         $this->validators = [
             new MemberValidator(), // 会员验证器
-            new SignatureValidator(), // 签名验证器
+//            new SignatureValidator(), // 签名验证器
             new OrderDataValidator(), // 订单验证器
             new ProjectValidator(), // 项目验证器
             new ChannelValidator() // 渠道验证器

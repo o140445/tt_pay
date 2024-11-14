@@ -38,7 +38,7 @@ class AcaciaPayChannel implements ChannelInterface
             'PartnerId' => $channel['mch_id'],
             'AuthKey' => $channel['mch_key'],
         ];
-
+var_dump($data, $headers);die();
         $response =Http::postJson($channel['gateway'], $data, $headers);
         //{
         //    "tx_id": "SHCP4C3C9KOF",
@@ -78,7 +78,7 @@ class AcaciaPayChannel implements ChannelInterface
      */
     public function getExtraConfig($channel, $key) {
         $extraConfig = json_decode($channel['extra'], true);
-        foreach ($this->config() as $item) {
+        foreach ($extraConfig as $item) {
             if ($item['key'] == $key) {
                 return $item['value'];
             }

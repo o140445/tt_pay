@@ -20,6 +20,11 @@ class OrderDataValidator implements ValidatorInterface
             return false;
         }
 
+        // 沙盒模式跳过
+        if(isset($data['is_sandbox'])) {
+            return true;
+        }
+
         // 根据type判断订单类型检查单号是否重复
         if ($data['type'] == "IN") {
             $order = OrderIn::where('member_order_no', $data['merchant_order_no'])->find();

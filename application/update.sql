@@ -375,3 +375,25 @@ CREATE TABLE `fa_order_manual` (
     KEY `idx_channel_order_no` (`channel_order_no`),
     KEY `idx_order_no` (`order_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='手动订单';
+
+
+-- 沙盒订单
+create TABLE if not exists `fa_order_sandbox` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `order_no` varchar(50) NOT NULL COMMENT '订单单号',
+    `member_id` bigint NOT NULL DEFAULT '0' COMMENT '会员ID',
+    `member_order_no` varchar(50) NOT NULL COMMENT '会员订单号',
+    `amount` decimal(15,4) NOT NULL COMMENT '订单金额',
+    `project_id` bigint NOT NULL DEFAULT '0' COMMENT '项目ID',
+    `status` tinyint NOT NULL DEFAULT '0' COMMENT '订单状态 0未支付 1已支付 2支付失败 3退款',
+    `notify_url` varchar(255) NOT NULL COMMENT '通知地址',
+    `notify_status` tinyint NOT NULL DEFAULT '0' COMMENT '通知状态',
+    `notify_count` int NOT NULL DEFAULT '0' COMMENT '通知次数',
+    `msg` varchar(255) NOT NULL   DEFAULT '' COMMENT '消息',
+    `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_create_time` (`create_time`),
+    KEY `idx_member_id` (`member_id`),
+    KEY `idx_order_no` (`order_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='沙盒订单';

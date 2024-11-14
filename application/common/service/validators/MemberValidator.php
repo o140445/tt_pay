@@ -33,12 +33,6 @@ class MemberValidator implements ValidatorInterface
             return false;
         }
 
-        // 代理不支持创建
-        if ($member->is_agency) {
-            $this->errorMessage = "代理不支持创建";
-            return false;
-        }
-
         // ip白名单检查
         if ($member->ip_white_list) {
             $ip = request()->ip();
@@ -46,6 +40,28 @@ class MemberValidator implements ValidatorInterface
                 $this->errorMessage = "IP不在白名单中";
                 return false;
             }
+        }
+
+
+        // 代理不支持创建
+        if ($member->is_agency) {
+            $this->errorMessage = "代理不支持创建";
+            return false;
+        }
+
+
+        // 沙盒模式检查
+        if ( isset($data['is_sandbox'])) {
+            if (!$member->is_sandbox ) {
+                $this->errorMessage = "商户不支持沙盒模式";
+                return false;
+            }
+            return true;
+        }
+
+        if ($member->is_sandbox) {
+            $this->errorMessage = "商户不支持正式模式";
+            return false;
         }
 
         // 余额检查 out

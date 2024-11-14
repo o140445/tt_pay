@@ -11,6 +11,11 @@ class ChannelValidator implements ValidatorInterface
     protected $errorMessage;
 
     public function validate(array $data): bool {
+        // 沙盒模式跳过
+        if(isset($data['is_sandbox'])) {
+            return true;
+        }
+
         if (!isset($data['channel_id']) || empty($data['channel_id'])) {
             $this->errorMessage = "渠道不存在";
             return false;
