@@ -2,6 +2,8 @@
 
 namespace app\common\model\merchant;
 
+use PragmaRX\Google2FA\Google2FA;
+use PragmaRX\Google2FAQRCode\Google2FA as Google2FAQRCode;
 use think\Model;
 
 class Member extends Model
@@ -55,5 +57,22 @@ class Member extends Model
     public function area()
     {
         return $this->hasOne('ConfigArea', 'id', 'area_id');
+    }
+
+    // 生成谷歌验证器
+    public function generateGoogleToken()
+    {
+        $google = new Google2FA();
+        return $google->generateSecretKey(64);
+    }
+
+    // 生成谷歌验证器二维码
+    public function generateGoogleQrcode($name, $google_token)
+    {
+        $google = new Google2FAQRCode();
+        return $google->getQRCodeInline(
+            config('app_name'),
+            $name . '@' . config('app_name') . '.com',
+            $google_token);
     }
 }

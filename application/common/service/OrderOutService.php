@@ -456,6 +456,10 @@ class OrderOutService
             'msg' => $order->error_msg ?? 'OK',
         ];
 
+        $member = Member::where('id', $order->member_id)->find();
+        $signService = new SignService();
+        $data['sign'] = $signService->makeSign($data, $member->api_key);
+
         $rse = Http::post($order->notify_url, $data);
         $code = $rse == 'success' ? OrderNotifyLog::STATUS_NOTIFY_SUCCESS : OrderNotifyLog::STATUS_NOTIFY_FAIL;
 

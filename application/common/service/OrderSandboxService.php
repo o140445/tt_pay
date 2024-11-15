@@ -2,6 +2,7 @@
 
 namespace app\common\service;
 
+use app\common\model\merchant\Member;
 use app\common\model\merchant\MemberProjectChannel;
 use app\common\model\merchant\OrderIn;
 use app\common\model\merchant\OrderNotifyLog;
@@ -103,6 +104,10 @@ class OrderSandboxService
             'pay_success_date' => $order->create_time ?? '',
             'msg' => $order->error_msg ?? 'OK',
         ];
+
+        $member = Member::where('id', $order->member_id)->find();
+        $signService = new SignService();
+        $data['sign'] = $signService->makeSign($data, $member->api_key);
 
         $rse = Http::post($order->notify_url, $data);
         $code = $rse == 'success' ? OrderNotifyLog::STATUS_NOTIFY_SUCCESS : OrderNotifyLog::STATUS_NOTIFY_FAIL;

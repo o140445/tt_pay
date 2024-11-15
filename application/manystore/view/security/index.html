@@ -1,10 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<style>
+    .profile-avatar-container {
+        position: relative;
+        width: 100px;
+        margin: 0 auto;
+    }
+
+    .profile-avatar-container .profile-user-img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .profile-avatar-container .profile-avatar-text {
+        display: none;
+    }
+
+    .profile-avatar-container:hover .profile-avatar-text {
+        display: block;
+        position: absolute;
+        height: 100px;
+        width: 100px;
+        background: #444;
+        opacity: .6;
+        color: #fff;
+        top: 0;
+        left: 0;
+        line-height: 100px;
+        text-align: center;
+    }
+
+    .profile-avatar-container button {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100px;
+        height: 100px;
+        opacity: 0;
+    }
+</style>
+<div class="row animated fadeInRight">
+    <div class="col-md-12" style="display: flex;justify-content: flex-start;" >
+        <div class="col-md-5">
+
+            <form id="update-form" role="form" data-toggle="validator" method="POST"  action="{:url('security/bindgoogle')}">
+
+                <div class="box box-success">
+                    <div class="panel-body">
+                        <div class="box-body box-profile">
+                            <h3 class="profile-username text-center">{:__('Google 验证')}</h3>
+                            {if !$row['is_bind_google']}
+                            <div class="form-group" style="display: flex;justify-content: center;">
+                                {$google_qrcode}
+                            </div>
+                            {/if}
+
+                            <div class="form-group">
+                                <label for="google_code" class="control-label">{:__('验证码')}:</label>
+                                <input type="text" class="form-control" id="google_code"
+                                       placeholder="{:__('请输入验证码')}" name="row[google_code]" value=""/>
+                            </div>
+
+
+
+                        </div>
+                        <div class="form-group">
+                            {if $row['is_bind_google']}
+                            <button type="button" class="btn btn-danger" onclick="window.location.href='{:url('security/unbindgoogle')}'">{:__('解绑')}</button>
+                            {else}
+                            <button type="submit" class="btn btn-success">{:__('绑定')}</button>
+                            {/if}
+                            <button type="reset" class="btn btn-default">{:__('Reset')}</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
