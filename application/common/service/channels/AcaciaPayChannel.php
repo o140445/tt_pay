@@ -59,6 +59,13 @@ class AcaciaPayChannel implements ChannelInterface
             ];
         }
 
+        if (isset($response['msg'])) {
+            return [
+                'status' => 0,
+                'msg' => '下单失败',
+            ];
+        }
+
         $pay_url = Config::get('pay_url') . '/index/pay/index?order_id=' . $params['order_no'];
 
         // 缓存订单信息$response
@@ -122,6 +129,13 @@ class AcaciaPayChannel implements ChannelInterface
             return [
                 'status' => 0,
                 'msg' => $res['error'],
+            ];
+        }
+
+        if (isset($res['msg'])) {
+            return [
+                'status' => 0,
+                'msg' => '下单失败',
             ];
         }
 
