@@ -47,10 +47,10 @@ class Dashboard extends Backend
 
         $todayOutOrder = Db::query($todayOutOrder);
 
-        // 利润统计 今日利润，昨日利润，本月利润 ，总利润
+        // 利润统计 今日利润，7日利润，本月利润 ，总利润
         $profit = "SELECT 
             SUM(IF(create_time >= '{$today}', profit, 0)) as today_profit,
-            SUM(IF(create_time >= DATE_SUB(CURDATE(), INTERVAL 1 DAY), profit, 0)) as yesterday_profit,
+            SUM(IF(create_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY), profit, 0)) as week_profit,
             SUM(IF(create_time >= DATE_FORMAT(NOW(),'%Y-%m-01'), profit, 0)) as month_profit,
             SUM(profit) as total_profit
             FROM fa_profit";
@@ -86,7 +86,7 @@ class Dashboard extends Backend
 
         if ($profit) {
             $profit[0]['today_profit'] = $profit[0]['today_profit'] ? number_format($profit[0]['today_profit'], 2) : 0;
-            $profit[0]['yesterday_profit'] = $profit[0]['yesterday_profit'] ? number_format($profit[0]['yesterday_profit'], 2) : 0;
+            $profit[0]['week_profit'] = $profit[0]['week_profit'] ? number_format($profit[0]['week_profit'], 2) : 0;
             $profit[0]['month_profit'] = $profit[0]['month_profit'] ? number_format($profit[0]['month_profit'], 2) : 0;
             $profit[0]['total_profit'] = $profit[0]['total_profit'] ? number_format($profit[0]['total_profit'], 2) : 0;
         }
