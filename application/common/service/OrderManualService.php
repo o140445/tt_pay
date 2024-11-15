@@ -17,7 +17,7 @@ class OrderManualService
         $order->area_id = $channel->area_id;
         $order->order_no = $this->generateOrderNo();
         $order->status = 1;
-        $order->data = json_encode($params['extra']);
+        $order->extra = json_encode($params['extra']);
         $order->save();
 
         //请求支付

@@ -17,6 +17,10 @@ class Member extends Model
         self::beforeInsert(function ($row) {
             $row->create_time = date('Y-m-d H:i:s');
             $row->update_time = date('Y-m-d H:i:s');
+            $row->last_login_time = date('Y-m-d H:i:s');
+        });
+        self::beforeUpdate(function ($row) {
+            $row->update_time = date('Y-m-d H:i:s');
         });
     }
 

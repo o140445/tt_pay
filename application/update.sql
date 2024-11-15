@@ -364,7 +364,7 @@ CREATE TABLE `fa_order_manual` (
     `channel_id` bigint NOT NULL DEFAULT '0' COMMENT '通道ID',
     `area_id` bigint NOT NULL DEFAULT '0' COMMENT '区域ID',
     `status` tinyint NOT NULL DEFAULT '0' COMMENT '订单状态 0未支付 1已支付 2支付失败 3退款',
-    `data` text NOT NULL COMMENT '订单数据',
+    `extra` text NOT NULL COMMENT '订单数据',
     `e_no` varchar(50) NOT NULL  DEFAULT '' COMMENT 'E单号',
     `msg` varchar(255) NOT NULL   DEFAULT '' COMMENT '消息',
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -375,7 +375,6 @@ CREATE TABLE `fa_order_manual` (
     KEY `idx_channel_order_no` (`channel_order_no`),
     KEY `idx_order_no` (`order_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='手动订单';
-
 
 -- 沙盒订单
 create TABLE if not exists `fa_order_sandbox` (

@@ -94,15 +94,20 @@ class AcaciaPayChannel implements ChannelInterface
      */
     public function outPay($channel, $params) : array
     {
-
         $extra = json_decode($params['extra'], true);
+
+        // 如果是电话号码 并且是电话号码没有+55
+        if ($extra['pix_type'] == 'PHONE' && strpos($extra['pix_key'], '+55') === false) {
+            $extra['pix_key'] = '+55'.$extra['pix_key'];
+        }
 
         $data = [
             'userId' => (int)$channel['mch_id'],
             'amount' => (float)$params['amount'],
-            'pixKeyType' => $extra['pix_type'],
-            'pixKey' => $extra['pix_key'] == "PHONE" ? "TELEFONE" : $extra['pix_key'], // PHONE TELEFONE CPF CNPJ
+            'pixKeyType' => $extra['pix_type'] == "PHONE" ? "TELEFONE" : $extra['pix_key'], // PHONE TELEFONE CPF CNPJ
+            'pixKey' => $extra['pix_key']
         ];
+
         $headers = [
             'Content-Type' => 'application/json',
             'partnerId' => $channel['mch_id'],
