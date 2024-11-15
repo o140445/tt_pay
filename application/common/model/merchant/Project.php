@@ -20,6 +20,10 @@ class Project extends Model
             $row->create_time = date('Y-m-d H:i:s');
             $row->update_time = date('Y-m-d H:i:s');
         });
+
+        self::beforeUpdate(function ($row) {
+            $row->update_time = date('Y-m-d H:i:s');
+        });
     }
 
 
