@@ -309,8 +309,43 @@ class OrderInService
         $walletService->addBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD, $order->order_no, '代收提成');
 
 //        if ($agent->agency_id){
-//            $this->calculateCommission($order, $amount);
+//            $amount += $this->getSecondCommission($order, $amount, $agent->id);
 //        }
+
+        return $amount;
+    }
+
+    /**
+     * 获取二级代理提成
+     */
+    public function getSecondCommission($order, $amount, $agent_id)
+    {
+        $agent = Member::where('status', OrderInService::STATUS_OPEN)->find($agent_id);
+        if (!$agent || !$agent->agency_id){
+            return 0;
+        }
+        $agent = Member::where('status', OrderInService::STATUS_OPEN)->find($agent->agency_id);
+        if (!$agent){
+            return 0;
+        }
+
+        $memberProjectChannel = MemberProjectChannel::where('status', OrderInService::STATUS_OPEN)
+            ->where('member_id', $agent->id)
+            ->where('project_id', $order->project_id)
+            ->where('channel_id', $order->channel_id)
+            ->where('type', 1)
+            ->where('status', OrderInService::STATUS_OPEN)
+            ->where('sub_member_id', $agent_id)
+            ->find();
+
+        if (!$memberProjectChannel){
+            return 0;
+        }
+
+        $amount = $amount * $memberProjectChannel->rate / 100 + $memberProjectChannel->fixed_rate;
+
+        $walletService = new MemberWalletService();
+        $walletService->addBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD, $order->order_no, '代收提成');
 
         return $amount;
     }

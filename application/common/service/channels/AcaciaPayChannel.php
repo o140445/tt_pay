@@ -183,7 +183,7 @@ class AcaciaPayChannel implements ChannelInterface
         if ($params['status'] == 'withdraw.paid') {
             $status = OrderOut::STATUS_PAID;
         }
-        if ($params['status'] == 'withdraw.failed' || $params['status'] == 'withdraw.cancelled') {
+        if ($params['status'] == 'withdraw.failed' || $params['status'] == 'withdraw.canceled') {
             $status = OrderOut::STATUS_FAILED;
         }
 
