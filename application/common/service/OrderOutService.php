@@ -5,6 +5,7 @@ namespace app\common\service;
 use app\common\model\merchant\Channel;
 use app\common\model\merchant\Member;
 use app\common\model\merchant\MemberProjectChannel;
+use app\common\model\merchant\MemberWallerLog;
 use app\common\model\merchant\MemberWalletModel;
 use app\common\model\merchant\OrderNotifyLog;
 use app\common\model\merchant\OrderOut;
@@ -352,9 +353,45 @@ class OrderOutService
         $walletService = new MemberWalletService();
         $walletService->addBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD, $order->order_no, '代付提成');
 
-//        if ($agent->agency_id){
-//            $this->calculateCommission($order, $amount);
-//        }
+        if ($agent->agency_id){
+            $amount += $this->calculateSecondCommission($order, $amount, $agent->id);
+        }
+
+        return $amount;
+    }
+
+    /**
+     * 二级提成
+     */
+    private function calculateSecondCommission($order, $amount, $agent_id)
+    {
+        $agent = Member::where('status', OrderInService::STATUS_OPEN)->find($agent_id);
+        if (!$agent || !$agent->agency_id){
+            return 0;
+        }
+        $agent = Member::where('status', OrderInService::STATUS_OPEN)->find($agent->agency_id);
+        if (!$agent){
+            return 0;
+        }
+
+        $memberProjectChannel = MemberProjectChannel::where('status', OrderInService::STATUS_OPEN)
+            ->where('member_id', $agent->id)
+            ->where('project_id', $order->project_id)
+            ->where('channel_id', $order->channel_id)
+            ->where('type', 2)
+            ->where('status', OrderInService::STATUS_OPEN)
+            ->where('sub_member_id', $agent_id)
+            ->find();
+
+        if (!$memberProjectChannel){
+            return 0;
+        }
+
+        $amount = $amount * $memberProjectChannel->rate / 100 + $memberProjectChannel->fixed_rate;
+
+        $walletService = new MemberWalletService();
+        $walletService->addBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD, $order->order_no, '代付提成');
+
 
         return $amount;
     }
@@ -364,12 +401,7 @@ class OrderOutService
      */
     private function getRefundCommission($order)
     {
-        $profit = Profit::where('order_no', $order->order_no)->find();
-        if (!$profit){
-            return 0;
-        }
-
-        $member = Member::where('status', OrderInService::STATUS_OPEN)->find($profit->member_id);
+        $member = Member::where('status', OrderInService::STATUS_OPEN)->find($order->member_id);
         if (!$member || !$member->agency_id){
             return 0;
         }
@@ -377,11 +409,22 @@ class OrderOutService
         if (!$agent){
             return 0;
         }
+        // 获取这笔订单的提成
+        $data =  MemberWallerLog::where('order_no', $order->order_no)
+            ->where('type', MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD)
+            ->select();
 
-        $amount = $profit->commission;
+        if (!$data) {
+            return 0;
+        }
 
-        $walletService = new MemberWalletService();
-        $walletService->subBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_REFUND, $order->order_no, '代付退款提成');
+        $amount = 0;
+        // 退款提成
+        foreach ($data as $v) {
+            $walletService = new MemberWalletService();
+            $walletService->subBalanceByType($v->member_id, $v->amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_REFUND, $order->order_no, '代付退款提成');
+            $amount += $v->amount;
+        }
 
         return $amount;
     }
