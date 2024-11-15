@@ -358,6 +358,7 @@ class OrderInService
         $data = [
             'order_no' => $order->order_no,
             'merchant_order_no' => $order->member_order_no,
+            'merchant_id' => $order->member_id,
             'amount' => $order->true_amount,
             'status' => $order->status,
             'pay_success_date' => $order->pay_success_date ?? '',
