@@ -495,7 +495,7 @@ class OrderOutService
             'merchant_id' => $order->member_id,
             'amount' => $order->amount,
             'status' => $order->status,
-            'pay_success_date' => $order->pay_success_date ?? '',
+            'pay_date' => $order->pay_success_date ?? '',
             'msg' => $order->error_msg ?? 'OK',
         ];
 
