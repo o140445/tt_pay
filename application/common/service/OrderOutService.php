@@ -496,7 +496,6 @@ class OrderOutService
             'amount' => $order->amount,
             'status' => $order->status,
             'pay_date' => $order->pay_success_date ?? '',
-            'pay_success_date' => $order->pay_success_date ?? '',
             'msg' => $order->error_msg ?? 'OK',
         ];
 
