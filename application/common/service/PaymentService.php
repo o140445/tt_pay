@@ -4,6 +4,7 @@ namespace app\common\service;
 
 use app\common\service\channels\AcaciaPayChannel;
 use app\common\service\channels\ChannelInterface;
+use app\common\service\channels\HwPayChannel;
 
 class PaymentService
 {
@@ -11,17 +12,21 @@ class PaymentService
 
     const PAY_CHANNEL = [
         'AcaciaPay' => 'AcaciaPay',
+        'HwPay' => 'HwPay',
     ];
 
     public function __construct(string $code)
     {
-       switch ($code) {
-           case 'AcaciaPay':
-               $this->channel = new AcaciaPayChannel();
-               break;
-           default:
-               throw new \Exception('未知支付渠道');
-       }
+        switch ($code) {
+            case 'AcaciaPay':
+                $this->channel = new AcaciaPayChannel();
+                break;
+            case 'HwPay':
+                $this->channel = new HwPayChannel();
+                break;
+            default:
+                throw new \Exception('未知支付渠道');
+        }
     }
 
     public function pay($channel, $data)

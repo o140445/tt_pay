@@ -114,7 +114,7 @@ class Pay extends Api
     {
         $params = $this->request->post();
         // 写请求日志
-        Log::write('代收请求参数：data' . json_encode($params), 'info');
+        Log::write('代收回调请求参数：data' . json_encode($params), 'info');
 
         Db::startTrans();
         try {
@@ -122,7 +122,7 @@ class Pay extends Api
             $res = $orderService->notify($code, $params);
         }catch (\Exception $e) {
             Db::rollback();
-            Log::write('代收请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
+            Log::write('代收回调失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
             $this->error($e->getMessage());
         }
         Db::commit();
@@ -134,7 +134,7 @@ class Pay extends Api
                 $orderService->notifyDownstream($res['order_id']);
             }catch (\Exception $e) {
                 Db::rollback();
-                Log::write('代付通知下游失败：error' . $e->getMessage() .', order_id:' . $res['order_id'], 'error');
+                Log::write('代收回调通知下游失败：error' . $e->getMessage() .', order_id:' . $res['order_id'], 'error');
                 $this->error($e->getMessage());
             }
             Db::commit();
@@ -207,7 +207,7 @@ class Pay extends Api
     {
         $params = $this->request->post();
         // 写请求日志
-        Log::write('代付请求参数：data' . json_encode($params), 'info');
+        Log::write('代付回调请求参数：data' . json_encode($params), 'info');
 
         Db::startTrans();
         try {
@@ -215,7 +215,7 @@ class Pay extends Api
             $res = $orderService->notify($code, $params);
         }catch (\Exception $e) {
             Db::rollback();
-            Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
+            Log::write('代付回调请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
             $this->error($e->getMessage());
         }
         Db::commit();
@@ -227,7 +227,7 @@ class Pay extends Api
                 $orderService->notifyDownstream($res['order_id']);
             }catch (\Exception $e) {
                 Db::rollback();
-                Log::write('代付通知下游失败：error' . $e->getMessage() .', order_id:' . $res['order_id'], 'error');
+                Log::write('代付回调通知下游失败：error' . $e->getMessage() .', order_id:' . $res['order_id'], 'error');
                 $this->error($e->getMessage());
             }
             Db::commit();
