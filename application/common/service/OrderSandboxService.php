@@ -102,9 +102,14 @@ class OrderSandboxService
             'merchant_id' => $order->member_id,
             'amount' => $order->amount,
             'status' => $order->status,
-            'pay_success_date' => $order->create_time ?? '',
             'msg' => $order->error_msg ?? 'OK',
         ];
+
+        if ($order->type == OrderInService::TYPE_IN) {
+            $data['pay_success_date'] = $order->create_time;
+        } elseif ($order->type == OrderOutService::TYPE_OUT) {
+            $data['pay_date'] = $order->create_time;
+        }
 
         $member = Member::where('id', $order->member_id)->find();
         $signService = new SignService();
