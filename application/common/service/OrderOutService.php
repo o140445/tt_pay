@@ -171,7 +171,7 @@ class OrderOutService
 
         // 订单不存在
         if (!$order) {
-            throw new \Exception('订单不存在');
+            throw new \Exception('订单不存在'.'order_no:'.$res['order_no'].'channel_no:'.$res['channel_no']);
         }
 
         // 状态判断
