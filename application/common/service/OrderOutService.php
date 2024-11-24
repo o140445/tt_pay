@@ -171,7 +171,18 @@ class OrderOutService
 
         // 订单不存在
         if (!$order) {
-            throw new \Exception('订单不存在'.'order_no:'.$res['order_no'].'channel_no:'.$res['channel_no']);
+            // 延迟处理一秒
+            sleep(1);
+
+            if ($res['order_no']) {
+                $order = OrderOut::where('order_no', $res['order_no'])->find();
+            } else {
+                $order = OrderOut::where('channel_order_no', $res['channel_no'])->find();
+            }
+
+            if (!$order) {
+                throw new \Exception('订单不存在'.' order_no:'.$res['order_no'].' channel_no:'.$res['channel_no']);
+            }
         }
 
         // 状态判断
