@@ -140,6 +140,10 @@ class AcaciaPayChannel implements ChannelInterface
             ];
         }
 
+
+        // 缓存 order_id 对应的订单信息
+        Cache::set('order_info_'.$res['tx_id'], $params['order_no'], 600);
+
         return [
             'status' => 1, // 状态 1成功 0失败
             'order_id' => $res['tx_id'], // 订单号
@@ -206,8 +210,11 @@ class AcaciaPayChannel implements ChannelInterface
             throw new \Exception('支付状态错误');
         }
 
+        // 获取订单信息
+        $order_no = Cache::get('order_info_'.$params['data']['tx_id']);
+
         return [
-            'order_no' => "", // 订单号
+            'order_no' => $order_no ?? '', // 订单号
             'channel_no' => $params['data']['tx_id'], // 渠道订单号
             'pay_date' => '', // 支付时间
             'status' => $status, // 状态 2成功 3失败 4退款

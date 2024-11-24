@@ -172,7 +172,7 @@ class OrderOutService
         // 订单不存在
         if (!$order) {
             // 延迟处理一秒
-            sleep(5);
+            sleep(20);
 
             if ($res['order_no']) {
                 $order = OrderOut::where('order_no', $res['order_no'])->find();
