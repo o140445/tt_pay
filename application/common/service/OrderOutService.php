@@ -2,6 +2,7 @@
 
 namespace app\common\service;
 
+use app\common\model\merchant\OrderOutDelay;
 use think\Cache;
 use think\Config;
 use think\Log;
@@ -171,18 +172,29 @@ class OrderOutService
 
         // 订单不存在
         if (!$order) {
-            // 延迟处理一秒
-            sleep(20);
 
-            if ($res['order_no']) {
-                $order = OrderOut::where('order_no', $res['order_no'])->find();
-            } else {
-                $order = OrderOut::where('channel_order_no', $res['channel_no'])->find();
+            //先查询延迟回调表
+            $source = !$res['order_no'] ? $res['channel_no'] : $res['order_no'];
+            $log = OrderOutDelay::where('source', $source)->find();
+            if ($log){
+                return [
+                    'order_id' => '',
+                    'msg' => $paymentService->response()
+                ];
             }
 
-            if (!$order) {
-                throw new \Exception('订单不存在'.' order_no:'.$res['order_no'].' channel_no:'.$res['channel_no']);
-            }
+            // 写入延迟回调表
+            $log = new OrderOutDelay();
+            $log->data = json_encode($data);
+            $log->source = $source;
+            $log->save();
+
+//            throw new \Exception('订单不存在'.' order_no:'.$res['order_no'].' channel_no:'.$res['channel_no']);
+
+            return [
+                'order_id' => '',
+                'msg' => '订单不存在'. ' order_no:'.$res['order_no'].' channel_no:'.$res['channel_no']
+            ];
         }
 
         // 状态判断
