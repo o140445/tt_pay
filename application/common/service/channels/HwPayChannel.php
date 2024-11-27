@@ -157,7 +157,7 @@ class HwPayChannel implements ChannelInterface
         return [
             'order_no' => $params['merchant_order_no'], // 订单号
             'channel_no' => '', // 渠道订单号
-            'pay_date' => $params['pay_date'], // 支付时间
+            'pay_date' => $params['pay_success_date'], // 支付时间
             'status' => $status, // 状态 2成功 3失败 4退款
             'e_no' => '', // 业务订单号
             'data' => json_encode($params), // 数据
