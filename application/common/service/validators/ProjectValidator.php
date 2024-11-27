@@ -25,7 +25,8 @@ class ProjectValidator implements ValidatorInterface
 
         // 代付扩展字段检查
         if ($data['type'] == OrderOutService::TYPE_OUT && !isset($data['is_member'])) {
-            $extend = json_decode($product->extend, true); //[{"title":"类型","value":"type"},{"title":"账号","value":"pix"},{"title":"xx","value":"ww"}]
+            $extend = json_decode($product->extend, true);
+            //[{"title":"类型","value":"type"},{"title":"账号","value":"pix"},{"title":"xx","value":"ww"}]
 
             if (!$extend) {
 

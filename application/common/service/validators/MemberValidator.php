@@ -23,13 +23,8 @@ class MemberValidator implements ValidatorInterface
         }
 
         //对接类型检查
-        if ($member->docking_type != Member::DOCKING_TYPE_API && !isset($data['is_member'])) {
-            $this->errorMessage = "Merchant Not Support API";
-            return false;
-        }
-
-        if ($member->docking_type == Member::DOCKING_TYPE_API && isset($data['is_member'])) {
-            $this->errorMessage = "Merchant Not Support Member";
+        if ($member->is_open_web_pay != Member::IS_OPEN_WEB_PAY && isset($data['is_member'])) {
+            $this->errorMessage = "Merchant Not Support Web Pay";
             return false;
         }
 

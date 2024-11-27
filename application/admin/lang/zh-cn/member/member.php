@@ -25,6 +25,7 @@ return [
     'DockingType' => '对接类型',
     'DockingType1' => 'API',
     'DockingType2' => '网页',
+    'IsOpenWebPay' => '网页代付',
     'AreaId' => '地区',
     'IpWhiteList' => 'IP白名单',
 ];

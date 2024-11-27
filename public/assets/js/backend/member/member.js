@@ -34,7 +34,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'is_sandbox', title: __('IsSandbox'), searchList: {"0":__('TypeReal'),"1":__('TypeSandbox')}, formatter: Table.api.formatter.label},
                         {field: 'agency_id', title: __('AgencyId')},
                         {field: 'area.name', title: __('AreaId'), formatter: Table.api.formatter.label},
-                        {field: 'docking_type', title: __('DockingType'), searchList: {"1":__('DockingType1'),"0":__('DockingType2')}, formatter: Table.api.formatter.label},
+                        {field: 'is_open_web_pay', title: __('IsOpenWebPay'), searchList: {0:__('关闭'), 1:__('开启')}, formatter: Table.api.formatter.label},
                         {field: 'ip_white_list', title: __('IpWhiteList'), operate:false},
                         {field: 'last_login_time', title: __('LastLoginTime'), formatter: Table.api.formatter.datetime},
                         {field: 'create_time', title: __('CreateTime'), formatter: Table.api.formatter.datetime},

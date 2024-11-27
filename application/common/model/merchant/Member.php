@@ -36,6 +36,10 @@ class Member extends Model
     CONST DOCKING_TYPE_API = 1;
     CONST DOCKING_TYPE_WEB = 0;
 
+    // IsOpenWebPay
+    CONST IS_OPEN_WEB_PAY = 1;
+    CONST IS_NOT_OPEN_WEB_PAY = 0;
+
     // status
     CONST STATUS_NORMAL = 1;
     CONST STATUS_DISABLE = 0;

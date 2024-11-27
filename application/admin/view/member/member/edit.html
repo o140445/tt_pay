@@ -37,12 +37,12 @@
         </div>
     </div>
 
-    <!--    对接模式-->
+    <!--    是否开启web支付-->
     <div class="form-group">
-        <label for="c-docking-type" class="control-label col-xs-12 col-sm-2">{:__('DockingType')}:</label>
+        <label for="c-is_open_web_pay" class="control-label col-xs-12 col-sm-2">{:__('IsOpenWebPay')}:</label>
         <div class="col-xs-12 col-sm-8">
             <div class="radio">
-                {:build_radios('row[docking_type]', ['1'=>__('DockingType1'), '0'=>__('DockingType2')], $row['docking_type'])}
+                {:build_radios('row[is_open_web_pay]', [0=>__('关闭'), 1=>__('开启')], $row['is_open_web_pay'])}
             </div>
         </div>
     </div>

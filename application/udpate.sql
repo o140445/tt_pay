@@ -7,3 +7,7 @@ ALTER TABLE `fa_member` ADD COLUMN `new_google_token` VARCHAR(255) NULL DEFAULT 
 
 -- fa_withdraw_order 添加汇率
 ALTER TABLE `fa_withdraw_order` ADD COLUMN `rate` DECIMAL(10, 2) NOT NULL DEFAULT 0 COMMENT '汇率';
+
+-- fa_member 添加 是否开启网页代付 删除 docking_type
+ALTER TABLE `fa_member` ADD COLUMN `is_open_web_pay` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否开启网页代付';
+ALTER TABLE `fa_member` DROP COLUMN `docking_type`;
