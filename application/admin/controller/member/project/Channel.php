@@ -4,8 +4,10 @@ namespace app\admin\controller\member\project;
 
 use app\common\controller\Backend;
 use app\common\model\merchant\Member;
+use app\common\model\merchant\MemberProjectChannel;
 use app\common\model\merchant\MemberProjectChannel as ChannelModel;
 use app\common\model\merchant\Project;
+use app\common\service\OrderInService;
 use think\Db;
 use think\exception\PDOException;
 use think\exception\ValidateException;
@@ -173,6 +175,46 @@ class Channel extends Backend
             $this->error(__('No rows were updated'));
         }
         $this->success();
+    }
+
+    public function in($ids = null)
+    {
+        if (false === $this->request->isPost()) {
+            $member_id = $this->request->get('member_id');
+            $data = MemberProjectChannel::where('member_id', $member_id)
+                ->with(['member', 'member.area'])
+                ->where('status', MemberProjectChannel::STATUS_ON)
+                ->where('type', MemberProjectChannel::TYPE_IN)
+                ->select();
+
+            if (empty($data)) {
+                $this->error('请先添加代收通道');
+            }
+
+            $this->view->assign('project_id', $data[0]->project_id);
+
+            return $this->view->fetch();
+        }
+
+        $params = $this->request->post('row/a');
+        if (empty($params)) {
+            $this->error(__('Parameter %s can not be empty', ''));
+        }
+        $result = false;
+        Db::startTrans();
+        try {
+            $orderService = new OrderInService();
+            $result = $orderService->memberCreateOrder($ids, $params);
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+
+
+        // 新页面打开 pay_url
+        $this->success('订单创建成功', '', $result);
+
     }
 
 }

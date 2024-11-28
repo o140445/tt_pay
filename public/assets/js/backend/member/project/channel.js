@@ -11,6 +11,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     del_url: 'member/project/channel/del',
                     multi_url: 'member/project/channel/multi',
                     import_url: 'member/project/channel/import',
+                    in_url: 'member/project/channel/in',
                     table: 'member_project_channel',
                 }
             });
@@ -153,6 +154,14 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             });
 
             Controller.api.bindevent();
+        },
+        in: function () {
+            //add-form
+            Form.api.bindevent($("#add-form"), function (data, ret) {
+                // 打开支付页面
+                window.open(data.pay_url);
+                // window.location.href = ret.pay_url;
+            });
         },
         api: {
             bindevent: function () {

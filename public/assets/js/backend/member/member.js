@@ -86,6 +86,19 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         table.bootstrapTable('refresh');
                                     }
                                 },
+
+                                // 测试通道
+                                {
+                                    name: 'dialog',
+                                    text: __('测试通道'),
+                                    title: __('测试通道'),
+                                    classname: 'btn btn-xs btn-success btn-dialog',
+                                    icon: 'fa fa-plus',
+                                    url: 'member/project/channel/in?member_id={id}',
+                                    callback: function (data, ret) {
+                                        table.bootstrapTable('refresh');
+                                    }
+                                },
                             ],
                         }
                     ]

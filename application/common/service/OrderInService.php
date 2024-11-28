@@ -515,4 +515,14 @@ class OrderInService
         return $res;
     }
 
+    public function memberCreateOrder($member_id, $params)
+    {
+        $params['merchant_id'] = $member_id;
+        $params['merchant_order_no'] = get_order_no('SDO'.$member_id);
+        $params['notify_url'] = '';
+        $params['is_member'] = 1;
+        $order =  $this->createOrder($params);
+        return  $this->requestChannel($order);
+    }
+
 }
