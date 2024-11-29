@@ -152,13 +152,13 @@ class AcaciaPayChannel implements ChannelInterface
             $res = Http::postJson($url, $data, $headers);
 
             Log::write('AcaciaPayChannel outPay response:'.json_encode($res) . ' data:'.json_encode($data) . ' headers:'.json_encode($headers), 'info');
-            if (isset($response['error'])) {
+            if (isset($res['error'])) {
                 return [
                     'status' => 0,
                     'msg' => $response['error'],
                 ];
             }
-            if (isset($response['msg'])) {
+            if (isset($res['msg'])) {
                 return [
                     'status' => 0,
                     'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
