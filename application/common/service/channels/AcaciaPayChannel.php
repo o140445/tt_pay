@@ -109,6 +109,11 @@ class AcaciaPayChannel implements ChannelInterface
             $extra['pix_key'] = '+55'.$extra['pix_key'];
         }
 
+        // 如果类型是CPF, 去除.-等特殊字符
+        if ($extra['pix_type'] == 'CPF') {
+            $extra['pix_key'] = preg_replace('/[^0-9]/', '', $extra['pix_key']);
+        }
+
         $data = [
             'userId' => $params['member_id'],
             'amount' => (float)$params['amount'],

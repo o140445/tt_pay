@@ -90,9 +90,13 @@ class Channel extends Backend
             if ($res) {
                 throw new Exception('通道名称已存在');
             }
+            if (isset($params['extra']) && !empty($params['extra'])) {
+                $params['extra'] = json_encode($params['extra']);
+            }else{
+                $params['extra'] = '[]';
+            }
 
             $params['sign'] = $this->getSign();
-            $params['extra'] = $params['extra'] ? json_encode($params['extra']) : '[]';
             $result = $this->model->allowField(true)->save($params);
             Db::commit();
         } catch (ValidateException|PDOException|Exception $e) {
