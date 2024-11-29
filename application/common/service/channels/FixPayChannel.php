@@ -46,7 +46,7 @@ class FixPayChannel implements ChannelInterface
             'email' => $email,
             'bankNumber' =>  $extra['pix_key'],
             'bankCode' => $extra['pix_type'],
-            'accountHoldName' => $extra['pix_name'],
+            'accountHoldName' => $extra['pix_name'] ?? 'tikpay',
             'notifyUrl' => $this->getNotifyUrl($channel, "outnotify"),
        ];
         $data['sign'] = $this->sign($data, $channel['mch_key']);
