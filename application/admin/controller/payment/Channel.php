@@ -142,7 +142,11 @@ class Channel extends Backend
                 $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.edit' : $name) : $this->modelValidate;
                 $this->model->validateFailException()->validate($validate);
             }
-            $params['extra'] = $params['extra'] ? json_encode($params['extra']) : '[]';
+            if (isset($params['extra']) && !empty($params['extra'])) {
+                $params['extra'] = json_encode($params['extra']);
+            }else{
+                $params['extra'] = '[]';
+            }
             $result = $row->allowField(true)->save($params);
             Db::commit();
         } catch (ValidateException|PDOException|Exception $e) {
