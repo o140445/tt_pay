@@ -87,4 +87,10 @@ class PaymentService
     {
         return $this->channel->parseVoucher($data);
     }
+
+    // getVoucherUrl
+    public function getVoucherUrl($data)
+    {
+        return $this->channel->getVoucherUrl($data);
+    }
 }

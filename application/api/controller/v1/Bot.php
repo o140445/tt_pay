@@ -140,14 +140,10 @@ class Bot extends Api
 
         try {
             $orderService = new OrderOutService();
-            $order = $orderService->queryOrder(['merchant_order_no' => $merchant_order_no, 'merchant_id' => $merchant_id], false);
+            $data = $orderService->getVoucherUrl(['merchant_order_no' => $merchant_order_no, 'merchant_id' => $merchant_id]);
 
-
-            if ($order['status'] != OrderOut::STATUS_PAID) {
-                $this->error('订单未支付');
-            }
-
-            $data['url'] =  Config::get('pay_url').'/index/receipt/index?order_id='.$order['order_no'];
+//
+//            $data['url'] =  Config::get('pay_url').'/index/receipt/index?order_id='.$order['order_no'];
 
         }catch (\Exception $e) {
             $this->error($e->getMessage());

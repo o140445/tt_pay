@@ -336,4 +336,10 @@ class AcaciaPayChannel implements ChannelInterface
             'type' => 'isbank', // 业务订单号
         ];
     }
+
+    public function getVoucherUrl($order): string
+    {
+        return   Config::get('pay_url').'/index/receipt/index?order_id='.$order['order_no'];
+    }
+
 }

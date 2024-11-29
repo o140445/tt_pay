@@ -160,4 +160,11 @@ class FixPayChannel implements ChannelInterface
     {
         return [];
     }
+
+    public function getVoucherUrl($order): string
+    {
+        // https://pay.paythere.top/getfeedback/
+        return   'https://pay.paythere.top/getfeedback/'.$order['order_no'];
+    }
+
 }

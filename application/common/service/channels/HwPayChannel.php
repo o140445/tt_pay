@@ -209,4 +209,9 @@ class HwPayChannel implements ChannelInterface
         return '';
 
     }
+
+    public function getVoucherUrl($order): string
+    {
+        return   'https://www.hwpay88.com/index/receipt/index?order_id='.$order['channel_no'];
+    }
 }

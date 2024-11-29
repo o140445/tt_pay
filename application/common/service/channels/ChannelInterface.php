@@ -34,4 +34,7 @@ interface ChannelInterface
     // parseVoucher
     public function parseVoucher($params) : array;
 
+    // getVoucherUrl
+    public function getVoucherUrl($params) : string;
+
 }

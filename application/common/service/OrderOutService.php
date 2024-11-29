@@ -689,4 +689,32 @@ class OrderOutService
         return $res;
     }
 
+    public function getVoucherUrl($params)
+    {
+        // 获取用户
+        $member = Member::where('status', OrderInService::STATUS_OPEN)->find($params['merchant_id']);
+        if (!$member){
+            throw new \Exception('用户不存在');
+        }
+
+        $order = OrderOut::where('member_id', $params['merchant_id'])->where('member_order_no', $params['merchant_order_no'])->with('channel')->find();
+
+        if (!$order){
+            throw new \Exception('订单不存在');
+        }
+
+
+        if ($order['status'] != OrderOut::STATUS_PAID) {
+            throw new \Exception('订单未支付');
+        }
+
+        // 解析数据
+        $paymentService = new PaymentService($order->channel->code);
+        $url = $paymentService->getVoucherUrl($order);
+
+        return [
+            'url' => $url,
+        ];
+    }
+
 }
