@@ -5,6 +5,7 @@ namespace app\common\service;
 use app\common\service\channels\AcaciaPayChannel;
 use app\common\service\channels\ChannelInterface;
 use app\common\service\channels\FixPayChannel;
+use app\common\service\channels\HeyPayChannel;
 use app\common\service\channels\HwPayChannel;
 
 class PaymentService
@@ -15,6 +16,7 @@ class PaymentService
         'AcaciaPay' => 'AcaciaPay',
         'HwPay' => 'HwPay',
         'FixPay' => 'FixPay',
+        'HeyPay' => 'HeyPay',
     ];
 
     public function __construct(string $code)
@@ -28,6 +30,9 @@ class PaymentService
                 break;
             case 'FixPay':
                 $this->channel = new FixPayChannel();
+                break;
+            case 'HeyPay':
+                $this->channel = new HeyPayChannel();
                 break;
             default:
                 throw new \Exception('未知支付渠道');

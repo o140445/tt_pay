@@ -198,7 +198,6 @@ class Http
         $header = array_merge([
             'Content-Type' => 'application/json',
         ], $header);
-
         try {
             $client = new \GuzzleHttp\Client();
 
@@ -206,6 +205,7 @@ class Http
                 $response = $client->request('POST', $url, [
                     'headers' => $header,
                     'json' => $data,
+                    'timeout' => 10,
                 ]);
 
             } else {
