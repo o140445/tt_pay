@@ -5,6 +5,7 @@ namespace app\common\service\validators;
 use app\common\model\merchant\Member;
 use app\common\service\OrderInService;
 use app\common\service\OrderOutService;
+use think\Log;
 
 class MemberValidator implements ValidatorInterface
 {
@@ -31,7 +32,7 @@ class MemberValidator implements ValidatorInterface
         // ip白名单检查
         if ($member->ip_white_list) {
             $ip = request()->ip();
-            var_dump($ip);die();
+            Log::write('ip', $ip);
             if (!in_array($ip, explode(',', $member->ip_white_list))) {
                 $this->errorMessage = "IP Not In White List";
                 return false;
