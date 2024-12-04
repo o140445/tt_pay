@@ -160,6 +160,7 @@ class AcPayChannel implements ChannelInterface
         $data = $params;
         $sign = $data['plat_sign'];
         unset($data['plat_sign']);
+        $data['amount'] = number_format($data['amount'], 2, '.', '');
         $mySign = $this->sign($data, $channel['mch_key']);
 
         if ($sign != $mySign) {
@@ -168,7 +169,7 @@ class AcPayChannel implements ChannelInterface
 
         $status = OrderIn::STATUS_UNPAID;
 
-        if ($data['plat_resp_code'] == 'SUCCESS') {
+        if ($data['status'] == 'SUCCESS') {
             $status = OrderIn::STATUS_PAID;
         }else {
             throw new \Exception("未支付");
@@ -191,7 +192,7 @@ class AcPayChannel implements ChannelInterface
         $data = $params;
         $sign = $data['plat_sign'];
         unset($data['plat_sign']);
-
+        $data['amount'] = number_format($data['amount'], 2, '.', '');
         $mySign = $this->sign($data, $channel['mch_key']);
 
         if ($sign != $mySign) {
@@ -200,11 +201,11 @@ class AcPayChannel implements ChannelInterface
 
         $status = OrderOut::STATUS_UNPAID;
 
-        if ($data['plat_resp_code'] == 'SUCCESS') {
+        if ($data['status'] == 'SUCCESS') {
             $status = OrderOut::STATUS_PAID;
         }
 
-        if ($data['plat_resp_code'] == 'FAIL') {
+        if ($data['status'] == 'FAIL') {
             $status = OrderOut::STATUS_FAILED;
         }
 
