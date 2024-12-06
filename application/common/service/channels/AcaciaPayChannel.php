@@ -165,10 +165,6 @@ class AcaciaPayChannel implements ChannelInterface
             }
         }
 
-
-        // 缓存 order_id 对应的订单信息
-        Cache::set('order_info_'.$res['tx_id'], $params['order_no'], 600);
-
         return [
             'status' => 1, // 状态 1成功 0失败
             'order_id' => $res['tx_id'] ?? '', // 订单号
