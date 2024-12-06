@@ -79,8 +79,6 @@ class AcaciaPayChannel implements ChannelInterface
 
         $pay_url = Config::get('pay_url') . '/index/pay/index?order_id=' . $params['order_no'];
 
-        // 缓存订单信息$response
-        Cache::set('order_info_'.$params['order_no'], json_encode($response), 600);
 
         return [
             'status' => 1, // 状态 1成功 0失败
@@ -231,8 +229,6 @@ class AcaciaPayChannel implements ChannelInterface
             throw new \Exception('支付状态错误');
         }
 
-        // 获取订单信息
-        $order_no = Cache::get('order_info_'.$params['data']['tx_id']);
 
         return [
             'order_no' => $params['data']['user_id'] ?? '', // 订单号
