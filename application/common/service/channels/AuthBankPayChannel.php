@@ -297,4 +297,8 @@ class AuthBankPayChannel implements ChannelInterface
         return '';
     }
 
+    public function getVoucherUrl($order): string
+    {
+        return   Config::get('pay_url').'/index/receipt/index?order_id='.$order['order_no'];
+    }
 }
