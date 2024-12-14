@@ -5,7 +5,11 @@ namespace app\index\controller;
 use app\common\controller\Frontend;
 use app\common\model\merchant\OrderIn;
 use app\common\model\merchant\OrderRequestLog;
+use app\common\service\PaymentService;
+use fast\Http;
 use think\Cache;
+use think\Config;
+use think\Log;
 
 class Pay extends Frontend
 {
@@ -19,6 +23,7 @@ class Pay extends Frontend
     public function index()
     {
         $order_id = $this->request->param('order_id');
+
         if (!$order_id) {
             $this->redirect('/404.html');
         }
@@ -33,26 +38,49 @@ class Pay extends Frontend
         $key =  'order_in_info_' . $order['order_no'];
         $response = Cache::get($key);
         if (!$response) {
-            $response = OrderRequestLog::where('order_no', $order['order_no'])->where('request_type', OrderRequestLog::REQUEST_TYPE_REQUEST)->find();
-            $response_data = json_decode($response['response_data'], true);
+            $channelService = new  PaymentService($order->channel->code);
+            $response_data = $channelService->getPayInfo($order);
         }else{
             $response_data = $response;
         }
-
-
-        // base64 qrcode转图片
-        $qrcode = "data:image/png;base64," . $response_data['qrcode'];
-        $pix_code = $response_data['copia_e_cola'];
 
         $data = [
             'order_id' => $order['order_no'],
             'amount' => 'R$ ' . number_format($order['amount'], 2, '.', ''),
             'expire_time' => date('d/m/y H:i', strtotime($order['create_time']) + 3600),
-            'qrcode'=> $qrcode,
-            'pix_code' => $pix_code,
+            'qrcode'=> $response_data['qrcode'],
+            'pix_code' => $response_data['pix_code'],
         ];
 
         $this->view->assign('data', $data);
         return $this->view->fetch();
     }
+
+    /**
+     * 拉入cdn黑名单
+     */
+    protected function black($ip)
+    {
+        //curl 'https://wafx.sucuri.net/api?v2' \
+        //--data 'k=API_KEY' \
+        //--data 's=API_SECRET' \
+        //--data 'a=blocklist_ip' \
+        //--data 'ip=IP_ADDRESS' \
+        //--data 'duration=(time in seconds)'
+        // 永久拉入黑名单
+
+        $url = 'https://wafx.sucuri.net/api?v2';
+        $data = [
+            'k' =>  Config::get('sucuri.api_key'),
+            's' =>  Config::get('sucuri.api_secret'),
+            'a' => 'blocklist_ip',
+            'ip' => $ip,
+            'duration' => 86400,
+        ];
+
+        $res = Http::post($url, $data);
+        // 写入日志
+        Log::write('拉入cdn黑名单', $res);
+    }
+
 }
