@@ -251,6 +251,10 @@ class OrderOutService
      */
     public function completeOrder($order, $data)
     {
+        if ($order->status != OrderOut::STATUS_UNPAID){
+            throw new \Exception('订单状态不正确');
+        }
+
         $order->status = OrderOut::STATUS_PAID;
         $order->pay_success_date = isset($data['pay_date']) && $data['pay_date'] ? $data['pay_date'] : date('Y-m-d H:i:s');
         $order->channel_order_no =  isset($data['channel_no']) && $data['channel_no'] ? $data['channel_no'] : $order->channel_order_no;
@@ -280,6 +284,10 @@ class OrderOutService
      */
     public function failOrder($order, $data)
     {
+        if ($order->status != OrderOut::STATUS_UNPAID){
+            throw new \Exception('订单状态不正确');
+        }
+
         $order->status = OrderOut::STATUS_FAILED;
         $order->error_msg = isset($data['msg']) && $data['msg'] ? $data['msg'] : 'O pagamento falhou';
         $order->save();
@@ -297,6 +305,10 @@ class OrderOutService
      */
     public function refundOrder($order, $data)
     {
+        if ($order->status != OrderOut::STATUS_PAID){
+            throw new \Exception('订单状态不正确');
+        }
+
         $order->status = OrderOut::STATUS_REFUND;
         $order->error_msg = $data['error_msg'] ?? '';
         $order->channel_order_no =  $data['channel_no'] ?? $order->channel_order_no;

@@ -2,6 +2,7 @@
 
 namespace app\admin\controller\order;
 
+use app\admin\model\Admin;
 use app\common\controller\Backend;
 use app\common\model\merchant\OrderOut;
 use app\common\service\OrderOutService;
@@ -27,7 +28,6 @@ class Out extends Backend
         $this->model = new \app\common\model\merchant\OrderOut;
         $this->view->assign("statusList", $this->model->getStatusList());
     }
-
 
 
     /**
@@ -94,131 +94,60 @@ class Out extends Backend
         $this->error('非法请求');
     }
 
-
     /**
-     * 完成订单
+     * edit_status
      * @param $ids
      */
-    public function complete($ids = null)
+    public function edit_status($ids = null)
     {
+        $order = $this->model->whereIn('id', $ids)->find();
+        if (!$order) {
+            $this->error('订单不存在');
+        }
         // 判断是否是post请求
         if (false === $this->request->isPost()) {
-            $this->error('非法请求');
+            $statusList = $this->model->getStatusList();
+            $this->view->assign("statusList", $statusList);
+            $this->view->assign("row", $order);
+            return $this->view->fetch();
         }
 
+        $params = $this->request->post('row/a');
+        $password = $this->request->post('password');
+        if (!$password) {
+            $this->error('请输入密码');
+        }
         $orderService = new OrderOutService();
+
         Db::startTrans();
         try {
 
-            $order = $this->model->whereIn('id', $ids)->find();
-            if (!$order) {
-                throw new \Exception('订单不存在');
+            $admin = Admin::get($this->auth->id);
+            if ($admin->password != $this->auth->getEncryptPassword($password, $admin->salt)) {
+                throw new \Exception('密码错误');
             }
 
-            if ($order->status != OrderOut::STATUS_UNPAID) {
+            if ($order->status != OrderOut::STATUS_UNPAID && $order->status != OrderOut::STATUS_PAID) {
                 throw new \Exception('订单状态不正确');
             }
 
             // 设置时区
             date_default_timezone_set($order->area->timezone);
-            $orderService->completeOrder($order, ['error_msg' => '手动完成']);
+            switch ($params['status']) {
+                case OrderOut::STATUS_PAID:
+                    $orderService->completeOrder($order, ['error_msg' => $params['remark']]);
+                    break;
+                case OrderOut::STATUS_FAILED:
+                    $orderService->failOrder($order, ['error_msg' => $params['remark']]);
+                    break;
+                case OrderOut::STATUS_REFUND:
+                    $orderService->refundOrder($order, ['error_msg' => $params['remark']]);
+                    break;
+                default:
+                    throw new \Exception('请选择正确的状态');
+            }
 
-        }catch (\Exception $e) {
-            Db::rollback();
-            $this->error($e->getMessage());
-        }
-
-        Db::commit();
-
-        //  通知下游
-        Db::startTrans();
-        try {
-            $orderService->notifyDownstream($ids);
         } catch (\Exception $e) {
-            Db::rollback();
-            $this->error($e->getMessage());
-        }
-
-        Db::commit();
-        $this->success("操作成功");
-
-    }
-
-    /**
-     * 失败
-     */
-    public function fail($ids = null)
-    {
-        // 判断是否是post请求
-        if (false === $this->request->isPost()) {
-             $this->error('非法请求');
-        }
-
-        $orderService = new OrderOutService();
-        Db::startTrans();
-        try {
-
-            $order = $this->model->whereIn('id', $ids)->find();
-            if (!$order) {
-                throw new \Exception('订单不存在');
-            }
-
-            if ($order->status != OrderOut::STATUS_UNPAID) {
-                throw new \Exception('订单状态不正确');
-            }
-
-            // 设置时区
-            date_default_timezone_set($order->area->timezone);
-            $orderService->failOrder($order, ['error_msg' => '手动失败']);
-
-        }catch (\Exception $e) {
-            Db::rollback();
-            $this->error($e->getMessage());
-        }
-
-        Db::commit();
-
-        //  通知下游
-        Db::startTrans();
-        try {
-            $orderService->notifyDownstream($ids);
-        } catch (\Exception $e) {
-            Db::rollback();
-            $this->error($e->getMessage());
-        }
-
-        Db::commit();
-        $this->success("操作成功");
-
-    }
-
-    /**
-     * 退款
-     */
-    public function refund($ids = null)
-    {
-        // 判断是否是post请求
-        if (false === $this->request->isPost()) {
-             $this->error('非法请求');
-        }
-
-        $orderService = new OrderOutService();
-        Db::startTrans();
-        try {
-
-            $order = $this->model->whereIn('id', $ids)->find();
-            if (!$order) {
-                throw new \Exception('订单不存在');
-            }
-
-            if ($order->status != OrderOut::STATUS_PAID) {
-                throw new \Exception('订单状态不正确');
-            }
-            // 设置时区
-            date_default_timezone_set($order->area->timezone);
-            $orderService->refundOrder($order, ['error_msg' => '手动退款']);
-
-        }catch (\Exception $e) {
             Db::rollback();
             $this->error($e->getMessage());
         }

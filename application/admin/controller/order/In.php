@@ -2,6 +2,7 @@
 
 namespace app\admin\controller\order;
 
+use app\admin\model\Admin;
 use app\common\controller\Backend;
 use app\common\model\merchant\OrderIn;
 use app\common\service\OrderInService;
@@ -69,73 +70,37 @@ class In extends Backend
     }
 
 
-
-
     /**
-     * 完成订单
+     * edit status
      * @param $ids
      */
-    public function complete($ids = null)
+    public function edit_status($ids = null)
     {
+        $order = $this->model->whereIn('id', $ids)->find();
+        if (!$order) {
+            $this->error('订单不存在');
+        }
         // 判断是否是post请求
         if (false === $this->request->isPost()) {
-            $this->error('非法请求');
+            $statusList = $this->model->getStatusList();
+            $this->view->assign("statusList", $statusList);
+            $this->view->assign("row", $order);
+            return $this->view->fetch();
         }
 
+        $params = $this->request->post('row/a');
+        $password = $this->request->post('password');
+        if (!$password) {
+            $this->error('请输入密码');
+        }
         $orderService = new OrderInService();
         Db::startTrans();
         try {
+            // 验证密码 $this->auth->getEncryptPassword
 
-            $order = $this->model->whereIn('id', $ids)->find();
-            if (!$order) {
-                throw new \Exception('订单不存在');
-            }
-
-            if ($order->status != OrderIn::STATUS_UNPAID) {
-                throw new \Exception('订单状态不正确');
-            }
-            // 设置时区
-            date_default_timezone_set($order->area->timezone);
-            $orderService->completeOrder($order, []);
-
-        }catch (\Exception $e) {
-            Db::rollback();
-            $this->error($e->getMessage());
-        }
-
-        Db::commit();
-
-        //  通知下游
-        Db::startTrans();
-        try {
-            $orderService->notifyDownstream($ids);
-        } catch (\Exception $e) {
-            Db::rollback();
-            $this->error($e->getMessage());
-        }
-
-        Db::commit();
-        $this->success("操作成功");
-
-    }
-
-    /**
-     * 失败
-     */
-    public function fail($ids = null)
-    {
-        // 判断是否是post请求
-        if (false === $this->request->isPost()) {
-             $this->error('非法请求');
-        }
-
-        $orderService = new OrderInService();
-        Db::startTrans();
-        try {
-
-            $order = $this->model->whereIn('id', $ids)->find();
-            if (!$order) {
-                throw new \Exception('订单不存在');
+            $admin = Admin::get($this->auth->id);
+            if ($admin->password != $this->auth->getEncryptPassword($password, $admin->salt)) {
+                throw new \Exception('密码错误');
             }
 
             if ($order->status != OrderIn::STATUS_UNPAID) {
@@ -144,19 +109,17 @@ class In extends Backend
 
             date_default_timezone_set($order->area->timezone);
 
-            $orderService->failOrder($order, ['msg' => '手动失败']);
+            switch ($params['status']) {
+                case OrderIn::STATUS_PAID:
+                    $orderService->completeOrder($order, ['msg' => $params['remark']]);
+                    break;
+                case OrderIn::STATUS_FAILED:
+                    $orderService->failOrder($order, ['msg' => $params['remark']]);
+                    break;
+                default:
+                    throw new \Exception('请选择正确的状态');
+            }
 
-        }catch (\Exception $e) {
-            Db::rollback();
-            $this->error($e->getMessage());
-        }
-
-        Db::commit();
-
-        //  通知下游
-        Db::startTrans();
-        try {
-            $orderService->notifyDownstream($ids);
         } catch (\Exception $e) {
             Db::rollback();
             $this->error($e->getMessage());

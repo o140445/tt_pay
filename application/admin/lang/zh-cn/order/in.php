@@ -37,4 +37,5 @@ return [
     'Order Fail' => '订单失败',
     'Send Notify' => '发送通知',
     'Notify Detail' => '通知详情',
+    'Edit Order Status' => '编辑订单状态',
 ];

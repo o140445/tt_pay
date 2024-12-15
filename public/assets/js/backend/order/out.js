@@ -11,6 +11,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     del_url: 'order/out/del',
                     multi_url: 'order/out/multi',
                     import_url: 'order/out/import',
+                    edit_status_url: 'order/out/edit_status',
                     table: 'order_out',
                 }
             });
@@ -72,35 +73,14 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             table: table,
                             events: Table.api.events.operate,
                             buttons: [
-                                // 订单完成
-                                {
-                                    name: 'ajax',
-                                    text: __('订单完成'),
-                                    title: __('订单完成'),
-                                    classname: 'btn btn-xs btn-success btn-magic btn-ajax',
-                                    icon: 'fa fa-magic',
-                                    url: 'order/out/complete',
-                                    confirm: "确认: 订单完成", //提示文字
-                                    success: function (data, ret) {
-                                        Layer.alert(ret.msg);
-                                        //刷新表格
-                                        table.bootstrapTable('refresh');
-                                    },
-                                    error: function (data, ret) {
-                                        Layer.alert(ret.msg);
-                                        return false;
-                                    }
-                                },
 
-                                // 订单失败
                                 {
-                                    name: 'ajax',
-                                    text: __('订单失败'),
-                                    title: __('订单失败'),
-                                    classname: 'btn btn-xs btn-danger btn-magic btn-ajax',
+                                    name: 'detail',
+                                    text: __('Edit Order Status'),
+                                    title: __('Edit Order Status'),
+                                    classname: 'btn btn-xs  btn-dialog btn-magic btn-danger',
                                     icon: 'fa fa-magic',
-                                    url: 'order/out/fail',
-                                    confirm: "确认: 订单失败", //提示文字
+                                    url: 'order/out/edit_status?order_no={order_no}',
                                     success: function (data, ret) {
                                         Layer.alert(ret.msg);
                                         //刷新表格
@@ -111,25 +91,64 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         return false;
                                     }
                                 },
-                                // 退款
-                                {
-                                    name: 'ajax',
-                                    text: __('退款'),
-                                    title: __('退款'),
-                                    classname: 'btn btn-xs btn-danger btn-magic btn-ajax',
-                                    icon: 'fa fa-magic',
-                                    url: 'order/out/refund',
-                                    confirm: "确认: 退款", //提示文字
-                                    success: function (data, ret) {
-                                        Layer.alert(ret.msg);
-                                        //刷新表格
-                                        table.bootstrapTable('refresh');
-                                    },
-                                    error: function (data, ret) {
-                                        Layer.alert(ret.msg);
-                                        return false;
-                                    }
-                                },
+                                // // 订单完成
+                                // {
+                                //     name: 'ajax',
+                                //     text: __('订单完成'),
+                                //     title: __('订单完成'),
+                                //     classname: 'btn btn-xs btn-success btn-magic btn-ajax',
+                                //     icon: 'fa fa-magic',
+                                //     url: 'order/out/complete',
+                                //     confirm: "确认: 订单完成", //提示文字
+                                //     success: function (data, ret) {
+                                //         Layer.alert(ret.msg);
+                                //         //刷新表格
+                                //         table.bootstrapTable('refresh');
+                                //     },
+                                //     error: function (data, ret) {
+                                //         Layer.alert(ret.msg);
+                                //         return false;
+                                //     }
+                                // },
+                                //
+                                // // 订单失败
+                                // {
+                                //     name: 'ajax',
+                                //     text: __('订单失败'),
+                                //     title: __('订单失败'),
+                                //     classname: 'btn btn-xs btn-danger btn-magic btn-ajax',
+                                //     icon: 'fa fa-magic',
+                                //     url: 'order/out/fail',
+                                //     confirm: "确认: 订单失败", //提示文字
+                                //     success: function (data, ret) {
+                                //         Layer.alert(ret.msg);
+                                //         //刷新表格
+                                //         table.bootstrapTable('refresh');
+                                //     },
+                                //     error: function (data, ret) {
+                                //         Layer.alert(ret.msg);
+                                //         return false;
+                                //     }
+                                // },
+                                // // 退款
+                                // {
+                                //     name: 'ajax',
+                                //     text: __('退款'),
+                                //     title: __('退款'),
+                                //     classname: 'btn btn-xs btn-danger btn-magic btn-ajax',
+                                //     icon: 'fa fa-magic',
+                                //     url: 'order/out/refund',
+                                //     confirm: "确认: 退款", //提示文字
+                                //     success: function (data, ret) {
+                                //         Layer.alert(ret.msg);
+                                //         //刷新表格
+                                //         table.bootstrapTable('refresh');
+                                //     },
+                                //     error: function (data, ret) {
+                                //         Layer.alert(ret.msg);
+                                //         return false;
+                                //     }
+                                // },
 
                                 // 发送通知
                                 {
@@ -183,6 +202,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             Controller.api.bindevent();
         },
         edit: function () {
+            Controller.api.bindevent();
+        },
+        edit_status: function () {
             Controller.api.bindevent();
         },
         api: {

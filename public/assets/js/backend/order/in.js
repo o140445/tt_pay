@@ -11,6 +11,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     del_url: 'order/in/del',
                     multi_url: 'order/in/multi',
                     import_url: 'order/in/import',
+                    edit_status_url: 'order/in/edit_status',
                     table: 'order_in',
                 }
             });
@@ -71,13 +72,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             // 订单完成按钮
                             buttons: [
                                 {
-                                    name: 'ajax',
-                                    text: __('Order Complete'),
-                                    title: __('Order Complete'),
-                                    classname: 'btn btn-xs btn-success btn-magic btn-ajax',
+                                    name: 'detail',
+                                    text: __('Edit Order Status'),
+                                    title: __('Edit Order Status'),
+                                    classname: 'btn btn-xs  btn-dialog btn-magic btn-danger',
                                     icon: 'fa fa-magic',
-                                    url: 'order/in/complete',
-                                    confirm: "确认: 设置订单完成", //提示文字
+                                    url: 'order/in/edit_status?order_no={order_no}',
                                     success: function (data, ret) {
                                         Layer.alert(ret.msg);
                                         //刷新表格
@@ -89,25 +89,25 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     }
                                 },
 
-                                // 订单失败按钮
-                                {
-                                    name: 'ajax',
-                                    text: __('Order Fail'),
-                                    title: __('Order Fail'),
-                                    classname: 'btn btn-xs btn-danger btn-magic btn-ajax',
-                                    icon: 'fa fa-magic',
-                                    url: 'order/in/fail',
-                                    confirm: "确认: 设置订单失败", //提示文字
-                                    success: function (data, ret) {
-                                        Layer.alert(ret.msg);
-                                        //刷新表格
-                                        table.bootstrapTable('refresh');
-                                    },
-                                    error: function (data, ret) {
-                                        Layer.alert(ret.msg);
-                                        return false;
-                                    }
-                                },
+                                // // 订单失败按钮
+                                // {
+                                //     name: 'ajax',
+                                //     text: __('Order Fail'),
+                                //     title: __('Order Fail'),
+                                //     classname: 'btn btn-xs btn-danger btn-magic btn-ajax',
+                                //     icon: 'fa fa-magic',
+                                //     url: 'order/in/fail',
+                                //     confirm: "确认: 设置订单失败", //提示文字
+                                //     success: function (data, ret) {
+                                //         Layer.alert(ret.msg);
+                                //         //刷新表格
+                                //         table.bootstrapTable('refresh');
+                                //     },
+                                //     error: function (data, ret) {
+                                //         Layer.alert(ret.msg);
+                                //         return false;
+                                //     }
+                                // },
 
                                 // 发送通知按钮
                                 {
@@ -161,6 +161,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             Controller.api.bindevent();
         },
         edit: function () {
+            Controller.api.bindevent();
+        },
+        edit_status: function () {
             Controller.api.bindevent();
         },
         api: {

@@ -30,4 +30,5 @@ return [
     'Notify_status success' => '通知成功',
     'Notify_status fail' => '通知失败',
     'Notify_status unknown' => '未通知',
+    'Edit Order Status' => '编辑订单状态',
 ];
