@@ -126,6 +126,17 @@ class In extends Backend
         }
 
         Db::commit();
+
+        //  通知下游
+        Db::startTrans();
+        try {
+            $orderService->notifyDownstream($ids);
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+
+        Db::commit();
         $this->success("操作成功");
     }
 
