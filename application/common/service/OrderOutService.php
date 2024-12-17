@@ -546,7 +546,12 @@ class OrderOutService
                 $rse = $rse['error'];
             }
         }
-        Log::write('代付通知下游：data' . json_encode($data) . 'result' . $rse, 'info');
+
+        if (is_array($rse)){
+            $rse = json_encode($rse);
+        }
+
+        Log::write('代付通知下游：data ' . json_encode($data) . ', result: ' . $rse, 'info');
         $code = $rse == 'success' ? OrderNotifyLog::STATUS_NOTIFY_SUCCESS : OrderNotifyLog::STATUS_NOTIFY_FAIL;
 
         $log = new OrderNotifyLog();
@@ -730,4 +735,16 @@ class OrderOutService
         ];
     }
 
+    /**
+     * 获取支付成功，但未通知的订单
+     */
+    public function getUnNotifyOrder($time)
+    {
+        $orders = OrderOut::where('status', OrderOut::STATUS_PAID)
+            ->where('pay_success_date', '<', $time)
+            ->where('notify_status', OrderNotifyLog::STATUS_NOTIFY_WAIT)
+            ->limit(10)
+            ->select();
+        return $orders;
+    }
 }
