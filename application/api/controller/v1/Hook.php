@@ -58,7 +58,7 @@ class Hook extends Api
                 $orderService->notifyDownstream($res['order_id']);
             }catch (\Exception $e) {
                 Db::rollback();
-                Log::write('代付通知下游失败：error' . $e->getMessage() .', order_id:' . $res['order_id'], 'error');
+                Log::write('代付通知下游失败：error' . json_decode($e->getMessage()) .', order_id:' . $res['order_id'], 'error');
                 $this->error($e->getMessage());
             }
             Db::commit();
