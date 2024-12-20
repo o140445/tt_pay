@@ -9,6 +9,7 @@ use app\common\service\channels\ChannelInterface;
 use app\common\service\channels\FixPayChannel;
 use app\common\service\channels\HeyPayChannel;
 use app\common\service\channels\HwPayChannel;
+use app\common\service\channels\PPayChannel;
 
 class PaymentService
 {
@@ -21,6 +22,7 @@ class PaymentService
         'HeyPay' => 'HeyPay',
         'AcPay' => 'AcPay',
         'AuthBankPay' => 'AuthBankPay',
+        'PPay' => 'PPay',
     ];
 
     public function __construct(string $code)
@@ -43,6 +45,9 @@ class PaymentService
                 break;
             case 'AuthBankPay':
                 $this->channel = new AuthBankPayChannel();
+                break;
+            case 'PPay':
+                $this->channel = new PPayChannel();
                 break;
             default:
                 throw new \Exception('未知支付渠道');
