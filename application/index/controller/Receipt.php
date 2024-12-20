@@ -21,7 +21,7 @@ class Receipt extends Frontend
             $order = $orderService->getVoucherData($order_id);
             $this->view->assign('data', $order);
         }catch (\Exception $e) {
-            var_dump($e->getMessage());die();
+            $this->error($e->getMessage());
         }
 
         return $this->view->fetch();

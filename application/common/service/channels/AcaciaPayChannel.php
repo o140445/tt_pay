@@ -349,10 +349,10 @@ class AcaciaPayChannel implements ChannelInterface
 
         return [
             'pay_date' => $voucher['created_at'], // 支付时间
-            'payer_name' => $voucher['payer_name'], // 付款人姓名
-            'payer_account' => $voucher['ispb'], // 付款人CPF
+            'payer_name' => 'B.B INVESTIMENT TRADING SERVICOS LTDA', // 付款人姓名
+            'payer_account' =>'57.709.170/0001-67', // 付款人CPF
             'e_no' => $voucher['e2e'], // 业务订单号
-            'type' => 'isbank', // 业务订单号
+            'type' => 'cnpj', // 业务订单号
         ];
     }
 
