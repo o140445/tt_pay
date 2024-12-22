@@ -226,7 +226,7 @@ class AcPayChannel implements ChannelInterface
         return 'SUCCESS';
     }
 
-    public function parseVoucher($params): array
+    public function parseVoucher($channel, $params): array
     {
         return  [];
     }

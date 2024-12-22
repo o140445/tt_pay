@@ -177,7 +177,7 @@ class HwPayChannel implements ChannelInterface
         return [];
     }
 
-    public function parseVoucher($params): array
+    public function parseVoucher($channel, $params): array
     {
         // TODO: Implement parseVoucher() method.
         return [];

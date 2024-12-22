@@ -103,9 +103,9 @@ class PaymentService
     }
 
     // 解析凭证
-    public function parseVoucher($data)
+    public function parseVoucher($channel, $data)
     {
-        return $this->channel->parseVoucher($data);
+        return $this->channel->parseVoucher($channel, $data);
     }
 
     // getVoucherUrl

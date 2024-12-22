@@ -28,6 +28,11 @@ class AcaciaPayChannel implements ChannelInterface
                 'name'=>'银行名称',
                 'key'=>'bankName',
                 'value'=>'',
+            ],
+            [
+                'name'=>'CNPJ',
+                'key'=>'cnpj',
+                'value'=>'',
             ]
         ];
     }
@@ -329,7 +334,7 @@ class AcaciaPayChannel implements ChannelInterface
     /**
      * 解析凭证
      */
-    public function parseVoucher($voucher) : array
+    public function parseVoucher($channel, $voucher) : array
     {
 
         //{
@@ -346,11 +351,12 @@ class AcaciaPayChannel implements ChannelInterface
         //    "created_at": "05/11/2024 12:27",
         //    "updated_at": "05/11/2024 20:28"
         //}
-
+        $payer_name = $this->getExtraConfig($channel, 'bankName');
+        $payer_account = $this->getExtraConfig($channel, 'cnpj');
         return [
             'pay_date' => $voucher['created_at'], // 支付时间
-            'payer_name' => 'B.B INVESTIMENT TRADING SERVICOS LTDA', // 付款人姓名
-            'payer_account' =>'57.709.170/0001-67', // 付款人CPF
+            'payer_name' => $payer_name, // 付款人姓名B.B INVESTIMENT TRADING SERVICOS LTDA
+            'payer_account' => $payer_account, // 付款人CPF 57.709.170/0001-67
             'e_no' => $voucher['e2e'], // 业务订单号
             'type' => 'cnpj', // 业务订单号
         ];

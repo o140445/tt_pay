@@ -259,7 +259,7 @@ class PPayChannel implements ChannelInterface
        return 'success';
     }
 
-    public function parseVoucher($params): array
+    public function parseVoucher($channel, $params): array
     {
         return [
             'status' => 0,

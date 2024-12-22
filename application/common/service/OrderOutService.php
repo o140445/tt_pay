@@ -691,7 +691,7 @@ class OrderOutService
 
         // 解析数据
         $paymentService = new PaymentService($order->channel->code);
-        $voucher = $paymentService->parseVoucher($data);
+        $voucher = $paymentService->parseVoucher($order->channe, $data);
 
         $extra = json_decode($order->extra, true);
 

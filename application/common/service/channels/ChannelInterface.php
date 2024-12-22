@@ -32,7 +32,7 @@ interface ChannelInterface
     public function getVoucher($channel, $params) : array;
 
     // parseVoucher
-    public function parseVoucher($params) : array;
+    public function parseVoucher($channel, $params) : array;
 
     // getVoucherUrl
     public function getVoucherUrl($params) : string;
