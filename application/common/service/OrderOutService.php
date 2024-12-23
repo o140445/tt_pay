@@ -751,4 +751,17 @@ class OrderOutService
             ->select();
         return $orders;
     }
+
+    /**
+     * 通知失败的订单，小于3次
+     */
+    public function getNotifyFailOrder()
+    {
+        $orders = OrderOut::where('notify_status', OrderNotifyLog::STATUS_NOTIFY_FAIL)
+            ->where('notify_count', '<', 3)
+            ->limit(50)
+            ->select();
+        return $orders;
+    }
+
 }
