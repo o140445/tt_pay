@@ -33,7 +33,9 @@ class OrderNotify  extends Command
         $endTime = date('Y-m-d H:i:s', strtotime('-5 minute'));
         $orderInService = new OrderInService();
         $orderIns = $orderInService->getUnNotifyOrder($endTime);
-        $failOrder = $orderInService->getNotifyFailOrder();
+
+        $endTime = date('Y-m-d H:i:s', strtotime('-1 day'));
+        $failOrder = $orderInService->getNotifyFailOrder($endTime);
 
         if (!$orderIns && !$failOrder) {
             Log::write('没有未通知的代收单', 'info');
@@ -69,7 +71,9 @@ class OrderNotify  extends Command
         $endTime = date('Y-m-d H:i:s', strtotime('-5 minute'));
         $orderOutService = new OrderOutService();
         $orderOuts = $orderOutService->getUnNotifyOrder($endTime);
-        $failOrder = $orderOutService->getNotifyFailOrder();
+        // 1天前的代付单
+        $endTime = date('Y-m-d H:i:s', strtotime('-1 day'));
+        $failOrder = $orderOutService->getNotifyFailOrder($endTime);
         if (!$orderOuts && !$failOrder) {
             Log::write('没有未通知的代付单', 'info');
             $this->output->writeln('没有未通知的代付单');
