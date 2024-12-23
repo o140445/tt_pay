@@ -554,7 +554,7 @@ class OrderInService
     {
         $orders = OrderIn::where('notify_status', OrderNotifyLog::STATUS_NOTIFY_FAIL)
             ->where('notify_count', '<', 3)
-            ->where('create_time', '<=', $time)
+            ->where('create_time', '>=', $time)
             ->limit(50)
             ->select();
         return $orders;
