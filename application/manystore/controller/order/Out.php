@@ -90,16 +90,7 @@ class Out extends ManystoreBase
                 Db::startTrans();
                 try {
                     $orderService = new OrderOutService();
-                    $order = $orderService->memberCreateOrder(STORE_ID, $params);
-                    Db::commit();
-                } catch (\Exception $e) {
-                    Db::rollback();
-                    $this->error($e->getMessage());
-                }
-
-                Db::startTrans();
-                try {
-                    $result = $orderService->requestChannel($order);
+                    $result = $orderService->memberCreateOrder(STORE_ID, $params);
                     Db::commit();
                 } catch (\Exception $e) {
                     Db::rollback();
