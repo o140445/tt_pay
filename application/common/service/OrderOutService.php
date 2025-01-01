@@ -105,7 +105,7 @@ class OrderOutService
         $key = 'order_out_request_channel_lock_'.$order->order_no;
         $lock = Cache::get($key);
         if ($lock){
-//            throw new \Exception('订单已经提交');
+            throw new \Exception('订单已经提交');
         }
 
         Cache::set($key, 1, 10);

@@ -57,12 +57,12 @@ class OutOrderBigRequestChannel extends Command
         $key_prefix = 'request_channel_';
         foreach ($orderOut as $k => $item) {
             // 检查是否已经处理
-            if (Cache::get($key_prefix . $item->id)){
-                unset($orderOut[$k]);
-                continue;
-            }
-
-            Cache::set($key_prefix . $item->id, 1, 600);
+//            if (Cache::get($key_prefix . $item->id)){
+//                unset($orderOut[$k]);
+//                continue;
+//            }
+//
+//            Cache::set($key_prefix . $item->id, 1, 600);
         }
 
         $output->writeln('代付单数量：' . count($orderOut));
