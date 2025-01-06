@@ -704,17 +704,10 @@ class OrderOutService
             throw new \Exception('order not found');
         }
 
-        $data = Cache::get('voucher_'.$order_no);
-        if (!$data){
-            $data = $this->getVoucher($order);
-            Cache::set('voucher_'.$order_no, json_encode($data), 600);
-        }else{
-            $data = json_decode($data, true);
-        }
 
         // 解析数据
         $paymentService = new PaymentService($order->channel->code);
-        $voucher = $paymentService->parseVoucher($order->channel, $data);
+        $voucher = $paymentService->parseVoucher($order->channel, $order);
 
         $extra = json_decode($order->extra, true);
 

@@ -299,34 +299,9 @@ class AcaciaPayChannel implements ChannelInterface
      */
     public function getVoucher($channel, $order) : array
     {
-        $url = $channel['gateway'].'/api/generate/receipt/'.$order['channel_order_no'];
-
-        $headers = [
-            'Content-Type' => 'application/json',
-            'partnerId' => $channel['mch_id'],
-            'authKey' => $channel['mch_key'],
-        ];
-
-        $response = Http::getJson($url,$headers);
-        Log::write('AcaciaPayChannel 获取凭证: '.json_encode($response) . ' order_no: ' . $order['order_no'], 'info');
-        if (isset($response['error'])) {
-            return [
-                'status' => 0,
-                'msg' => $response['error'],
-            ];
-        }
-
-        if (isset($response['msg'])) {
-            return [
-                'status' => 0,
-                'msg' => '获取凭证失败',
-            ];
-        }
-
-        return [
-            'status' => 1, // 状态 1成功 0失败
-            'msg' => '获取凭证成功', // 消息
-            'data' => $response, // 数据
+        return  [
+            'created_at' => $order['created_at'],
+            'e2e' => $order['e_no'],
         ];
 
     }
@@ -334,7 +309,7 @@ class AcaciaPayChannel implements ChannelInterface
     /**
      * 解析凭证
      */
-    public function parseVoucher($channel, $voucher) : array
+    public function parseVoucher($channel, $order) : array
     {
 
         //{
@@ -354,10 +329,10 @@ class AcaciaPayChannel implements ChannelInterface
         $payer_name = $this->getExtraConfig($channel, 'bankName');
         $payer_account = $this->getExtraConfig($channel, 'cnpj');
         return [
-            'pay_date' => $voucher['created_at'], // 支付时间
+            'pay_date' => $order['pay_success_date'], // 支付时间
             'payer_name' => $payer_name, // 付款人姓名B.B INVESTIMENT TRADING SERVICOS LTDA
             'payer_account' => $payer_account, // 付款人CPF 57.709.170/0001-67
-            'e_no' => $voucher['e2e'], // 业务订单号
+            'e_no' => $order['e_no'], // 业务订单号
             'type' => 'cnpj', // 业务订单号
         ];
     }
