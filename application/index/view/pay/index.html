@@ -3,102 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIX Payment</title>
+    <title>Pagamento PIX</title>
     <link rel="stylesheet" href="__CDN__/assets/css/bootstrap.min.css">
     <link rel="icon" href="__CDN__/assets/img/favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="__CDN__/assets/img/favicon.ico"/>
     <link href="__CDN__/assets/css/index.css" rel="stylesheet">
-    <link href="__CDN__/assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="__CDN__/assets/css/frontend.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
     <style>
         body {
-            background-color: #f9fafb;
+            background-color: #f1f5f9;
             font-family: 'Roboto', Arial, sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             height: 100vh;
+            color: #333;
         }
         .payment-container {
-            background-color: #ffffff;
+            background: linear-gradient(135deg, #f1f5f9, #e6ebf1);
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
             text-align: center;
             width: 100%;
             max-width: 500px;
             margin-top: -15px;
-
-            @media (max-width: 576px) {
-                height: 100vh;
-            }
         }
         .qrcode {
             width: 200px;
             height: 200px;
             margin: 20px 0;
         }
-        .container h1 {
+        h1 {
             margin-bottom: 15px;
-            color: #333333;
-            font-size: 24px;
+            color: #34a853;
+            font-size: 28px;
             font-weight: 700;
         }
         .payment-details p {
             font-size: 16px;
-            margin: 5px 0;
-            color: #555555;
+            margin: 10px 0;
+            line-height: 1.5;
         }
-        .pix-code {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
+        .payment-details strong {
+            color: #1e88e5;
         }
-        .btn-primary {
-            background-color: #34a853;
+        .payment-details span {
+            font-weight: bold;
+        }
+        .btn-primary, .btn-success {
+            background: #34a853;
             border-color: #34a853;
             font-size: 16px;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 8px;
+            color: #fff;
+            transition: all 0.3s ease;
         }
-        .btn-primary:hover {
-            background-color: #2a8c43;
+        .btn-primary:hover, .btn-success:hover {
+            background: #2a8c43;
             border-color: #2a8c43;
+        }
+        .btn-primary i, .btn-success i {
+            margin-right: 5px;
+        }
+        .pix-code p {
+            font-size: 14px;
+            color: #666;
         }
         .pix_log img {
             margin-top: 15px;
-            width: 120px;
+            width: 100px;
+        }
+        @media (max-width: 576px) {
+            .payment-container {
+                height: 100vh;
+                padding: 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container payment-container">
     <h1>Pagamento PIX</h1>
+
     <div class="payment-details">
-        <p><strong>Valor:</strong> {$data.amount}</p>
-        <p><strong>ID do Pedido:</strong> {$data.order_id}</p>
         <p><strong>Expira em:</strong> {$data.expire_time}</p>
+        <p><strong>Valor:</strong> {$data.amount}</p>
     </div>
+
     <div>
         <img src="{$data.qrcode}" alt="QR Code" class="qrcode">
-        <p>
-            Abra o app com sua chave PIX cadastrada, escolha Pagar com Pix e escaneie o QR Codeou
-            copie e cole o código.
+        <p style="color: #555; font-size: 14px;">
+            Abra o app com sua chave PIX cadastrada, escolha "Pagar com Pix" e escaneie o QR Code ou copie e cole o código abaixo.
         </p>
     </div>
 
     <div class="pix-code">
         <button class="btn btn-success" id="copy" data-clipboard-text="{$data.pix_code}">
-            <i class="fa fa-copy"></i>
-            PIX CÓPIA E COLA
+            <i class="fa fa-copy"></i> PIX CÓPIA E COLA
         </button>
         <div class="pix_log">
             <img src="__CDN__/assets/img/pix.png" alt="PIX Logo">
         </div>
-
     </div>
 </div>
 

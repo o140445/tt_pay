@@ -280,7 +280,7 @@ class AuthBankPayChannel implements ChannelInterface
         return $res;
     }
 
-    public function parseVoucher($params): array
+    public function parseVoucher($params, $order = ''): array
     {
         return [
             'pay_date' => date('Y-m-d H:i:s', strtotime($params['horario'])),
