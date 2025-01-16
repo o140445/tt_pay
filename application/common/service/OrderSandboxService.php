@@ -112,13 +112,13 @@ class OrderSandboxService
         $data['sign'] = $signService->makeSign($data, $member->api_key);
 
         $rse = Http::post_json($order->notify_url, $data);
-        Log::write('sandbox notify', ['order_no' => $order_no, 'notify_url' => $order->notify_url, 'data' => $data, 'rse' => $rse]);
+
+//        Log::write('sandbox notify', ['order_no' => $order_no, 'notify_url' => $order->notify_url, 'data' => json_encode($data), 'rse' => $rse]);
         $code = $rse == 'success' ? OrderNotifyLog::STATUS_NOTIFY_SUCCESS : OrderNotifyLog::STATUS_NOTIFY_FAIL;
 
         // 修改通知次数和状态
         $order->notify_count += 1;
         $order->notify_status = $code;
-
         return $order->save();
     }
 }
