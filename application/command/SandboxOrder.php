@@ -33,7 +33,12 @@ class SandboxOrder extends Command
                     $item->save();
                 }
             }
-            $orderService->notify($item->order_no);
+            try {
+                $orderService->notify($item->order_no);
+            }catch (\Exception $e) {
+                $output->writeln('订单号：' . $item->order_no . ' 通知失败');
+                continue;
+            }
             $output->writeln('订单号：' . $item->order_no . ' 通知成功');
         }
 
