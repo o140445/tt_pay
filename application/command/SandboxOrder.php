@@ -17,7 +17,7 @@ class SandboxOrder extends Command
     protected function execute($input, $output)
     {
         // 查询通知少余三次的订单 2天内的
-        $data = OrderSandbox::where('notify_count', '<', 3)->where('create_time', '>', time() - 172800)->select();
+        $data = OrderSandbox::where('notify_count', '<', 3)->order('id', 'desc')->select();
 
         // 循环通知
         $orderService = new OrderSandboxService();
