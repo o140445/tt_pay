@@ -9,7 +9,6 @@ use app\common\service\HookService;
 use fast\Http;
 use think\Config;
 use think\Log;
-
 class AuthBankPayChannel implements ChannelInterface
 {
     // headers
@@ -47,7 +46,7 @@ class AuthBankPayChannel implements ChannelInterface
     // getAccessToken
     public function getAccessToken($channel)
     {
-        $key = 'auth_bank_token';
+        $key = 'auth_bank_token'.$channel->mch_id;
         $token = cache($key);
         if ($token) {
             return json_decode($token, true);
@@ -59,11 +58,9 @@ class AuthBankPayChannel implements ChannelInterface
             'clientSecret' => $channel->mch_key,
         ];
 
-        $this->setHeader($channel);
-
         $res = Http::postJson($url, $data, $this->headers);
 
-        Log::write('AuthBank getAccessToken', ['res' => $res, 'params' => $data]);
+        Log::write('AuthBank getAccessToken res :' . json_encode($res) . ' data:'.json_encode($data) . ' url: '. $url .' headers:'.json_encode($this->headers), 'info');
 
         if (!$res || isset($res['msg']) || (isset($res['sucesso']) && $res['sucesso'] == false)) {
             $msg = $res['msg'] ?? $res['mensagem'] ?? '获取token失败';
@@ -81,14 +78,16 @@ class AuthBankPayChannel implements ChannelInterface
         $data = [
             'valor' => (int)(round($params['amount'], 2) * 100),
             'tempoExpiracao' => 3600,
+            'comImagem' => true,
         ];
 
         $this->setHeader($channel, true);
 
-        $url = $channel->gateway . '/qrcode/v1/gerar';
+        $url = $channel->gateway . '/qrcode/v2/gerar';
 
         $res = Http::postJson($url, $data, $this->headers);
-        Log::write('AuthBank pay', ['res' => $res, 'params' => $data]);
+        Log::write('AuthBank pay response:'.json_encode($res) . ' data:'.json_encode($data) . ' url: '. $url .' headers:'.json_encode($this->headers), 'info');
+
         if (!$res || isset($res['msg']) || (isset($res['sucesso']) && $res['sucesso'] == false)) {
             return ['status' => 0, 'msg' => $res['msg'] ?? $res['mensagem'] ?? '下单失败'];
         }
@@ -126,7 +125,7 @@ class AuthBankPayChannel implements ChannelInterface
 
         $res = Http::postJson($url, $data, $this->headers);
 
-        Log::write('AuthBank outPay', ['res' => $res, 'params' => $data]);
+        Log::write('AuthBank outPay response:'.json_encode($res) . ' data:'.json_encode($data) . ' url: '. $url .' headers:'.json_encode($this->headers), 'info');
         if (!$res || isset($res['msg']) || (isset($res['sucesso']) && $res['sucesso'] == false)) {
             return ['status' => 0, 'msg' => $res['msg'] ?? $res['mensagem'] ?? '下单失败'];
         }
@@ -183,10 +182,14 @@ class AuthBankPayChannel implements ChannelInterface
             $status = OrderOut::STATUS_REFUND;
         }
 
+        $amount = (string)abs($params['valor']);
+        // 到数两位加个小数点
+        $amount = substr($amount, 0, -2) . '.' . substr($amount, -2);
+
         return [
             'order_no' => $params['idEnvio'],
             'channel_no' => $params['codigoTransacao'],
-            'amount' =>  bcdiv(abs($params['valor']), 100, 2),
+            'amount' =>  $amount,
             'pay_date' => date('Y-m-d H:i:s', strtotime($params['horario'])),
             'status' => $status,
             'e_no' => $params['endToEndId'],
@@ -220,10 +223,14 @@ class AuthBankPayChannel implements ChannelInterface
         }
 
         $status = OrderIn::STATUS_PAID;
+        $amount = (string)$params['valor'];
+        // 到数两位加个小数点
+        $amount = substr($amount, 0, -2) . '.' . substr($amount, -2);
+
         return [
             'order_no' => '',
             'channel_no' => $params['txid'],
-            'amount' =>  bcdiv($params['valor'], 100, 2),
+            'amount' =>  $amount,
             'pay_date' => date('Y-m-d H:i:s', strtotime($params['horario'])),
             'status' => $status,
             'e_no' => $params['endToEndId'],
