@@ -22,6 +22,17 @@ class AuthBankPayChannel implements ChannelInterface
                 'key'=>'token',
                 'value'=>'',
             ],
+
+            [
+                'name'=>'银行名称',
+                'key'=>'bankName',
+                'value'=>'',
+            ],
+            [
+                'name'=>'CNPJ',
+                'key'=>'cnpj',
+                'value'=>'',
+            ]
         ];
     }
 
@@ -282,6 +293,8 @@ class AuthBankPayChannel implements ChannelInterface
         $data = json_decode($data['request_data'], true);
         $res['data'] = json_decode($data['data'],true);
         $res['data']['e2e'] =  $res['data']['endToEndId'];
+        $res['data']['payer_name'] = $this->getExtraConfig($channel, 'bankName');
+        $res['data']['payer_account'] = $this->getExtraConfig($channel, 'cnpj');
         $res['status'] = 1;
 
         return $res;
@@ -291,8 +304,8 @@ class AuthBankPayChannel implements ChannelInterface
     {
         return [
             'pay_date' => date('Y-m-d H:i:s', strtotime($params['horario'])),
-            'payer_name' => '', // 付款人姓名
-            'payer_account' =>  '', // 付款人CPF
+            'payer_name' => $params['payer_name'], // 付款人姓名
+            'payer_account' =>  $params['payer_account'], // 付款人CPF
             'e_no' => $params['endToEndId'], // 业务订单号
             'type' => 'pix',
         ];
