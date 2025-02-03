@@ -146,7 +146,7 @@ class BPPayChannel implements ChannelInterface
         $extra = json_decode($params['extra'], true);
 
         //bankAccount^7280101686|bankCode^GCASH
-        $extendedParams = "bankAccount^" . $extra['bankAccount'] . "|bankCode^" . $this->getExtraConfig($channel, 'bankCode');
+        $extendedParams = "bankAccount^" . $extra['bank_account'] . "|bankCode^" . $this->getExtraConfig($channel, 'bankCode');
 
         $data = [
             'merchantNo' => $channel['mch_id'],

@@ -11,3 +11,7 @@ ALTER TABLE `fa_withdraw_order` ADD COLUMN `rate` DECIMAL(10, 2) NOT NULL DEFAUL
 -- fa_member 添加 是否开启网页代付 删除 docking_type
 ALTER TABLE `fa_member` ADD COLUMN `is_open_web_pay` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否开启网页代付';
 ALTER TABLE `fa_member` DROP COLUMN `docking_type`;
+
+-- fa_channel 修改字段长度 mch_key 255 -> 2056 extra 255 -> 1024
+ALTER TABLE `fa_channel` MODIFY COLUMN `mch_key` VARCHAR(2056) NOT NULL DEFAULT '' COMMENT '商户密钥';
+ALTER TABLE `fa_channel` MODIFY COLUMN `extra` VARCHAR(1024) NOT NULL DEFAULT '' COMMENT '扩展参数';
