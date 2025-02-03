@@ -81,7 +81,7 @@ class OutOrderBigRequestChannel extends Command
             }
 
             $output->writeln('代付回调请求结果：' . json_encode($res) . ' 时间：' . date('Y-m-d H:i:s'));
-            Cache::rm($key_prefix . $item->id);
+//            Cache::rm($key_prefix . $item->id);
             // 失败
             if ($res['status'] == OrderOut::STATUS_FAILED) {
 
