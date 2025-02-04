@@ -320,7 +320,7 @@ class AuthBankPayChannel implements ChannelInterface
             'payer_name' => $payer_name, // 付款人姓名
             'payer_account' =>  $payer_account, // 付款人CPF
             'e_no' => $order['e_no'], // 业务订单号
-            'type' => 'pix',
+            'type' => 'cnpj',
         ];
     }
 
