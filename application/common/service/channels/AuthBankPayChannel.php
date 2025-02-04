@@ -300,13 +300,26 @@ class AuthBankPayChannel implements ChannelInterface
         return $res;
     }
 
-    public function parseVoucher($params, $order = ''): array
+    public function parseVoucher($channel, $order = ''): array
     {
+        $payer_name = $this->getExtraConfig($channel, 'bankName');
+        $payer_account = $this->getExtraConfig($channel, 'cnpj');
+
+        $data = OrderRequestLog::where('order_no', $order['order_no'])->where('request_type', OrderRequestLog::REQUEST_TYPE_CALLBACK)->find();
+        if (!$data) {
+            return [
+                'status' => 0,
+                'msg' => '凭证获取失败',
+            ];
+        }
+        $data = json_decode($data['request_data'], true);
+        $res['data'] = json_decode($data['data'],true);
+
         return [
-            'pay_date' => date('Y-m-d H:i:s', strtotime($params['horario'])),
-            'payer_name' => $params['payer_name'], // 付款人姓名
-            'payer_account' =>  $params['payer_account'], // 付款人CPF
-            'e_no' => $params['endToEndId'], // 业务订单号
+            'pay_date' => date('Y-m-d H:i:s', strtotime($res['data']['horario'])),
+            'payer_name' => $payer_name, // 付款人姓名
+            'payer_account' =>  $payer_account, // 付款人CPF
+            'e_no' => $order['e_no'], // 业务订单号
             'type' => 'pix',
         ];
     }
@@ -332,6 +345,6 @@ class AuthBankPayChannel implements ChannelInterface
 
     public function getVoucherUrl($order): string
     {
-        return   '';
+        return   Config::get('pay_url').'/index/receipt/index?order_id='.$order['order_no'];
     }
 }
