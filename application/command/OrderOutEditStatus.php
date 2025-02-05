@@ -25,7 +25,7 @@ class OrderOutEditStatus  extends Command
         // 获取所有未处理的订单 1个小时前的订单 10条
         $orderOut = OrderOut::where('status', 5)
             ->where('create_time', '<', date('Y-m-d H:i:s', strtotime('-1 hour')))
-            ->limit(10)
+            ->limit(100)
             ->select();
 
         foreach ($orderOut as $item) {
