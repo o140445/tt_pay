@@ -27,4 +27,5 @@ return [
     'app\command\OutOrderRequestChannel',
     'app\command\OutOrderBigRequestChannel',
     'app\command\OrderOutFailed',
+    'app\command\OrderOutEditStatus',
 ];

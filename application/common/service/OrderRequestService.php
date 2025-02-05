@@ -33,4 +33,20 @@ class OrderRequestService
 
         return false;
     }
+
+    /**
+     * del
+     */
+    public function del($order_no, $request_type, $order_type)
+    {
+        $model = OrderRequestLog::where('order_no', $order_no)
+            ->where('request_type', $request_type)
+            ->where('order_type', $order_type)
+            ->find();
+
+        if ($model) {
+            $model->response_data = '';
+            $model->save();
+        }
+    }
 }
