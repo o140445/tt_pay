@@ -24,9 +24,8 @@ class OrderOutFailed extends Command
     protected function execute(Input $input, Output $output)
     {
         // 获取所有未处理的订单 1分钟前的订单 100条
-        $orderOut = OrderOut::where('member_id', 90007)
-            ->where('status', 5)
-            ->where('create_time', '<', date('Y-m-d H:i:s', strtotime('-1 minute')))
+        $orderOut = OrderOut::where('status', 5)
+            ->where('update_time', '<', date('Y-m-d H:i:s', strtotime('-1 hour')))
             ->limit(100)
             ->select();
 
