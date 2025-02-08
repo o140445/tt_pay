@@ -34,7 +34,7 @@ class OutOrderBigRequestChannel extends Command
             $page = 1;
         }
 
-        if ($page > 5) {
+        if ($page > 3) {
             $page = 1;
         }
 
