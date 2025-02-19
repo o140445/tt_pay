@@ -16,8 +16,15 @@ class ChannelStat extends Command
 
     protected function execute($input, $output)
     {
-        // 查询昨天的渠道统计
-        $start = date('Y-m-d 00:00:00', strtotime('-5 day'));
+        // 查询10分钟的渠道统计
+        $start = date('Y-m-d 00:00:00', strtotime('-1 day'));
+        $is_yesterday_key = 'channel_stat_' . date('Y-m-d', strtotime('-1 day'));
+        $is_yesterday = cache($is_yesterday_key);
+        if ($is_yesterday > 10) {
+            $start = date('Y-m-d 00:00:00');
+        }else{
+            $is_yesterday += 1;
+        }
         $end = date('Y-m-d 23:59:59');
 
         // 先统计代收单
@@ -104,6 +111,11 @@ class ChannelStat extends Command
         }
 
         $output->writeln('渠道统计完成');
+
+        // 标记已经统计过
+        if ($is_yesterday < 10) {
+            cache($is_yesterday_key, $is_yesterday, 86400);
+        }
 
     }
 }

@@ -18,6 +18,14 @@ class MemberStat extends Command
     {
         // 查询昨天的会员统计
         $start = date('Y-m-d 00:00:00', strtotime('-1 day'));
+        $is_yesterday_key = 'member_stat_' . date('Y-m-d', strtotime('-1 day'));
+        $is_yesterday = cache($is_yesterday_key);
+        if ($is_yesterday < 10) {
+            $start = date('Y-m-d 00:00:00');
+        }else{
+            $is_yesterday += 1;
+        }
+
         $end = date('Y-m-d 23:59:59');
 
         // 先统计代收单
@@ -110,6 +118,10 @@ class MemberStat extends Command
 
 
         $output->writeln('会员统计完成');
+
+        if ($is_yesterday < 10) {
+            cache($is_yesterday_key, $is_yesterday, 86400);
+        }
     }
 
 }
