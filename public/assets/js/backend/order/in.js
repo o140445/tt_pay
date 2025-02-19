@@ -18,6 +18,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
             var table = $("#table");
 
+            // 今天日期
+            var today = new Date();
+            var todayStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+            // 7天前日期
+            var sevenDayAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            var sevenDayAgoStr = sevenDayAgo.getFullYear() + '-' + (sevenDayAgo.getMonth() + 1) + '-' + sevenDayAgo.getDate();
+
             // 初始化表格
             table.bootstrapTable({
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
@@ -66,7 +73,14 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'e_no', title: __('E_no'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'error_msg', title: __('Error_msg'), operate: false, table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'pay_success_date', title: __('Pay_success_date'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
-                        {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
+                        {field: 'create_time',
+                            title: __('Create_time'),
+                            operate:'RANGE',
+                            addclass:'datetimerange',
+                            autocomplete:false,
+                            formatter: Table.api.formatter.datetime,
+                            // 默认值 今天
+                            defaultValue: sevenDayAgoStr + ' 00:00:00 - ' + todayStr + ' 23:59:59'},
                         {field: 'update_time', title: __('Update_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate,
                             // 订单完成按钮
