@@ -11,6 +11,7 @@ use app\common\service\channels\FixPayChannel;
 use app\common\service\channels\HeyPayChannel;
 use app\common\service\channels\HwPayChannel;
 use app\common\service\channels\PPayChannel;
+use app\common\service\channels\NovoPayChannel;
 
 class PaymentService
 {
@@ -25,6 +26,7 @@ class PaymentService
         'AuthBankPay' => 'AuthBankPay',
         'PPay' => 'PPay',
         'BPPay' => 'BPPay',
+        'NovoPay' => 'NovoPay',
     ];
 
     public function __construct(string $code)
@@ -53,6 +55,9 @@ class PaymentService
                 break;
             case 'BPPay':
                 $this->channel = new BPPayChannel();
+                break;
+            case 'NovoPay':
+                $this->channel = new NovoPayChannel();
                 break;
 
             default:
