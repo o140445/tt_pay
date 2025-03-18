@@ -42,7 +42,7 @@ class OrderOutDelay extends Command
                 $res =   $outService->notify($data['code'], $data);
             }catch (\Exception $e) {
                 Db::rollback();
-                Log::write('代付回调请求失败：error' . $e->getMessage() .', data:' . json_encode($data), 'error');
+                Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($data), 'error');
             }
             Db::commit();
 
@@ -57,6 +57,7 @@ class OrderOutDelay extends Command
                 }
                 Db::commit();
             }else{
+                Db::rollback();
                 Log::error('代付回调请求失败 error:  data:' . json_encode($data) . ', msg:' . $res['msg']);
             }
 
