@@ -181,7 +181,7 @@ class NovoPayChannel implements ChannelInterface
         $amount = substr($amount, 0, -2) . '.' . substr($amount, -2);
 
         return [
-            'order_no' => $params['user_id'], // 订单号
+            'order_no' => "", // 订单号
             'channel_no' => $params['id'], // 渠道订单号
             'amount' => $amount, // 金额
             'pay_date' => '', // 支付时间
@@ -252,6 +252,7 @@ class NovoPayChannel implements ChannelInterface
      */
     public function getNotifyType($params) : string
     {
+        //{"id":"dff8bc206d71f99c187611e0792ae011","status":"COMPLETED","type":"IN ","value":"5","endToEndId":"E22896431202503181430wuntz4uVZo2","payer":{"name":"EDSON MENDES JUNIOR","document":"02462005960","bank":"PICPAY"}
         // 如果status 包含 payment 是代收， withdraw 是代付 其他是其他
         if (isset($params['type'])) {
             if (strpos($params['type'], 'IN') !== false) {
