@@ -104,10 +104,10 @@ class NovoPayChannel implements ChannelInterface
         $amount = (string)abs($params['amount']);
         // 到数两位加个小数点
         if (strpos($amount, '.') === false) {
-            $amount = substr($amount, 0, -2) . '.' . substr($amount, -2);
+            $amount = $amount * 100;
         }else{
             // 保留两位小数
-            $amount = $amount * 100;
+            $amount = substr($amount, 0, -2) . '.' . substr($amount, -2);
         }
 
         $data = [
