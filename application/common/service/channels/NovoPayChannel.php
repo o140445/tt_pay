@@ -55,7 +55,7 @@ class NovoPayChannel implements ChannelInterface
     public function pay($channel, $params): array
     {
         $data = [
-            'value' => (int)(round($params['amount'], 2) * 100),
+            'value' => (int)(round($params['amount'] * 100 , 2) ),
             'expiration' => 3600,
         ];
 
