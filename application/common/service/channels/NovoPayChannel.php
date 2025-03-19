@@ -174,9 +174,7 @@ class NovoPayChannel implements ChannelInterface
             throw new \Exception('支付状态错误');
         }
 
-        $amount = (string)$params['value'];
-        // 到数两位加个小数点
-        $amount = substr($amount, 0, -2) . '.' . substr($amount, -2);
+        $amount = $params['value'];
 
         return [
             'order_no' => "", // 订单号
