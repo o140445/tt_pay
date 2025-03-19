@@ -124,4 +124,10 @@ class PaymentService
     {
         return $this->channel->getVoucherUrl($data);
     }
+
+    // queryOrder
+    public function queryOrder($channel, $channel_no)
+    {
+        return $this->channel->queryOrder($channel, $channel_no);
+    }
 }

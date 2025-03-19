@@ -127,7 +127,7 @@ class NovoPayChannel implements ChannelInterface
         if (!$res || isset($res['msg']) || isset($res['message'])) {
             return [
                 'status' => 0,
-                'msg' => $response['message'] ?? $response['msg'] ?? 'Excepção de pagamento, por favor tente de novo mais tarde',
+                'msg' => $res['message'] ?? $res['msg'] ?? 'Excepção de pagamento, por favor tente de novo mais tarde',
             ];
         }
 
@@ -195,43 +195,26 @@ class NovoPayChannel implements ChannelInterface
      */
     public function outPayNotify($channel, $params) : array
     {
-        //{
-        //  "id": "79cc0edd-8cf7-4f8e-961a-6f3651915323",
-        //  "value": 10.50,
-        //  "status": "COMPLETED",
-        //  "type": "OUT",
-        //  "endToEndId": "E9040088820241221195631832674555",
-        //  “payer”: {
-        //    “name”: "Joao da silva oliveira",
-        //    “document”: "123.456.789-10",
-        //    “bank”: "BANCO SANTANDER",
-        //  }
-        //}
+//        {"id":"0a358053f4d94b8da99bd3f35c0ea784","endToEndId":"E22896431202503191309j2Lax5R0Vre","description":"Venda por API","type":"IN","status":"COMPLETED","value":5,"paymentMethod":"PIX","createdAt":"2025-03-19T13:08:23.741Z","updatedAt":"2025-03-19T13:09:59.834Z","payer":{"name":"EDSON MENDES JUNIOR","document":"02462005960"}}
 
         $status = OrderOut::STATUS_UNPAID;
         if ($params['status'] == 'COMPLETED') {
             $status = OrderOut::STATUS_PAID;
         }
-        if ($params['status'] == 'FAILED' || $params['status'] == 'CANCELED') {
+        if ($params['status'] == 'ERROR') {
             $status = OrderOut::STATUS_FAILED;
-        }
-
-        // 退款
-        if ($params['status'] == 'REFUNDED') {
-            $status = OrderOut::STATUS_REFUND;
         }
 
         if ($status == OrderOut::STATUS_UNPAID) {
             throw new \Exception('支付状态错误');
         }
 
-
         return [
             'order_no' =>  '', // 订单号
             'channel_no' => $params['id'], // 渠道订单号
             'pay_date' => '', // 支付时间
-            'status' => $status['endToEndId'], // 状态 2成功 3失败 4退款
-            'e_no' =>  $params, // 业务订单号
+            'status' => $status, // 状态 2成功 3失败 4退款
+            'e_no' =>  $params['endToEndId'], // 业务订单号
             'data' => json_encode($params), // 数据
             'msg' => $status == OrderOut::STATUS_PAID ? 'sucesso' : 'failed/canceled', // 消息
         ];
@@ -331,6 +314,28 @@ class NovoPayChannel implements ChannelInterface
     public function getVoucherUrl($order): string
     {
         return   Config::get('pay_url').'/index/receipt/index?order_id='.$order['order_no'];
+    }
+
+    /**
+     * 查询订单状态
+     */
+    public function queryOrder($channel, $channel_no) : array
+    {
+        $this->setHeader($channel);
+        $url = $channel['gateway'].'/transactions/'.$channel_no;
+
+        $res = Http::getJson($url, $this->header);
+
+        Log::write('Novo queryOrder response:'.json_encode($res) . ' headers:'.json_encode($this->header), 'info');
+
+        if (!$res || isset($res['msg']) || isset($res['message'])) {
+            return [
+                'status' => 0,
+                'msg' => $res['message'] ?? $res['msg'] ?? 'Excepção de pagamento, por favor tente de novo mais tarde',
+            ];
+        }
+
+        return $res;
     }
 
 }
