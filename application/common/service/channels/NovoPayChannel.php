@@ -101,6 +101,11 @@ class NovoPayChannel implements ChannelInterface
             $extra['pix_key'] = preg_replace('/[^0-9]/', '', $extra['pix_key']);
         }
 
+        //  果然是email 全部转小写
+        if ($extra['pix_type'] == 'EMAIL') {
+            $extra['pix_key'] = strtolower($extra['pix_key']);
+        }
+
         $amount = (string)abs($params['amount']);
         // 到数两位加个小数点
         if (strpos($amount, '.') === false) {
