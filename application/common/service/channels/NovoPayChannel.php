@@ -91,9 +91,9 @@ class NovoPayChannel implements ChannelInterface
     {
         $extra = json_decode($params['extra'], true);
 
-        // 如果是电话号码 并且是电话号码没有+55
-        if ($extra['pix_type'] == 'PHONE' && strpos($extra['pix_key'], '+55') === false) {
-            $extra['pix_key'] = '+55'.$extra['pix_key'];
+        // 如果是电话号码 并且是电话号码有+55 就去除
+        if ($extra['pix_type'] == 'PHONE' && strpos($extra['pix_key'], '+55') !== false) {
+            $extra['pix_key'] = str_replace('+55', '', $extra['pix_key']);
         }
 
         // 如果类型是CPF, 去除.-等特殊字符
