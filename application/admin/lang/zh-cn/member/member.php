@@ -2,6 +2,7 @@
 
 return [
     'id' => 'ID',
+    'MchId'=> '商户号',
     'UserName' => '用户名',
     'Email' => '邮箱',
     'IsAgency' => '是否代理',

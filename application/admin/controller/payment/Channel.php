@@ -3,7 +3,7 @@
 namespace app\admin\controller\payment;
 
 use app\common\controller\Backend;
-use app\common\model\merchant\ConfigArea;
+use app\common\model\merchant\Channel as ChannelModel;
 use app\common\service\PaymentService;
 use think\Db;
 use think\Exception;
@@ -19,21 +19,17 @@ class Channel extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\common\model\merchant\Channel;
+        $this->model = new ChannelModel;
         $this->view->assign("statusList", $this->model->getStatusList());
 
         $configChannelList = PaymentService::PAY_CHANNEL;
         $configChannelList[0] = __('请选择');
 
-        $configAreaList = ConfigArea::column('id,name');
-        $configAreaList[0] = __('请选择');
-        $this->view->assign('configAreaList', $configAreaList);
         $this->view->assign('configChannelList', $configChannelList);
     }
 
     public function index()
     {
-//        config_area
         //设置过滤方法
         $this->request->filter(['strip_tags', 'trim']);
         if (false === $this->request->isAjax()) {
@@ -45,8 +41,8 @@ class Channel extends Backend
         }
         [$where, $sort, $order, $offset, $limit] = $this->buildparams();
         $list = $this->model
-            ->with(['configArea'])
             ->where($where)
+            ->where('status', '<>', ChannelModel::STATUS_DELETE)
             ->order($sort, $order)
             ->paginate($limit);
         $result = ['total' => $list->total(), 'rows' => $list->items()];
@@ -81,12 +77,8 @@ class Channel extends Backend
                 throw new Exception('通道编码不能为空');
             }
 
-            if (empty($params['area_id'])) {
-                throw new Exception('地区不能为空');
-            }
-
             // 检查是否存在
-            $res = $this->model->where('title', $params['title'])->find();
+            $res = $this->model->where('title', $params['title'])->where('status', '<>', ChannelModel::STATUS_DELETE)->find();
             if ($res) {
                 throw new Exception('通道名称已存在');
             }
@@ -103,9 +95,13 @@ class Channel extends Backend
             Db::rollback();
             $this->error($e->getMessage());
         }
+
         if ($result === false) {
             $this->error(__('No rows were inserted'));
         }
+
+        // 写入缓存
+        $this->setCache($this->model->id);
         $this->success();
     }
 
@@ -156,6 +152,9 @@ class Channel extends Backend
         if ($result === false) {
             $this->error(__('No rows were updated'));
         }
+
+        // 写入缓存
+        $this->setCache($row->id);
         $this->success();
     }
 
@@ -188,13 +187,60 @@ class Channel extends Backend
 
     public function del($ids = "")
     {
+        if (empty($ids)) {
+            $this->error(__('Parameter %s can not be empty', 'ids'));
+        }
 
-        $this->error(__('No rows were deleted'));
+        // 检查是否存在
+        $res = $this->model->where('id', 'in', $ids)->where('status', '<>', ChannelModel::STATUS_DELETE)->select();
+        if (empty($res)) {
+            $this->error('通道不存在或已删除');
+        }
+
+        $result = false;
+
+        Db::startTrans();
+        try {
+            $result = $this->model->where('id', 'in', $ids)->update(['status' => ChannelModel::STATUS_DELETE]);
+            Db::commit();
+        } catch (ValidateException|PDOException|Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+
+        if ($result === false) {
+            $this->error(__('No rows were deleted'));
+        }
+
+        // 删除缓存
+        $this->setCache($ids);
+
+        $this->success();
     }
 
     public function destroy($ids = "")
     {
         $this->error(__('No rows were deleted'));
+    }
+
+    /**
+     * 写入缓存
+     */
+    protected function setCache($id)
+    {
+        $cacheKey = ChannelModel::CACHE_KEY .$id;
+        // 删除缓存
+        cache($cacheKey, null);
+
+        $cacheData = $this->model->where('id', $id)
+            ->where('status', ChannelModel::STATUS_NORMAL)
+            ->find();
+
+        if ($cacheData) {
+            $cacheData = $cacheData->toArray();
+            $cacheData['extra'] = json_decode($cacheData['extra'], true);
+            cache($cacheKey, $cacheData);
+        }
     }
 
 }

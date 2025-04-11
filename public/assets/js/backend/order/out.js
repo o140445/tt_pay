@@ -32,8 +32,18 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'id', title: __('Id')},
                         {field: 'order_no', title: __('Order_no'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'member_id', title: __('Member_id')},
-                        {field: 'member_order_no', title: __('Member_order_no'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
-                        {field: 'channel_order_no', title: __('Channel_order_no'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
+                        {
+                            field: 'member_order_no',
+                            title: '商户单号/渠道单号',
+                            operate: 'LIKE',
+                            table: table,
+                            class: 'autocontent',
+                            formatter: function (value, row, index) {
+                                // 显示 member_order_no 和 channel_order_no 换行
+                                return value + '<br>' + row.channel_order_no;
+                            }
+                        },
+                        {field: 'channel_order_no', title: __('Channel_order_no'), operate: 'LIKE',visible: false},
                         {field: 'amount', title: __('Amount'), operate:false},
                         {field: 'actual_amount', title: __('Actual_amount'), operate:false},
                         {field: 'fee_amount', title: __('Fee_amount'), operate:false},
@@ -47,8 +57,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             "5":__('Status paying'),
                             }
                         },
-                        {field: 'area_id', title: __('Area_id'), searchList: $.getJSON('order/out/getAreaList'), visible: false},
-                        {field: 'area.name', title: __('Area_id'), operate: false, formatter: Table.api.formatter.label},
 
                         {field: 'notify_status', title: __('Notify_status'), formatter: Table.api.formatter.status, searchList:{
                             "1":__('Notify_status success'),
@@ -65,7 +73,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'pay_success_date', title: __('Pay_success_date'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
 
                         {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
-                        {field: 'update_time', title: __('Update_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         // 解冻按钮
                         {
                             field: 'buttons',

@@ -528,3 +528,11 @@ if (!function_exists('get_order_no')) {
         return $prefix . date('YmdHis') . get_random_string();
     }
 }
+
+//获取商户号
+if (!function_exists('get_merchant_no')) {
+    function get_merchant_no($prefix = '')
+    {
+        return $prefix . date('YmdHis') . get_random_string(4, '0123456789');
+    }
+}

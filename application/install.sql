@@ -1,6 +1,6 @@
 
 -- 渠道
-create TABLE if not exists fa_channel (
+create TABLE if not exists tt_channel (
     `id` int NOT NULL AUTO_INCREMENT,
     `title` varchar(255)  NOT NULL COMMENT '通道名称',
     `code` varchar(255) NOT NULL COMMENT '通道编码',
@@ -28,7 +28,7 @@ create TABLE if not exists fa_channel (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 通道
-create TABLE if not exists fa_project (
+create TABLE if not exists tt_project (
     `id` int NOT NULL AUTO_INCREMENT,
     `name` varchar(255)  NOT NULL COMMENT '项目名称',
     `area_id` int NOT NULL DEFAULT 0 COMMENT '地区id',
@@ -40,7 +40,7 @@ create TABLE if not exists fa_project (
 ) ENGINE=InnoDB AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8;
 
 -- 通道渠道关联
-create TABLE if not exists fa_project_channel (
+create TABLE if not exists tt_project_channel (
     `id` int NOT NULL AUTO_INCREMENT,
     `project_id` int NOT NULL COMMENT '项目id',
     `channel_id` int NOT NULL COMMENT '通道id',
@@ -49,7 +49,7 @@ create TABLE if not exists fa_project_channel (
 
 
 -- 会员
-create TABLE if not exists fa_member (
+create TABLE if not exists tt_member (
     `id` int NOT NULL AUTO_INCREMENT,
     `username` varchar(255)  NOT NULL COMMENT '用户名',
     `password` varchar(255)  NOT NULL COMMENT '密码',
@@ -73,7 +73,7 @@ create TABLE if not exists fa_member (
 ) ENGINE=InnoDB AUTO_INCREMENT=90001 DEFAULT CHARSET=utf8mb4 COMMENT='会员表';
 
 -- 会员钱包
-create TABLE if not exists fa_member_wallet (
+create TABLE if not exists tt_member_wallet (
     `id` int NOT NULL AUTO_INCREMENT,
     `member_id` int NOT NULL COMMENT '会员id',
     `balance` decimal(10,4) Default 0 COMMENT '余额',
@@ -82,7 +82,7 @@ create TABLE if not exists fa_member_wallet (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员钱包表';
 
 -- 会员余额变动记录
-create TABLE if not exists fa_member_wallet_log (
+create TABLE if not exists tt_member_wallet_log (
     `id` int NOT NULL AUTO_INCREMENT,
     `member_id` int NOT NULL COMMENT '会员id',
     `order_no` varchar(255)  NOT NULL COMMENT '业务单号',
@@ -99,7 +99,7 @@ create TABLE if not exists fa_member_wallet_log (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员余额变动记录表';
 
 -- 会员冻结列表
-create TABLE if not exists fa_member_wallet_freeze (
+create TABLE if not exists tt_member_wallet_freeze (
     `id` int NOT NULL AUTO_INCREMENT,
     `member_id` int NOT NULL COMMENT '会员id',
     `order_no` varchar(255)  NOT NULL COMMENT '业务单号',
@@ -118,7 +118,7 @@ create TABLE if not exists fa_member_wallet_freeze (
 
 
 -- 会员通道费率
-create TABLE if not exists fa_member_project_channel (
+create TABLE if not exists tt_member_project_channel (
    `id` int NOT NULL AUTO_INCREMENT,
    `status` tinyint NOT NULL DEFAULT '1' COMMENT '状态',
    `member_id` bigint NOT NULL,
@@ -134,7 +134,7 @@ create TABLE if not exists fa_member_project_channel (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会员通道费率';
 
 -- 提款单
-create TABLE if not exists fa_withdraw_order (
+create TABLE if not exists tt_withdraw_order (
     `id` int NOT NULL AUTO_INCREMENT,
     `order_no` varchar(255)  NOT NULL COMMENT '订单号',
     `member_id` int NOT NULL COMMENT '会员id',
@@ -153,7 +153,7 @@ create TABLE if not exists fa_withdraw_order (
 
 
 -- 代收单
-create TABLE if not exists fa_order_in (
+create TABLE if not exists tt_order_in (
     `id` int NOT NULL AUTO_INCREMENT,
     `order_no` varchar(255)  NOT NULL COMMENT '订单号',
     `member_order_no` varchar(255)  NOT NULL COMMENT '会员订单号',
@@ -192,7 +192,7 @@ create TABLE if not exists fa_order_in (
 
 
 -- 地区信息
-create TABLE if not exists fa_config_area (
+create TABLE if not exists tt_config_area (
     `id` int NOT NULL AUTO_INCREMENT,
     `name` varchar(255)  NOT NULL COMMENT '地区名称',
     `timezone` varchar(255)  NOT NULL COMMENT '时区',
@@ -200,7 +200,7 @@ create TABLE if not exists fa_config_area (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='地区信息';
 
 
-CREATE TABLE `fa_profit` (
+CREATE TABLE `tt_profit` (
      `id` int NOT NULL AUTO_INCREMENT,
      `area_id` bigint NOT NULL DEFAULT '0' COMMENT '区域ID',
      `member_id` bigint NOT NULL DEFAULT '0' COMMENT '会员ID',
@@ -220,7 +220,7 @@ CREATE TABLE `fa_profit` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='利润报表';
 
 -- 回调下游记录
-CREATE TABLE `fa_notify_log` (
+CREATE TABLE `tt_notify_log` (
     `id` int NOT NULL AUTO_INCREMENT,
     `order_no` varchar(50) NOT NULL COMMENT '订单单号',
     `notify_type` tinyint NOT NULL DEFAULT '1' COMMENT '通知类型 1代收 2代付',
@@ -237,7 +237,7 @@ CREATE TABLE `fa_notify_log` (
 
 
 -- 代付单
-create TABLE if not exists fa_order_out (
+create TABLE if not exists tt_order_out (
     `id` int NOT NULL AUTO_INCREMENT,
     `order_no` varchar(255)  NOT NULL COMMENT '订单号',
     `member_id` int NOT NULL COMMENT '会员id',
@@ -272,7 +272,7 @@ create TABLE if not exists fa_order_out (
 
 
 -- 单据请求返回记录
-CREATE TABLE `fa_order_request_log` (
+CREATE TABLE `tt_order_request_log` (
     `id` int NOT NULL AUTO_INCREMENT,
     `order_no` varchar(50) NOT NULL COMMENT '订单单号',
     `order_type` tinyint NOT NULL DEFAULT '1' COMMENT '订单类型 1代收 2代付',
@@ -285,7 +285,7 @@ CREATE TABLE `fa_order_request_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='单据请求返回记录';
 
 -- 利润报表统计
-CREATE TABLE `fa_profit_stat` (
+CREATE TABLE `tt_profit_stat` (
     `id` int NOT NULL AUTO_INCREMENT,
     `area_id` bigint NOT NULL DEFAULT '0' COMMENT '区域ID',
     `in_order_count` int NOT NULL DEFAULT '0' COMMENT '代收订单数',
@@ -309,7 +309,7 @@ CREATE TABLE `fa_profit_stat` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='利润报表统计';
 
 -- 商户每日统计
-CREATE TABLE `fa_member_stat` (
+CREATE TABLE `tt_member_stat` (
     `id` int NOT NULL AUTO_INCREMENT,
     `member_id` bigint NOT NULL DEFAULT '0' COMMENT '会员ID',
     `in_order_count` int NOT NULL DEFAULT '0' COMMENT '代收订单数',
@@ -332,7 +332,7 @@ CREATE TABLE `fa_member_stat` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商户每日统计';
 
 -- 渠道每日统计
-CREATE TABLE `fa_channel_stat` (
+CREATE TABLE `tt_channel_stat` (
     `id` int NOT NULL AUTO_INCREMENT,
     `channel_id` bigint NOT NULL DEFAULT '0' COMMENT '通道ID',
     `date` date NOT NULL COMMENT '日期',
@@ -356,7 +356,7 @@ CREATE TABLE `fa_channel_stat` (
 
 
 -- 手动订单
-CREATE TABLE `fa_order_manual` (
+CREATE TABLE `tt_order_manual` (
     `id` int NOT NULL AUTO_INCREMENT,
     `order_no` varchar(50) NOT NULL COMMENT '订单单号',
     `channel_order_no` varchar(50) NOT NULL DEFAULT '' COMMENT '通道订单号',
@@ -377,7 +377,7 @@ CREATE TABLE `fa_order_manual` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='手动订单';
 
 -- 沙盒订单
-create TABLE if not exists `fa_order_sandbox` (
+create TABLE if not exists `tt_order_sandbox` (
     `id` int NOT NULL AUTO_INCREMENT,
     `order_no` varchar(50) NOT NULL COMMENT '订单单号',
     `member_id` bigint NOT NULL DEFAULT '0' COMMENT '会员ID',
@@ -398,7 +398,7 @@ create TABLE if not exists `fa_order_sandbox` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='沙盒订单';
 
 -- 延迟代付回调
-CREATE TABLE `fa_order_out_delay` (
+CREATE TABLE `tt_order_out_delay` (
     `id` int NOT NULL AUTO_INCREMENT,
     `source` varchar(50) NOT NULL COMMENT '来源',
     `data` text NOT NULL COMMENT '数据',

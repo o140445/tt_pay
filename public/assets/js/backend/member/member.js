@@ -10,7 +10,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     edit_url: 'member/member/edit',
                     del_url: 'member/member/del',
                     multi_url: 'member/member/multi',
-                    add_balance_url: 'member/member/add_balance',
+                    add_balance_url: 'member/member/addBalance',
                     table: 'member',
                 }
             });
@@ -22,24 +22,23 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 pk: 'id',
                 sortName: 'id',
                 searchFormVisible: true,
+
                 columns: [
                     [
                         {checkbox: true},
                         {field: 'id', title: __('Id'), sortable: true},
+                        {field: 'mch_id', title: __('MchId'), sortable: true},
                         {field: 'username', title: __('UserName')},
                         {field: 'wallet.balance', title: __('Balance'), operate:false, formatter: Table.api.formatter.price},
                         {field: 'wallet.blocked_balance', title: __('BlockedBalance'), operate:false},
                         {field: 'status', title: __('Status'), searchList: {0:'禁用',1:'正常'}, formatter: Table.api.formatter.toggle},
                         {field: 'is_agency', title: __('IsAgency'), searchList: {1:'代理',0:'商户'}, formatter: Table.api.formatter.label},
                         {field: 'is_sandbox', title: __('IsSandbox'), searchList: {"0":__('TypeReal'),"1":__('TypeSandbox')}, formatter: Table.api.formatter.label},
-                        {field: 'agency_id', title: __('AgencyId')},
-                        {field: 'area.name', title: __('AreaId'), formatter: Table.api.formatter.label},
                         {field: 'is_open_web_pay', title: __('IsOpenWebPay'), searchList: {0:__('关闭'), 1:__('开启')}, formatter: Table.api.formatter.label},
-                        {field: 'ip_white_list', title: __('IpWhiteList'), operate:false},
+                        {field: 'agency_id', title: __('AgencyId')},
                         {field: 'last_login_time', title: __('LastLoginTime'), formatter: Table.api.formatter.datetime},
                         {field: 'create_time', title: __('CreateTime'), formatter: Table.api.formatter.datetime},
-                        {field: 'update_time', title: __('UpdateTime'), formatter: Table.api.formatter.datetime},
-                        {field: 'operate', title: __('Operate'), table: table, formatter: Table.api.formatter.operate, events: Table.api.events.operate,
+                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate,
                             buttons: [
                                 {
                                     name: 'ajax',
@@ -47,8 +46,27 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     title: __('重置APIKEY'),
                                     classname: 'btn btn-xs btn-success btn-magic btn-ajax',
                                     icon: 'fa fa-magic',
-                                    url: 'member/member/resetapikey',
+                                    url: 'member/member/resetApiKey',
                                     confirm: '确认: 重置APIKEY',
+                                    success: function (data, ret) {
+                                        Layer.alert(ret.msg);
+                                        //如果需要阻止成功提示，则必须使用return false;
+                                        //return false;
+                                    },
+                                    error: function (data, ret) {
+                                        Layer.alert(ret.msg);
+                                        return false;
+                                    }
+                                },
+
+                                {
+                                    name: 'ajax',
+                                    text: __('重置Google验证'),
+                                    title: __('重置Google验证'),
+                                    classname: 'btn btn-xs btn-success btn-magic btn-ajax',
+                                    icon: 'fa fa-magic',
+                                    url: 'member/member/resetGoogle',
+                                    confirm: '确认: 重置Google验证',
                                     success: function (data, ret) {
                                         Layer.alert(ret.msg);
                                         //如果需要阻止成功提示，则必须使用return false;
@@ -66,7 +84,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     title: __('编辑金额'),
                                     classname: 'btn btn-xs btn-success btn-dialog',
                                     icon: 'fa fa-plus',
-                                    url: 'member/member/add_balance',
+                                    url: 'member/member/addBalance',
                                     callback: function (data, ret) {
                                         // 重新加载表格
                                         table.bootstrapTable('refresh');

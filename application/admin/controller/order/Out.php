@@ -49,7 +49,6 @@ class Out extends Backend
         }
         [$where, $sort, $order, $offset, $limit] = $this->buildparams();
         $list = $this->model
-            ->with(['area'])
             ->where($where)
             ->order($sort, $order)
             ->paginate($limit);

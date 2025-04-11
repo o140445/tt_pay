@@ -44,6 +44,9 @@ class Member extends Model
     CONST STATUS_NORMAL = 1;
     CONST STATUS_DISABLE = 0;
 
+    // 缓存key
+    CONST CACHE_KEY = 'member:';
+
     public function getAgentLists()
     {
         $data = self::where('is_agency', 1)->column('id,username');

@@ -19,12 +19,7 @@ class Dashboard extends Backend
      */
     public function index()
     {
-        try {
-            \think\Db::execute("SET @@sql_mode='';");
-        } catch (\Exception $e) {
-
-        }
-
+echo 123;die();
         $today = date('Y-m-d');
 
         // 今日订单 总单量，完成订单，总金额，完成金额
@@ -33,7 +28,7 @@ class Dashboard extends Backend
             SUM(amount) as amount,
             SUM(IF(status = 2, 1, NULL)) as success,
             SUM(IF(status = 2, amount, 0)) as success_amount
-            FROM fa_order_in WHERE create_time >= '{$today}'";
+            FROM tt_order_in WHERE create_time >= '{$today}'";
 
         $todayOrder = Db::query($todayOrder);
 
@@ -43,7 +38,7 @@ class Dashboard extends Backend
             SUM(amount) as amount,
             SUM(IF(status = 2, 1, NULL)) as success,
             SUM(IF(status = 2, amount, 0)) as success_amount
-            FROM fa_order_out WHERE create_time >= '{$today}'";
+            FROM tt_order_out WHERE create_time >= '{$today}'";
 
         $todayOutOrder = Db::query($todayOutOrder);
 
@@ -53,7 +48,7 @@ class Dashboard extends Backend
             SUM(IF(create_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY), profit, 0)) as week_profit,
             SUM(IF(create_time >= DATE_FORMAT(NOW(),'%Y-%m-01'), profit, 0)) as month_profit,
             SUM(profit) as total_profit
-            FROM fa_profit";
+            FROM tt_profit";
 
         $profit = Db::query($profit);
 
@@ -61,7 +56,7 @@ class Dashboard extends Backend
         $member_wallet = "SELECT 
             SUM(balance) as balance,
             SUM(blocked_balance) as blocked_balance
-            FROM fa_member_wallet";
+            FROM tt_member_wallet";
 
         $member_wallet = Db::query($member_wallet);
 
@@ -69,7 +64,7 @@ class Dashboard extends Backend
         $member = "SELECT 
             COUNT(IF(is_agency = 1, 1, NULL)) as agent,
             COUNT(IF(is_agency = 0, 1, NULL)) as merchant
-            FROM fa_member";
+            FROM tt_member";
 
         $member = Db::query($member);
 

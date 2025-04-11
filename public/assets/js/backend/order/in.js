@@ -30,8 +30,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
                 pk: 'id',
                 sortName: 'id',
-                fixedColumns: true,
-                fixedRightNumber: 1,
                 searchFormVisible: true,
                 columns: [
                     [
@@ -39,9 +37,18 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'id', title: __('Id')},
                         {field: 'order_no', title: __('Order_no'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'member_id', title: __('Member_id')},
-                        {field: 'member_order_no', title: __('Member_order_no'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
-                        {field: 'channel_order_no', title: __('Channel_order_no'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
-
+                        {
+                            field: 'member_order_no',
+                            title: '商户单号/渠道单号',
+                            operate: 'LIKE',
+                            table: table,
+                            class: 'autocontent',
+                            formatter: function (value, row, index) {
+                               // 显示 member_order_no 和 channel_order_no 换行
+                                return value + '<br>' + row.channel_order_no;
+                            }
+                        },
+                        {field: 'channel_order_no', title: __('Channel_order_no'), operate: 'LIKE',visible: false},
 
                         {field: 'amount', title: __('Amount'), operate:false},
                         {field: 'actual_amount', title: __('Actual_amount'), operate:false},
@@ -56,9 +63,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             }
                         },
 
-                        {field: 'area_id', title: __('Area_id'),  searchList: $.getJSON('member/config/area/list'), visible: false},
-                        {field: 'area.name', title: __('Area'), formatter:Table.api.formatter.label, operate: false },
-
                         {
                             field: 'notify_status', title: __('Notify_status'), searchList: {
                                 "1": __('Notify_status success'),
@@ -68,7 +72,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             formatter:Table.api.formatter.status,
                         },
 
-                        {field: 'pay_url', title: __('支付地址'), operate: false},
+                        {field: 'pay_url', title: __('支付地址'), operate: false, table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'notify_count', title: __('Notify_count'), operate: false},
                         {field: 'e_no', title: __('E_no'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'error_msg', title: __('Error_msg'), operate: false, table: table, class: 'autocontent', formatter: Table.api.formatter.content},
@@ -78,10 +82,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             operate:'RANGE',
                             addclass:'datetimerange',
                             autocomplete:false,
-                            formatter: Table.api.formatter.datetime,
-                            // 默认值 今天
-                            defaultValue: sevenDayAgoStr + ' 00:00:00 - ' + todayStr + ' 23:59:59'},
-                        {field: 'update_time', title: __('Update_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
+                            formatter: Table.api.formatter.datetime
+                        },
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate,
                             // 订单完成按钮
                             buttons: [

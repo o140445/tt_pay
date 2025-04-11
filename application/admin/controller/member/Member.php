@@ -10,6 +10,7 @@ use app\common\model\merchant\Member as MemberModel;
 use app\common\model\merchant\MemberWalletModel;
 use app\common\service\FreezeService;
 use app\common\service\MemberWalletService;
+use PragmaRX\Google2FAQRCode\Google2FA;
 use think\Db;
 use think\Exception;
 use think\exception\PDOException;
@@ -28,7 +29,6 @@ class Member extends Backend
         $this->model = new MemberModel();
         $this->view->assign("categoryList", $this->model->category);
         $this->view->assign('agentLists', $this->model->getAgentLists());
-        $this->view->assign('configAreaList', ConfigArea::column('id,name'));
     }
 
 
@@ -46,7 +46,7 @@ class Member extends Backend
         [$where, $sort, $order, $offset, $limit] = $this->buildparams();
 
         $list = $this->model
-            ->with(['wallet', 'area'])
+            ->with(['wallet'])
             ->where($where)
             ->order($sort, $order)
             ->paginate($limit);
@@ -89,22 +89,31 @@ class Member extends Backend
         if (!$params['password']) {
             $this->error('密码不能为空');
         }
+
+
         $params['api_key'] = strtoupper(md5($params['username'] . time()));
+
+
+        // 密码长度检查
+        if (strlen($params['password']) < 6 || strlen($params['password']) > 20) {
+            $this->error('密码长度必须在6-20之间');
+        }
+
+        // username 是否重复
+        $member = MemberModel::where('username', $params['username'])->find();
+        if ($member) {
+            $this->error('用户名已存在');
+        }
+
+        // 获取商户号
+        $params['mch_id'] = $this->getMchId();
+
+        // google验证器
+        $params['google_token'] = $this->model->generateGoogleToken();
 
         $result = false;
         Db::startTrans();
         try {
-
-            // 密码长度检查
-            if (strlen($params['password']) < 6 || strlen($params['password']) > 20) {
-                $this->error('密码长度必须在6-20之间');
-            }
-
-            // username 是否重复
-            $member = MemberModel::where('username', $params['username'])->find();
-            if ($member) {
-                $this->error('用户名已存在');
-            }
 
             // 密码加密
             if ($params['password']) {
@@ -113,7 +122,6 @@ class Member extends Backend
             }
 
             $result = $this->model->allowField(true)->save($params);
-
 
             // 创建钱包
             MemberWalletModel::create([
@@ -126,7 +134,7 @@ class Member extends Backend
             ManystoreAuthGroupAccess::create(
                 [
                     'uid' => $this->model->id,
-                    'group_id' => $params['is_agency'] ? 2 : 1 // 机构用户默认为代理
+                    'group_id' => $params['is_agency'] ? ManystoreAuthGroupAccess::GROUP_AGENT : ManystoreAuthGroupAccess::GROUP_MERCHANT // 2 代理商 1 商户
                 ]
             );
 
@@ -138,6 +146,10 @@ class Member extends Backend
         if ($result === false) {
             $this->error(__('No rows were inserted'));
         }
+
+        // 写入缓存
+        $this->setCache($this->model->id);
+
         $this->success();
     }
 
@@ -211,6 +223,10 @@ class Member extends Backend
         if (false === $result) {
             $this->error(__('No rows were updated'));
         }
+
+        // 写入缓存
+        $this->setCache($row->id);
+
         $this->success();
     }
 
@@ -225,7 +241,7 @@ class Member extends Backend
     }
     
     // edit_password
-    public function resetapikey($ids = null)
+    public function resetApiKey($ids = null)
     {
         $row = $this->model->get($ids);
         if (!$row) {
@@ -253,11 +269,15 @@ class Member extends Backend
         if (false === $result) {
             $this->error(__('No rows were updated'));
         }
+
+        // 删除缓存
+        $this->setCache($row->id);
+
         $this->success("ok");
     }
 
     // addBalance
-    public function add_balance($ids = null)
+    public function addBalance($ids = null)
     {
         $row = $this->model->get($ids);
         if (!$row) {
@@ -310,6 +330,75 @@ class Member extends Backend
             $this->error(__('No rows were updated'));
         }
         $this->success("ok");
+    }
+
+    /**
+     * resetGoogle
+     * 重置谷歌验证码
+     */
+    public function resetGoogle($ids = null)
+    {
+        $row = $this->model->get($ids);
+        if (!$row) {
+            $this->error(__('No Results were found'));
+        }
+        $adminIds = $this->getDataLimitAdminIds();
+        if (is_array($adminIds) && !in_array($row[$this->dataLimitField], $adminIds)) {
+            $this->error(__('You have no permission'));
+        }
+        if (false === $this->request->isPost()) {
+            $this->error(__('Invalid Request'));
+        }
+        $result = false;
+        Db::startTrans();
+        try {
+            $update['google_token'] = $this->model->generateGoogleToken();
+            $update['is_bind_google'] = 0;
+            $update['is_verify_google'] = 0;
+            $update['new_google_token'] = 0;
+            $result = $row->allowField(true)->save($update);
+            Db::commit();
+        } catch (ValidateException|PDOException|Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+        if (false === $result) {
+            $this->error(__('No rows were updated'));
+        }
+
+        $this->success("ok");
+    }
+
+
+    // getMchId
+    protected function getMchId()
+    {
+        $mch_id = get_merchant_no();
+        $member = MemberModel::where('mch_id', $mch_id)->find();
+        if ($member) {
+            $mch_id = $this->getMchId();
+        }
+        return $mch_id;
+    }
+
+    /**
+     * 写入缓存
+     */
+    protected function setCache($id)
+    {
+        $key = MemberModel::CACHE_KEY . $id;
+        // 删除
+        if (cache($key)) {
+            cache($key, null);
+        }
+
+        $member = MemberModel::where('id', $id)->where('status', MemberModel::STATUS_NORMAL)->find();
+        if ($member) {
+            $member =  json_encode($member->toArray());
+            cache($key, $member);
+            return $member;
+        }
+        return false;
     }
 
 }

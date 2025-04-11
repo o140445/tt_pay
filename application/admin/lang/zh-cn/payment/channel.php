@@ -3,7 +3,7 @@
 return [
     'Id' => 'ID',
     'Title' => '标题',
-    'Code' => '代码',
+    'Code' => '渠道编码',
     'MchId' => '商户ID',
     'Status' => '状态',
     'IsIn' => '开启代收',

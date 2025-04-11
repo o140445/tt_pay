@@ -21,6 +21,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
                 pk: 'id',
                 sortName: 'id',
+                showExport: false,
                 columns: [
                     [
                         {checkbox: true},
@@ -29,7 +30,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'code', title: __('Code')},
                         {field: 'sign', title: __('唯一标识')},
                         {field: 'mch_id', title: __('MchId'), operate: false },
-                        {field: 'config_area.name', title: __('地区'), operate: false },
                         {field: 'status', title: __('Status'), searchList: {0:'禁用',1:'正常'}, formatter: Table.api.formatter.toggle},
                         {field: 'is_in', title: __('IsIn'), searchList: {0:__('Disabled'),1:__('Enabled')}, formatter: Table.api.formatter.status},
                         {field: 'is_out', title: __('IsOut'), searchList: {0:__('Disabled'),1:__('Enabled')}, formatter: Table.api.formatter.status},

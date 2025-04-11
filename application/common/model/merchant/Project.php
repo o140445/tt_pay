@@ -14,6 +14,13 @@ class Project extends Model
     protected $createTime = 'create_time';
     protected $updateTime = 'update_time';
 
+    CONST STATUS_NORMAL = 1; // 正常
+    CONST STATUS_DISABLE = 0; // 禁用
+    CONST STATUS_DELETE = 2; // 删除
+
+    // 缓存key
+    CONST CACHE_KEY = 'project:';
+
     protected static function init()
     {
         self::beforeInsert(function ($row) {
@@ -37,12 +44,6 @@ class Project extends Model
     public function channel()
     {
         return $this->belongsToMany('Channel', 'project_channel', 'channel_id', 'project_id');
-    }
-
-    // configArea
-    public function configArea()
-    {
-        return $this->hasOne('ConfigArea', 'id', 'area_id');
     }
 
 }
