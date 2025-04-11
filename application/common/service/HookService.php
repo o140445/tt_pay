@@ -2,8 +2,7 @@
 
 namespace app\common\service;
 
-use app\common\model\merchant\Channel;
-use think\Db;
+use app\common\model\Channel;
 
 class HookService
 {

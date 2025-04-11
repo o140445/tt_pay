@@ -1,19 +1,25 @@
 <?php
 
-namespace app\common\model\merchant;
+namespace app\common\model;
 
 use think\Model;
 
 
-class MemberWallerLog extends Model
+class OrderManual extends Model
 {
+
     // 表名
-    protected $name = 'member_wallet_log';
+    protected $name = 'order_manual';
+
+
+    protected $createTime = 'create_time';
+    protected $updateTime = 'update_time';
 
     protected static function init()
     {
         self::beforeInsert(function ($row) {
             $row->create_time = date('Y-m-d H:i:s');
+            $row->update_time = date('Y-m-d H:i:s');
         });
 
         self::beforeUpdate(function ($row) {

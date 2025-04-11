@@ -5,7 +5,7 @@ namespace app\common\service\channels;
 interface ChannelInterface
 {
     // config
-    public function config();
+    public function config() : array;
 
     // pay
     public function pay($channel, $params) : array;
@@ -27,9 +27,6 @@ interface ChannelInterface
 
     // getPayInfo
     public function getPayInfo($orderIn) : array;
-
-    // getVoucher
-    public function getVoucher($channel, $params) : array;
 
     // parseVoucher
     public function parseVoucher($channel, $params) : array;

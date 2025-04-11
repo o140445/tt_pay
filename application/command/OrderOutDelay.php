@@ -27,7 +27,7 @@ class OrderOutDelay extends Command
 
         // 获取所有未处理的订单 1分钟前的订单 100条
         $date = date('Y-m-d H:i:s', strtotime('-1 minute'));
-        $orderOutDelay = \app\common\model\merchant\OrderOutDelay::where('status', 0)
+        $orderOutDelay = \app\common\model\OrderOutDelay::where('status', 0)
             ->where('create_time', '<', $date)
             ->limit(100)
             ->select();

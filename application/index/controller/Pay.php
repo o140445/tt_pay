@@ -3,8 +3,7 @@
 namespace app\index\controller;
 
 use app\common\controller\Frontend;
-use app\common\model\merchant\OrderIn;
-use app\common\model\merchant\OrderRequestLog;
+use app\common\model\OrderIn;
 use app\common\service\PaymentService;
 use fast\Http;
 use think\Cache;

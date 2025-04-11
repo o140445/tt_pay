@@ -1,19 +1,12 @@
 <?php
 
-namespace app\common\model\merchant;
+namespace app\common\model;
 
 use think\Model;
 
-
-class OrderManual extends Model
+class OrderOutDelay extends Model
 {
-
-    // 表名
-    protected $name = 'order_manual';
-
-
-    protected $createTime = 'create_time';
-    protected $updateTime = 'update_time';
+    protected $name = 'order_out_delay';
 
     protected static function init()
     {
@@ -25,19 +18,10 @@ class OrderManual extends Model
         self::beforeUpdate(function ($row) {
             $row->update_time = date('Y-m-d H:i:s');
         });
+
+
     }
-    // 追加属性
-    protected $append = [
 
-    ];
-    
-
-    
-
-
-
-
-
-
-
+    const ORDER_TYPE_IN = 1;
+    const ORDER_TYPE_OUT = 2;
 }

@@ -3,7 +3,7 @@
 namespace app\admin\controller\payment;
 
 use app\common\controller\Backend;
-use app\common\model\merchant\Channel as ChannelModel;
+use app\common\model\Channel as ChannelModel;
 use app\common\service\PaymentService;
 use think\Db;
 use think\Exception;
@@ -12,7 +12,7 @@ use think\exception\PDOException;
 class Channel extends Backend
 {
     /**
-     * @var \app\common\model\merchant\Channel
+     * @var \app\common\model\Channel
      */
     protected $model = null;
 

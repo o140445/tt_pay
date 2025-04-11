@@ -3,14 +3,14 @@
 namespace app\manystore\controller\order;
 
 use app\common\controller\ManystoreBase;
-use app\common\model\merchant\Member;
-use app\common\model\merchant\Profit;
+use app\common\model\Member;
+use app\common\model\Profit;
 
 class Commission extends ManystoreBase
 {
     /**
      * In模型对象
-     * @var \app\common\model\merchant\Profit
+     * @var \app\common\model\Profit
      */
     protected $model = null;
 

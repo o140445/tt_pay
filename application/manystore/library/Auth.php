@@ -2,7 +2,7 @@
 
 namespace app\manystore\library;
 
-use app\common\model\merchant\Member;
+use app\common\model\Member;
 use app\manystore\model\Manystore;
 use fast\Random;
 use fast\Tree;

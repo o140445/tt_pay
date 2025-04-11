@@ -2,7 +2,7 @@
 
 namespace app\common\service\validators;
 
-use app\common\model\merchant\Member;
+use app\common\model\Member;
 use app\common\service\OrderInService;
 use app\common\service\OrderOutService;
 use think\Log;

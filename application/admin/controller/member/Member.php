@@ -2,15 +2,12 @@
 
 namespace app\admin\controller\member;
 
-use app\admin\model\AuthGroupAccess;
 use app\admin\model\ManystoreAuthGroupAccess;
 use app\common\controller\Backend;
-use app\common\model\merchant\ConfigArea;
-use app\common\model\merchant\Member as MemberModel;
-use app\common\model\merchant\MemberWalletModel;
+use app\common\model\Member as MemberModel;
+use app\common\model\MemberWalletModel;
 use app\common\service\FreezeService;
 use app\common\service\MemberWalletService;
-use PragmaRX\Google2FAQRCode\Google2FA;
 use think\Db;
 use think\Exception;
 use think\exception\PDOException;

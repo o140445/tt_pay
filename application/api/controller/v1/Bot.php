@@ -3,8 +3,8 @@
 namespace app\api\controller\v1;
 
 use app\common\controller\Api;
-use app\common\model\merchant\OrderIn;
-use app\common\model\merchant\OrderOut;
+use app\common\model\OrderIn;
+use app\common\model\OrderOut;
 use app\common\service\MemberWalletService;
 use app\common\service\OrderInService;
 use app\common\service\OrderOutService;

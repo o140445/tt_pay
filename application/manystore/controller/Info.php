@@ -2,8 +2,8 @@
 
 namespace app\manystore\controller;
 
-use app\common\model\merchant\Member;
 use app\common\controller\ManystoreBase;
+use app\common\model\Member;
 use fast\Random;
 use think\Validate;
 

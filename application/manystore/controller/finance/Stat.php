@@ -3,8 +3,8 @@
 namespace app\manystore\controller\finance;
 
 use app\common\controller\ManystoreBase;
-use app\common\model\merchant\Member;
-use app\common\model\merchant\MemberStatModel;
+use app\common\model\Member;
+use app\common\model\MemberStatModel;
 
 /**
  * 商户每日统计
@@ -16,7 +16,7 @@ class Stat extends ManystoreBase
 
     /**
      * Stat模型对象
-     * @var \app\common\model\merchant\MemberStatModel
+     * @var \app\common\model\MemberStatModel
      */
     protected $model = null;
 
@@ -50,7 +50,7 @@ class Stat extends ManystoreBase
         $member = Member::find($id);
         // 如果是代理商，获取代理商下的商户
         if ($member->is_agency) {
-            $member_ids = Member::where('agency_id', $id)->column('member_id');
+            $member_ids = Member::where('agency_id', $id)->column('id');
         }else{
             $member_ids = [$id];
         }

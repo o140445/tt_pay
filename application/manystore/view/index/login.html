@@ -75,15 +75,15 @@
             font-size: 13px;
         }
 
+        .title {
+            font-size: 20px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
     </style>
     <!--@formatter:off-->
-    {if $background}
-    <style type="text/css">
-        body{
-            background-image: url('{$background}');
-        }
-    </style>
-    {/if}
     <!--@formatter:on-->
 </head>
 <body>
@@ -95,7 +95,8 @@
                     <img src="__CDN__/assets/img/login-head.png" style="width:100%;"/>
                 </div>
                 <div class="login-form">
-                    <img id="profile-img" class="profile-img-card" src="__CDN__/assets/img/avatar.png"/>
+                    <h2 class="title">商户管理后台</h2>
+
                     <p id="profile-name" class="profile-name-card"></p>
 
                     <form action="" method="post" id="login-form">

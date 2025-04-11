@@ -4,9 +4,6 @@ namespace app\manystore\controller\order;
 
 
 use app\common\controller\ManystoreBase;
-use app\common\model\merchant\OrderIn;
-use app\common\service\OrderInService;
-use think\Db;
 
 /**
  * 代付单
@@ -18,14 +15,14 @@ class In extends ManystoreBase
 
     /**
      * In模型对象
-     * @var \app\common\model\merchant\OrderIn
+     * @var \app\common\model\OrderIn
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\common\model\merchant\OrderIn;
+        $this->model = new \app\common\model\OrderIn;
         $this->view->assign("statusList", $this->model->getStatusList());
     }
 

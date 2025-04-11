@@ -3,8 +3,8 @@
 namespace app\admin\controller\finance\profits;
 
 use app\common\controller\Backend;
-use app\common\model\merchant\ConfigArea;
-use app\common\model\merchant\ProfitStatModel;
+use app\common\model\ConfigArea;
+use app\common\model\ProfitStatModel;
 
 /**
  * 利润报表统计
@@ -16,7 +16,7 @@ class Stat extends Backend
 
     /**
      * Stat模型对象
-     * @var \app\common\model\merchant\ProfitStatModel
+     * @var \app\common\model\ProfitStatModel
      */
     protected $model = null;
 

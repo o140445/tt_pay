@@ -3,7 +3,7 @@
 namespace app\manystore\controller;
 
 use app\common\controller\ManystoreBase;
-use app\common\model\merchant\Member;
+use app\common\model\Member;
 use PragmaRX\Google2FA\Google2FA;
 use think\Session;
 

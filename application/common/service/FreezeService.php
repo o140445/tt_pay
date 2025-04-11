@@ -2,7 +2,7 @@
 
 namespace app\common\service;
 
-use app\common\model\merchant\MemberWalletFreezeModel;
+use app\common\model\MemberWalletFreezeModel;
 
 class FreezeService
 {

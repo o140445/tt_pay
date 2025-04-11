@@ -4,7 +4,7 @@ namespace app\admin\controller\order;
 
 use app\admin\model\Admin;
 use app\common\controller\Backend;
-use app\common\model\merchant\OrderOut;
+use app\common\model\OrderOut;
 use app\common\service\OrderOutService;
 use think\Db;
 
@@ -18,14 +18,14 @@ class Out extends Backend
 
     /**
      * Out模型对象
-     * @var \app\common\model\merchant\OrderOut
+     * @var \app\common\model\OrderOut
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\common\model\merchant\OrderOut;
+        $this->model = new \app\common\model\OrderOut;
         $this->view->assign("statusList", $this->model->getStatusList());
     }
 
@@ -131,7 +131,7 @@ class Out extends Backend
             }
 
             // 设置时区
-            date_default_timezone_set($order->area->timezone);
+//            date_default_timezone_set($order->area->timezone);
             switch ($params['status']) {
                 case OrderOut::STATUS_PAID:
                     $orderService->completeOrder($order, ['error_msg' => $params['remark']]);

@@ -2,15 +2,13 @@
 
 namespace app\command;
 
-use app\common\model\merchant\OrderOut;
-use app\common\model\merchant\OrderRequestLog;
-use app\common\service\OrderOutService;
+use app\common\model\OrderOut;
+use app\common\model\OrderRequestLog;
 use app\common\service\OrderRequestService;
 use think\console\Command;
 use think\console\Input;
 use think\console\Output;
 use think\Db;
-use think\Log;
 
 class OrderOutEditStatus  extends Command
 {

@@ -409,3 +409,18 @@ CREATE TABLE `tt_order_out_delay` (
     KEY `idx_create_time` (`create_time`),
     key `idx_source` (`source`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='延迟代付回调';
+
+
+-- 订单税率表
+CREATE TABLE `tt_order_tax` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `order_id` int NOT NULL COMMENT '订单ID',
+    `order_type` tinyint NOT NULL DEFAULT '1' COMMENT '订单类型 1代收 2代付',
+    `channel_rate` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '通道税率',
+    `channel_fixed_rate` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '通道固定税率',
+    `member_rate` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '会员税率',
+    `member_fixed_rate` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '会员固定税率',
+    `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_order_id` (`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单税率表';

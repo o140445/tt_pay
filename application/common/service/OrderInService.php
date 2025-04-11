@@ -2,14 +2,14 @@
 
 namespace app\common\service;
 
-use app\common\model\merchant\Channel;
-use app\common\model\merchant\Member;
-use app\common\model\merchant\MemberProjectChannel;
-use app\common\model\merchant\MemberWalletModel;
-use app\common\model\merchant\OrderIn;
-use app\common\model\merchant\OrderNotifyLog;
-use app\common\model\merchant\OrderRequestLog;
-use app\common\model\merchant\Profit;
+use app\common\model\Channel;
+use app\common\model\Member;
+use app\common\model\MemberProjectChannel;
+use app\common\model\MemberWalletModel;
+use app\common\model\OrderIn;
+use app\common\model\OrderNotifyLog;
+use app\common\model\OrderRequestLog;
+use app\common\model\Profit;
 use fast\Http;
 use think\Log;
 
@@ -33,13 +33,13 @@ class OrderInService
     public function createOrder($params)
     {
         // 订单创建检查
-        $channel_id = MemberProjectChannel::where('status', OrderInService::STATUS_OPEN)->where('member_id', $params['merchant_id'])->where('project_id', $params['product_id'])->where('type', 1)->value('channel_id');
+        $member_project_channel = MemberProjectChannel::getChannelByProjectId( $params['product_id'], $params['merchant_id'], self::TYPE_IN);
 
-        if (!$channel_id) {
+        if (!$member_project_channel) {
             throw new \Exception('Merchant channel not found');
         }
 
-        $params['channel_id'] = $channel_id;
+        $params['channel_id'] = $member_project_channel->channel_id;
         $params['type'] = self::TYPE_IN;
 
         $validate = new OrderValidator();
@@ -47,32 +47,34 @@ class OrderInService
             throw new \Exception($validate->getErrors()[0]);
         }
 
-        $member = Member::where('status', OrderInService::STATUS_OPEN)->find($params['merchant_id']);
-
-        // 设置时区
-        date_default_timezone_set($member->area->timezone);
-
         // 创建订单
         $order = new OrderIn();
         $order->order_no = $this->generateOrderNo();
         $order->member_id = $params['merchant_id'];
         $order->project_id = $params['product_id'];
-        $order->channel_id = $channel_id;
-
+        $order->channel_id = $member_project_channel->channel_id;
         $order->member_order_no = $params['merchant_order_no'];
         $order->amount = $params['amount'];
         $order->notify_url = $params['notify_url'];
         $order->order_ip = request()->ip();
-        $order->area_id = $member->area_id;
         $order->status = OrderIn::STATUS_UNPAID;
         $order->channel_order_no = '';
-
-
         $res = $order->save();
 
         if (!$res) {
             throw new \Exception('Order creation failed');
         }
+
+        // 保存 税率
+        $order_tax_service = new OrderTaxService();
+        $res = $order_tax_service->saveOrderTax($order->id, $order->channel_id, $params['merchant_id'], self::TYPE_IN);
+        if (!$res) {
+            throw new \Exception('Order tax rate save failed');
+        }
+
+        // 新增统计
+        $statService = new StatService();
+        $statService->add($order, 'in');
 
         return $order;
     }
@@ -164,9 +166,6 @@ class OrderInService
             $order = OrderIn::where('channel_order_no', $data['channel_no'])->lock(true)->find();
         }
 
-        // 设置时区
-        date_default_timezone_set($order->area->timezone);
-
         if (!$order) {
             throw new \Exception( '订单不存在');
         }
@@ -257,21 +256,14 @@ class OrderInService
             'channel_fee_amount' => 0,
         ];
 
-        $channel = Channel::where('status', OrderInService::STATUS_OPEN)->find($order->channel_id);
-        $memberProjectChannel = MemberProjectChannel::where('status', OrderInService::STATUS_OPEN)
-            ->where('member_id', $order->member_id)
-            ->where('project_id', $order->project_id)
-            ->where('channel_id', $order->channel_id)
-            ->where('type', 1)
-            ->find();
-
-        if ($channel){
-            $res['channel_fee_amount'] = $order->amount * $channel->in_rate / 100 + $channel->in_fixed_rate;
+        $order_tax_service= new OrderTaxService();
+        $order_tax = $order_tax_service->getOrderTax($order->id,  self::TYPE_IN);
+        if (!$order_tax){
+            return $res;
         }
 
-        if ($memberProjectChannel){
-            $res['fee_amount'] = $order->amount * $memberProjectChannel->rate / 100 + $memberProjectChannel->fixed_rate;
-        }
+        $res['channel_fee_amount'] = $order->true_amount * $order_tax->channel_rate / 100 + $order_tax->in_fixed_rate;
+        $res['fee_amount'] = $order->true_amount * $order_tax->member_rate / 100 + $order_tax->member_fixed_rate;
 
         return $res;
     }
@@ -309,9 +301,9 @@ class OrderInService
         $walletService = new MemberWalletService();
         $walletService->addBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD, $order->order_no, '代收提成');
 
-        if ($agent->agency_id){
-            $amount += $this->getSecondCommission($order, $agent->id);
-        }
+//        if ($agent->agency_id){
+//            $amount += $this->getSecondCommission($order, $agent->id);
+//        }
 
         return $amount;
     }
@@ -369,6 +361,10 @@ class OrderInService
         $profit->commission = $commission;
         $profit->profit = $order->fee_amount - $order->channel_fee_amount - $commission;
         $profit->save();
+
+        // 更新统计
+        $statService = new StatService();
+        $statService->addProfits($profit, 'in');
     }
 
     /**
@@ -422,6 +418,7 @@ class OrderInService
         }
 
         Log::write('代收通知下游：data ' . json_encode($data) . ', result: ' . $rse, 'info');
+        $rse = strtolower($rse);
         $code = $rse == 'success' ? OrderNotifyLog::STATUS_NOTIFY_SUCCESS : OrderNotifyLog::STATUS_NOTIFY_FAIL;
 
         $log = new OrderNotifyLog();

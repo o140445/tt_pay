@@ -3,10 +3,10 @@
 namespace app\admin\controller\member\project;
 
 use app\common\controller\Backend;
-use app\common\model\merchant\Member;
-use app\common\model\merchant\MemberProjectChannel;
-use app\common\model\merchant\MemberProjectChannel as ChannelModel;
-use app\common\model\merchant\Project;
+use app\common\model\Member;
+use app\common\model\MemberProjectChannel;
+use app\common\model\MemberProjectChannel as ChannelModel;
+use app\common\model\Project;
 use app\common\service\OrderInService;
 use think\Db;
 use think\exception\PDOException;
@@ -22,7 +22,7 @@ class Channel extends Backend
 
     /**
      * Channel模型对象
-     * @var \app\common\model\merchant\MemberProjectChannel
+     * @var \app\common\model\MemberProjectChannel
      */
     protected $model = null;
 

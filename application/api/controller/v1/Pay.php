@@ -3,8 +3,6 @@
 namespace app\api\controller\v1;
 
 use app\common\controller\Api;
-use app\common\model\merchant\OrderIn;
-use app\common\model\merchant\OrderOut;
 use app\common\service\OrderInService;
 use app\common\service\OrderOutService;
 use think\Cache;
@@ -65,17 +63,21 @@ class Pay extends Api
             empty($params['merchant_order_no']) ||
             empty($params['sign']) ||
             empty($params['notify_url']) ||
-            empty($params['nonce'])) {
+            empty($params['time'])) {
             $this->error('Parameter error');
         }
 
         // 写请求日志
         Log::write('代收请求参数：data ' . json_encode($params), 'info');
 
+        // time 超过 10s
+        if (time() - $params['time'] > 10) {
+            $this->error('Request timeout');
+        }
+
         // 加锁同一个单号同时只能有一个请求
         $lock = $params['merchant_order_no'] . '_lock';
         Cache::get($lock) && $this->error('Submit repeatedly');
-
         Cache::set($lock, 1, 10);
 
         Db::startTrans();
@@ -91,7 +93,6 @@ class Pay extends Api
         }
 
         Db::commit();
-        Cache::rm($lock);
 
         try {
             $res = $orderService->requestChannel($order);
@@ -178,25 +179,35 @@ class Pay extends Api
         try {
             $orderService = new OrderOutService();
             $order = $orderService->createOutOrder($params);
+            Db::commit();
         }catch (\Exception $e) {
             Db::rollback();
             Cache::rm($lock);
             Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
             $this->error($e->getMessage());
         }
-        Db::commit();
-        Cache::rm($lock);
 
-        //return [
-        //            'order_no' => $order->order_no,
-        //            'status' => $order->status,
-        //            'msg' => $res['msg'],
-        //        ];
-        $res = [
-            'order_no' => $order->order_no,
-            'status' => $order->status,
-            'msg' => '下单成功',
-        ];
+        Db::startTrans();
+        try {
+            $res = $orderService->requestChannel($order);
+            Db::commit();
+        }catch (\Exception $e) {
+            Db::rollback();
+            Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
+            $this->error($e->getMessage());
+        }
+
+
+        return [
+                    'order_no' => $order->order_no,
+                    'status' => $order->status,
+                    'msg' => $res['msg'],
+                ];
+//        $res = [
+//            'order_no' => $order->order_no,
+//            'status' => $order->status,
+//            'msg' => '下单成功',
+//        ];
 
         $this->success('返回成功', $res);
     }

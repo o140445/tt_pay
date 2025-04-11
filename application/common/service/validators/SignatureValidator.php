@@ -2,7 +2,7 @@
 
 namespace app\common\service\validators;
 
-use app\common\model\merchant\Member;
+use app\common\model\Member;
 use app\common\service\OrderInService;
 use app\common\service\SignService;
 
@@ -31,7 +31,7 @@ class SignatureValidator implements ValidatorInterface
             'amount' => $data['amount'],
             'product_id' => $data['product_id'],
             'notify_url' => $data['notify_url'],
-            'nonce' => $data['nonce'],
+            'time' => $data['time'],
             'sign' => $data['sign'],
         ];
 

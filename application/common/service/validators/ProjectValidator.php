@@ -2,8 +2,7 @@
 
 namespace app\common\service\validators;
 
-use app\common\model\merchant\OrderOut;
-use app\common\model\merchant\Project;
+use app\common\model\Project;
 use app\common\service\OrderInService;
 use app\common\service\OrderOutService;
 

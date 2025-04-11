@@ -16,14 +16,14 @@ class Order extends Backend
 
     /**
      * Order模型对象
-     * @var \app\common\model\merchant\WithdrawOrder
+     * @var \app\common\model\WithdrawOrder
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\common\model\merchant\WithdrawOrder;
+        $this->model = new \app\common\model\WithdrawOrder;
         $this->view->assign("statusList", $this->model->getStatusList());
     }
 

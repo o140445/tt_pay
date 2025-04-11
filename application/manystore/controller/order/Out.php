@@ -4,13 +4,10 @@ namespace app\manystore\controller\order;
 
 
 use app\common\controller\ManystoreBase;
-use app\common\model\merchant\MemberProjectChannel;
-use app\common\model\merchant\OrderOut;
-use app\common\model\merchant\Project;
+use app\common\model\MemberProjectChannel;
 use app\common\service\OrderOutService;
 use think\Config;
 use think\Db;
-use think\Exception;
 use think\Log;
 
 /**
@@ -23,14 +20,14 @@ class Out extends ManystoreBase
 
     /**
      * Out模型对象
-     * @var \app\common\model\merchant\OrderOut
+     * @var \app\common\model\OrderOut
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\common\model\merchant\OrderOut;
+        $this->model = new \app\common\model\OrderOut;
         $this->view->assign("statusList", $this->model->getStatusList());
     }
 

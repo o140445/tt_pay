@@ -1,6 +1,6 @@
 <?php
 
-namespace app\common\model\merchant;
+namespace app\common\model;
 
 use think\Model;
 

@@ -3,10 +3,9 @@
 namespace app\admin\controller\payment;
 
 use app\common\controller\Backend;
-use app\common\model\merchant\Channel;
-use app\common\model\merchant\ConfigArea;
-use app\common\model\merchant\Project as ProjectModel;
-use app\common\model\merchant\ProjectChannel;
+use app\common\model\Channel;
+use app\common\model\Project as ProjectModel;
+use app\common\model\ProjectChannel;
 use think\Db;
 use think\Exception;
 use think\exception\PDOException;

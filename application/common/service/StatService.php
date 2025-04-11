@@ -2,11 +2,9 @@
 
 namespace app\common\service;
 
-use app\common\model\merchant\ChannelStatModel;
-use app\common\model\merchant\MemberStatModel;
-use app\common\model\merchant\OrderIn;
-use app\common\model\merchant\OrderOut;
-use app\common\model\merchant\ProfitStatModel;
+use app\common\model\ChannelStatModel;
+use app\common\model\MemberStatModel;
+use app\common\model\ProfitStatModel;
 
 class StatService
 {
@@ -153,7 +151,6 @@ class StatService
     public function addProfits($profit, $type = "in")
     {
         $model = ProfitStatModel::where('create_time', date(strtotime($profit->create_time)))
-            ->where('area_id', $profit['area_id'])
             ->lock(true)
             ->find();
 
@@ -177,7 +174,6 @@ class StatService
             $model->profit += $profit->profit;
         }else{
             ProfitStatModel::create([
-                'area_id' => $profit->area_id,
                 'create_time' => date(strtotime($profit->create_time)),
                 'in_order_count' => $type == 'in' ? 1 : 0,
                 'in_order_amount' => $type == 'in' ? $profit->order_amount : 0,

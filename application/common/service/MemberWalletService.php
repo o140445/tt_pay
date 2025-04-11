@@ -2,9 +2,9 @@
 
 namespace app\common\service;
 
-use app\common\model\merchant\Member;
-use app\common\model\merchant\MemberWalletLogModel;
-use app\common\model\merchant\MemberWalletModel;
+use app\common\model\Member;
+use app\common\model\MemberWalletLogModel;
+use app\common\model\MemberWalletModel;
 use think\Db;
 
 class MemberWalletService

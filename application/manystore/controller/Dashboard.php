@@ -3,12 +3,10 @@
 namespace app\manystore\controller;
 
 use app\common\controller\ManystoreBase;
-use app\common\model\merchant\Member;
-use app\common\model\merchant\MemberWalletModel;
-use app\common\model\merchant\OrderIn;
-use app\common\model\merchant\OrderOut;
-use app\common\model\merchant\Profit;
-use think\Config;
+use app\common\model\Member;
+use app\common\model\OrderIn;
+use app\common\model\OrderOut;
+use app\common\model\Profit;
 
 /**
  * 控制台

@@ -3,7 +3,7 @@
 namespace app\admin\controller\finance\member;
 
 use app\common\controller\Backend;
-use app\common\model\merchant\MemberStatModel;
+use app\common\model\MemberStatModel;
 
 /**
  * 商户每日统计
@@ -15,7 +15,7 @@ class Stat extends Backend
 
     /**
      * Stat模型对象
-     * @var \app\common\model\merchant\MemberStatModel
+     * @var \app\common\model\MemberStatModel
      */
     protected $model = null;
 

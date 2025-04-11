@@ -2,20 +2,19 @@
 
 namespace app\common\service;
 
-use app\common\model\merchant\OrderOutDelay;
-use think\Cache;
-use think\Config;
-use think\Log;
-use app\common\model\merchant\Channel;
-use app\common\model\merchant\Member;
-use app\common\model\merchant\MemberProjectChannel;
-use app\common\model\merchant\MemberWallerLog;
-use app\common\model\merchant\MemberWalletModel;
-use app\common\model\merchant\OrderNotifyLog;
-use app\common\model\merchant\OrderOut;
-use app\common\model\merchant\OrderRequestLog;
-use app\common\model\merchant\Profit;
+use app\common\model\Channel;
+use app\common\model\Member;
+use app\common\model\MemberProjectChannel;
+use app\common\model\MemberWallerLog;
+use app\common\model\MemberWalletModel;
+use app\common\model\OrderNotifyLog;
+use app\common\model\OrderOut;
+use app\common\model\OrderOutDelay;
+use app\common\model\OrderRequestLog;
+use app\common\model\Profit;
 use fast\Http;
+use think\Cache;
+use think\Log;
 
 class OrderOutService
 {
@@ -31,12 +30,16 @@ class OrderOutService
     public function createOutOrder($params)
     {
         // 订单创建检查
-        $channel_id = MemberProjectChannel::where('status', OrderInService::STATUS_OPEN)->where('member_id', $params['merchant_id'])->where('project_id', $params['product_id'])->where('type', 2)->value('channel_id');
-        if (!$channel_id) {
+        $member_project_channel = MemberProjectChannel::getChannelByProjectId(
+            $params['merchant_id'],
+            $params['product_id'],
+            self::TYPE_OUT
+        );
+        if (!$member_project_channel) {
             throw new \Exception('Project Channel Not Found');
         }
 
-        $params['channel_id'] = $channel_id;
+        $params['channel_id'] = $member_project_channel->channel_id;
         $params['type'] = self::TYPE_OUT;
 
         $validate = new OrderValidator();
@@ -44,15 +47,11 @@ class OrderOutService
             throw new \Exception($validate->getErrors()[0]);
         }
 
-        $member = Member::where('status', OrderInService::STATUS_OPEN)->find($params['merchant_id']);
-
-        // 设置时区
-        date_default_timezone_set($member->area->timezone);
         // 创建订单
         $order = new OrderOut();
         $order->order_no = $this->generateOrderNo();
         $order->member_id = $params['merchant_id'];
-        $order->channel_id = $channel_id;
+        $order->channel_id =  $params['channel_id'];
         $order->member_order_no = $params['merchant_order_no'];
         $order->amount = $params['amount'];
         $order->project_id = $params['product_id'];
@@ -60,7 +59,6 @@ class OrderOutService
         $order->extra = json_encode($params['extra']);
 
         $order->order_ip = request()->ip();
-        $order->area_id = $member->area_id;
         $order->status = OrderOut::STATUS_UNPAID;
         $order->channel_order_no = '';
 
@@ -74,6 +72,10 @@ class OrderOutService
         // 冻结
         $feeService = new FreezeService();
         $feeService->freeze($order->member_id, $order->actual_amount, MemberWalletModel::CHANGE_TYPE_PAY_FREEZE, $order->order_no, '代付冻结');
+
+        // 写入统计
+        $stat_service = new StatService();
+        $stat_service->add($order, 'out');
 
         return $order;
     }
@@ -230,7 +232,7 @@ class OrderOutService
         }
 
         // 设置时区
-        date_default_timezone_set($order->area->timezone);
+//        date_default_timezone_set($order->area->timezone);
 
         // 写入请求日志
         $log = new OrderRequestService();
@@ -290,7 +292,17 @@ class OrderOutService
 
          // 减少余额
         $memberWalletService = new MemberWalletService();
-        $memberWalletService->subBalanceByType($order->member_id, $order->actual_amount , MemberWalletModel::CHANGE_TYPE_PAY_SUB, $order->order_no, '代付扣款');
+        $memberWalletService->subBalanceByType(
+            $order->member_id,
+            $order->actual_amount ,
+            MemberWalletModel::CHANGE_TYPE_PAY_SUB,
+            $order->order_no,
+            '代付扣款'
+        );
+
+        // 更新统计
+        $stat_service = new StatService();
+        $stat_service->update($order, 'out');
 
         // 计算提成
         $commission = $this->calculateCommission($order);
@@ -411,9 +423,9 @@ class OrderOutService
         $walletService = new MemberWalletService();
         $walletService->addBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD, $order->order_no, '代付提成');
 
-        if ($agent->agency_id){
-            $amount += $this->calculateSecondCommission($order, $agent->id);
-        }
+//        if ($agent->agency_id){
+//            $amount += $this->calculateSecondCommission($order, $agent->id);
+//        }
 
         return $amount;
     }
@@ -506,6 +518,10 @@ class OrderOutService
         $profit->commission = $commission;
         $profit->profit = $order->fee_amount - $order->channel_fee_amount - $commission;
         $profit->save();
+
+        // 写入统计
+        $stat_service = new StatService();
+        $stat_service->addProfits($profit, 'out');
     }
 
 
@@ -549,8 +565,6 @@ class OrderOutService
             return $order->save();
         }
 
-        // 设置时区
-        date_default_timezone_set($order->area->timezone);
 
         $data = [
             'order_no' => $order->order_no,
@@ -645,46 +659,6 @@ class OrderOutService
     }
 
 
-    /**
-     * 获取凭证
-     * @param $order
-     * @return array
-     */
-    public function getVoucher($order)
-    {
-
-        // 查询是否已经生成凭证
-        $response = OrderRequestLog::where('order_no', $order['order_no'])->where('request_type', OrderRequestLog::REQUEST_TYPE_VOUCHER)->find();
-
-        if (!$response){
-            $paymentService = new PaymentService($order->channel->code);
-            $response = $paymentService->getVoucher($order->channel, $order);
-            if (!$response['status']){
-                throw new \Exception($response['msg']);
-            }
-
-            // 保存
-            $log = new OrderRequestService();
-            $log->create(
-                $order->order_no,
-                OrderRequestLog::REQUEST_TYPE_VOUCHER,
-                OrderRequestLog::ORDER_TYPE_OUT,
-                '',
-                json_encode($response['data'])
-            );
-
-            // 修改E_NO
-            $order->e_no = $response['data']['e2e'];
-            $order->save();
-            $response['response_data'] = json_encode($response['data']);
-        }
-
-        Cache::set('voucher_'.$order->order_no,  $response['response_data'], 600);
-
-
-        return json_decode($response['response_data'], true);
-
-    }
 
     /**
      * 获取凭证数据

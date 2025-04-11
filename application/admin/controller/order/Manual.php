@@ -3,9 +3,8 @@
 namespace app\admin\controller\order;
 
 use app\common\controller\Backend;
-use app\common\model\merchant\Channel;
+use app\common\model\Channel;
 use app\common\service\OrderManualService;
-use app\common\service\OrderOutService;
 use think\Config;
 use think\Db;
 
@@ -19,14 +18,14 @@ class Manual extends Backend
 
     /**
      * Manual模型对象
-     * @var \app\common\model\merchant\OrderManual
+     * @var \app\common\model\OrderManual
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\common\model\merchant\OrderManual;
+        $this->model = new \app\common\model\OrderManual;
 
     }
 

@@ -1,27 +1,37 @@
 <?php
 
-namespace app\common\model\merchant;
+namespace app\common\model;
 
 use think\Model;
 
-class OrderOutDelay extends Model
+
+class MemberWallerLog extends Model
 {
-    protected $name = 'order_out_delay';
+    // 表名
+    protected $name = 'member_wallet_log';
 
     protected static function init()
     {
         self::beforeInsert(function ($row) {
             $row->create_time = date('Y-m-d H:i:s');
-            $row->update_time = date('Y-m-d H:i:s');
         });
 
         self::beforeUpdate(function ($row) {
             $row->update_time = date('Y-m-d H:i:s');
         });
-
-
     }
+    // 追加属性
+    protected $append = [
 
-    const ORDER_TYPE_IN = 1;
-    const ORDER_TYPE_OUT = 2;
+    ];
+    
+
+    
+
+
+
+
+
+
+
 }

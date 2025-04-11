@@ -1,6 +1,6 @@
 <?php
 
-namespace app\common\model\merchant;
+namespace app\common\model;
 
 use PragmaRX\Google2FA\Google2FA;
 use PragmaRX\Google2FAQRCode\Google2FA as Google2FAQRCode;
@@ -60,11 +60,6 @@ class Member extends Model
         return $this->hasOne('MemberWalletModel', 'member_id', 'id');
     }
 
-    // area
-    public function area()
-    {
-        return $this->hasOne('ConfigArea', 'id', 'area_id');
-    }
 
     // 生成谷歌验证器
     public function generateGoogleToken()

@@ -2,7 +2,7 @@
 
 namespace app\command;
 
-use app\common\model\merchant\OrderOut;
+use app\common\model\OrderOut;
 use app\common\service\OrderOutService;
 use think\Cache;
 use think\Config;

@@ -2,8 +2,8 @@
 
 namespace app\common\service;
 
-use app\common\model\merchant\Channel;
-use app\common\model\merchant\OrderManual;
+use app\common\model\Channel;
+use app\common\model\OrderManual;
 
 class OrderManualService
 {

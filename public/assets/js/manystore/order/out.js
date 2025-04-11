@@ -22,8 +22,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
                 pk: 'id',
                 sortName: 'id',
-                fixedColumns: true,
-                fixedRightNumber: 1,
                 searchFormVisible: true,
                 columns: [
                     [
@@ -51,7 +49,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'notify_count', title: __('Notify_count'), operate: false},
                         {field: 'extra', title: __('收款信息'), operate: false, table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'error_msg', title: __('Error_msg'), operate: false, table: table, class: 'autocontent', formatter: Table.api.formatter.content},
-                        {field: 'e_no', title: __('E_no'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
 
 
                         {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},

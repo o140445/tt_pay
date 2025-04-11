@@ -2,7 +2,7 @@
 
 namespace app\command;
 
-use app\common\model\merchant\OrderSandbox;
+use app\common\model\OrderSandbox;
 use app\common\service\OrderSandboxService;
 use think\console\Command;
 

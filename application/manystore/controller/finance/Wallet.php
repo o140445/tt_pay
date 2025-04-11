@@ -3,13 +3,13 @@
 namespace app\manystore\controller\finance;
 
 use app\common\controller\ManystoreBase;
-use app\common\model\merchant\MemberWallerLog;
-use app\common\model\merchant\MemberWalletModel;
+use app\common\model\MemberWallerLog;
+use app\common\model\MemberWalletModel;
 
 class wallet extends ManystoreBase
 {
     /**
-     * @var \app\common\model\merchant\MemberWallerLog
+     * @var \app\common\model\MemberWallerLog
      */
     protected $model = null;
     public function _initialize()

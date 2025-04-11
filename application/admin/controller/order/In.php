@@ -4,7 +4,7 @@ namespace app\admin\controller\order;
 
 use app\admin\model\Admin;
 use app\common\controller\Backend;
-use app\common\model\merchant\OrderIn;
+use app\common\model\OrderIn;
 use app\common\service\OrderInService;
 use think\Db;
 
@@ -18,14 +18,14 @@ class In extends Backend
 
     /**
      * In模型对象
-     * @var \app\common\model\merchant\OrderIn
+     * @var \app\common\model\OrderIn
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\common\model\merchant\OrderIn;
+        $this->model = new \app\common\model\OrderIn;
         $this->view->assign("statusList", $this->model->getStatusList());
     }
 
@@ -106,7 +106,6 @@ class In extends Backend
                 throw new \Exception('订单状态不正确');
             }
 
-            date_default_timezone_set($order->area->timezone);
 
             switch ($params['status']) {
                 case OrderIn::STATUS_PAID:

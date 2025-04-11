@@ -2,13 +2,12 @@
 
 namespace app\command;
 
-use app\common\model\merchant\OrderOut;
+use app\common\model\OrderOut;
 use app\common\service\OrderOutService;
 use think\console\Command;
 use think\console\Input;
 use think\console\Output;
 use think\Db;
-use think\Log;
 
 /**
  * 代付失败通知

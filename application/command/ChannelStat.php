@@ -2,7 +2,7 @@
 
 namespace app\command;
 
-use app\common\model\merchant\ChannelStatModel;
+use app\common\model\ChannelStatModel;
 use think\console\Command;
 use think\Log;
 
